@@ -1,2 +1,4 @@
 /node_modules
+/datab
+firebase.js
 package-lock.json
