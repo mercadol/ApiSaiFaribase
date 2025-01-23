@@ -6,7 +6,7 @@ const router = express.Router();
 
 // Todas las rutas a continuacion
 router.get('/test', memberController.test);
-router.get('/members/:last?', memberController.getMiembros);
+router.get('/:last?', memberController.getMiembros);
 
 
 

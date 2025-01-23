@@ -1,13 +1,13 @@
 'use strict'
 //cargar modulos de node para crear servidor
-var express = require('express');
-var bodyParser = require('body-parser');
+const express = require('express');
+const bodyParser = require('body-parser');
+const loadRoutes = require('./routerLoader');
 
 // Ejecutar express (http)
-var app = express();
+const app = express();
 
 // cargar ficheros rutas
-var member_routes = require('./routes/memberRoute');
 
 // MiddLewares
 app.use(bodyParser.urlencoded({extended:false}));
@@ -23,7 +23,7 @@ app.use((req, res, next) => {
 });
 //Añadir prefijos o rutas
 
-app.use('/api', member_routes);// usar el modulo member para las rutas de la API
+app.use('/api', loadRoutes);// todas las rutas inician por API
 
 // exportar modulo
 module.exports =app;
