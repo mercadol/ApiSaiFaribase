@@ -1,7 +1,9 @@
 'use strict'
 
+require('dotenv').config();
+
 var app = require('./app');
-var port = 3900;
+var port = process.env.PORT || 3900;
 
 //inicializa el servidor
 app.listen(port,() =>{

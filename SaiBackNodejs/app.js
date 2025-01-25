@@ -3,6 +3,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const loadRoutes = require('./routerLoader');
+const setupSwagger = require('./swagger');
 
 // Ejecutar express (http)
 const app = express();
@@ -24,6 +25,9 @@ app.use((req, res, next) => {
 //Añadir prefijos o rutas
 
 app.use('/api', loadRoutes);// todas las rutas inician por API
+
+// Configurar Swagger
+setupSwagger(app);
 
 // exportar modulo
 module.exports =app;

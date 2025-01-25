@@ -2,3 +2,4 @@
 /datab
 firebase.js
 package-lock.json
+.env
