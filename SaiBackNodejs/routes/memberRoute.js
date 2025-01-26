@@ -150,7 +150,7 @@ router.get('/:id', memberController.getMember);
  *             Email: "johndoe@example.com"
  *             Telephono: "1234567890"
  *             Oficio: "Desarrollador"
- *             Notas: "Este miembro ha sido registrado como parte del grupo Premium."
+ *             Notas: "Este miembro ha sido registrado como parte del grupo Bautizado."
  *             Cursos: ["Curso de liderazgo", "Curso de comunicación"]
  *             Grupos: ["Grupo A", "Grupo B"]
  *             Eventos: ["Evento 1", "Evento 2"]
@@ -269,7 +269,7 @@ router.delete('/:id', memberController.deleteMember);
  * @returns {object} 404 - Miembro no encontrado
  * @returns {object} 500 - Error interno del servidor
  */
-router.put('/:id', memberController.updateMember)
+router.put('/:id', memberController.updateMember);
 
 /**
  * @swagger

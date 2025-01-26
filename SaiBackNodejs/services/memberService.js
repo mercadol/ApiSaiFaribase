@@ -31,12 +31,6 @@ const memberService = {
   },
 
   // Función para obtener un Miembro
-  /**
-   * Obtiene un miembro específico por su ID.
-   * @param {string} id - ID del miembro a buscar.
-   * @returns {Promise<Object>} - Un objeto con los datos del miembro.
-   * @throws {Error} - Si no se encuentra el miembro o ocurre un error.
-   */
   getMiembro: async (id) => {
     try {
       const doc = await db.collection('Member').doc(id).get(); // Obtener documento por ID
@@ -53,12 +47,7 @@ const memberService = {
   },
 
   //Funcion para crear un nuevo Miembro
-  /**
-   * Crea un nuevo miembro en la base de datos.
-   * @param {Object} memberData - Datos del miembro proporcionados por el cliente.
-   * @returns {Promise<string>} - El ID del miembro creado.
-   * @throws {Error} - Si ocurre un problema al guardar el miembro.
-   */
+
   createMember: async (memberData) => {
     try {
       // Guardar el miembro en Firestore
@@ -71,11 +60,6 @@ const memberService = {
   },
 
   // Función para eliminar un Miembro por ID
-  /**
-   * Obtiene un miembro específico por su ID.
-   * @param {string} id - ID del miembro a eliminar.
-   * @throws {Error} - Si no se encuentra el miembro o ocurre un error.
-   */
   deleteMemberById: async (memberId)=> {
     try {
       // Eliminar el documento del miembro por su ID

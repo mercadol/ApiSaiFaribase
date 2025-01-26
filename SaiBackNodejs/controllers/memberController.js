@@ -6,35 +6,20 @@ const validator = require('validator');
 var memberController = {
   
   // Ruta para obtener miembros con paginación
-  /**
-   * Obtiene un Todos los Miembros de forma paginada.
-   * @group Miembros - Operaciones sobre miembros
-   * @param {Object} req - Objeto de solicitud.
-   * @param {Object} res - Objeto de respuesta.
-   */
   getMembers: async (req, res) => {
     try {
-      console.log("Consulta recibida con parámetros:", req.query);  // Verifica qué parámetros está enviando el cliente
-
       const pageSize = 10; // Tamaño de la página (puedes hacerlo dinámico si lo necesitas)
       let startAfterDoc = null;
 
       // Si el cliente envía un "startAfter" (que es el ID del último miembro de la página anterior)
       if (req.query.startAfter) {
-        console.log("startAfter recibido:", req.query.startAfter);  // Verifica el valor de startAfter
-
         const startAfterId = req.query.startAfter;
         const startAfterSnapshot = await db.collection('Member').doc(startAfterId).get();
-        if (!startAfterSnapshot.exists) {
-          console.log("No se encontró el documento de inicio:", startAfterId);
-        }
         startAfterDoc = startAfterSnapshot.exists ? startAfterSnapshot : null;
       }
 
       // Obtener la página de miembros correspondiente
       const { members, lastDoc } = await memberService.getMiembros(startAfterDoc, pageSize);
-      console.log("Miembros obtenidos desde el servicio:", members);  // Verifica los miembros obtenidos
-    
 
       // Si hay un "lastDoc", significa que hay más miembros, por lo que el cliente puede solicitar la siguiente página.
       const nextStartAfter = lastDoc ? lastDoc.id : null;
@@ -51,24 +36,14 @@ var memberController = {
   },
 
   // Ruta para obtener un miembro por su ID
-  /**
-   * Obtiene un miembro específico por su ID.
-   * @group Miembros - Operaciones sobre miembros
-   * @param {Object} req - Objeto de solicitud.
-   * @param {Object} res - Objeto de respuesta.
-   */
   getMember: async (req, res) => {
     try {
       const id = req.params.id; // Obtener el ID de la ruta
-      console.log('ID recibido en la solicitud:', id);
-
       if (!id) {
         return res.status(400).json({ error: 'El ID es obligatorio.' });
       }
 
       const miembro = await memberService.getMiembro(id); // Llamar al servicio
-      console.log('Miembro encontrado:', miembro);
-
       res.status(200).json(miembro); // Responder con los datos del miembro
     } catch (error) {
       console.error('Error en getMiembro:', error.message);
@@ -77,12 +52,6 @@ var memberController = {
   },
 
   //Ruta para crear un nuevo Miembro
-  /**
-   * Crea un nuevo miembro.
-   * @group Miembros - Operaciones sobre miembros
-   * @param {Object} req - Objeto de solicitud.
-   * @param {Object} res - Objeto de respuesta.
-   */
   createMember: async (req, res) => {
     try {
       const { id, Name, MemberType, EstadoCivil, Email, Telephono, Oficio, Notas, Cursos, Grupos, Eventos } = req.body;
@@ -135,16 +104,7 @@ var memberController = {
   },
 
   //Ruta para eliminar un miembro por su ID
-  /**
-   * Elimina un miembro por su ID.
-   * @route DELETE /members/{id}
-   * @group Miembros - Operaciones sobre miembros
-   * @param {string} id.path.required - El ID del miembro a eliminar
-   * @returns {object} 200 - Miembro eliminado exitosamente
-   * @returns {object} 400 - El ID del miembro no es válido
-   * @returns {object} 404 - Miembro no encontrado
-   * @returns {object} 500 - Error interno del servidor
-   */
+  
   deleteMember: async (req, res) =>{
     try {
       const memberId = req.params.id;
