@@ -1,13 +1,9 @@
 'use strict';
 
 const groupService = require('../services/groupService'); // Importar el servicio
+const validator = require('validator');
 
 var groupController = {
-  test: (req, res) => {
-    return res.status(200).send({
-      message: "Soy la accion test de mi controlador",
-    });
-  },
 
   // Ruta para obtener grupos con paginación
   getGrupos: async (req, res) => {
@@ -21,9 +17,6 @@ var groupController = {
 
         const startAfterId = req.query.startAfter;
         const startAfterSnapshot = await db.collection('Group').doc(startAfterId).get();
-        if (!startAfterSnapshot.exists) {
-          console.log("No se encontró el documento de inicio:", startAfterId);
-        }
         startAfterDoc = startAfterSnapshot.exists ? startAfterSnapshot : null;
       }
 
@@ -44,5 +37,62 @@ var groupController = {
       res.status(500).send(error.message); // Mostrar el mensaje de error
     }
   },
+  
+  // Ruta para crear un nuevo grupo
+  createGrupo: async (req, res) => {
+    try {
+      const { Nombre, Lider, Descripcion, Nota, Asistentes } = req.body;
+
+      // Validaciones (puedes agregar más según tus necesidades)
+      if (!Nombre) {
+        return res.status(400).json({ error: 'El nombre del grupo es obligatorio' });
+      }
+
+      // Crear el nuevo grupo
+      const newGroup = await groupService.createGrupo({ Nombre, Lider, Descripcion, Nota, Asistentes });
+
+      res.status(201).json(newGroup);
+    } catch (error) {
+      console.error('Error al crear el grupo:', error);
+      res.status(500).json({ error: error.message });
+    }
+  },
+
+  // Ruta para obtener un grupo por su ID
+  getGrupoById: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const grupo = await groupService.getGrupoById(id);
+      res.status(200).json(grupo);
+    } catch (error) {
+      console.error('Error al obtener el grupo:', error.message);
+      res.status(500).json({ error: error.message });
+    }
+  },
+
+  // Ruta para actualizar un grupo
+  updateGrupo: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updatedData = req.body;
+      const updatedGrupo = await groupService.updateGrupo(id, updatedData);
+      res.status(200).json(updatedGrupo);
+    } catch (error) {
+      console.error('Error al actualizar el grupo:', error.message);
+      res.status(500).json({ error: error.message });
+    }
+  },
+
+  // Ruta para eliminar un grupo
+  deleteGrupo: async (req, res) => {
+    try {
+      const { id } = req.params;
+      await groupService.deleteGrupo(id);
+      res.status(200).json({ message: 'Grupo eliminado correctamente' });
+    } catch (error) {
+      console.error('Error al eliminar el grupo:', error.message);
+      res.status(500).json({ error: error.message });
+    }
+  }
 };
 module.exports = groupController;
