@@ -4,31 +4,23 @@ const db = require('../firebase').db; // Importar la conexión a Firestore
 
 const memberService = {
   // Función para obtener todos los miembros
-  
   getMiembros: async (startAfterDoc = null, pageSize = 10) => {
     try {
       let query = db.collection('Member').orderBy('Name').limit(pageSize); // Ordenar por nombre y limitar el tamaño de la página
       
       if (startAfterDoc) {
         query = query.startAfter(startAfterDoc); // Si se proporciona un documento de inicio, utilizarlo para la paginación
-        console.log("Aplicando startAfter con el documento:", startAfterDoc.id);
       }
 
       const membersSnapshot = await query.get();
-      console.log("Documentos en la consulta:", membersSnapshot.docs.map(doc => doc.id));
-      console.log("snapshot obtenido:", membersSnapshot.size);  // Muestra la cantidad de documentos obtenidos
-
+      
       const members = [];
       membersSnapshot.forEach((doc) => {
         members.push({ id: doc.id, ...doc.data() });
       });
-      console.log("Miembros después de la consulta:", members);  // Verifica los miembros que se están agregando al array
-
 
       // Obtener el último documento de la página actual
       const lastDoc = membersSnapshot.docs[membersSnapshot.docs.length - 1];
-      console.log("Último documento:", lastDoc ? lastDoc.id : null);  // Verifica si el último documento existe y es válido
-
 
       return { members, lastDoc }; // Devolver los miembros y el último documento para la paginación
       
@@ -96,7 +88,50 @@ const memberService = {
     }
   },
 
-  // Puedes agregar más funciones para otras operaciones con 'Member' aquí
+  updateMemberById: async (memberId, updatedData) => {
+    try {
+      // Actualizar el documento en Firestore
+      const memberRef = db.collection('members').doc(memberId);
+      await memberRef.update(updatedData);
+  
+      // Obtener el miembro actualizado (opcional)
+      const updatedMember = await memberRef.get();
+      return updatedMember.data();
+    } catch (error) {
+      console.error('Error al actualizar el miembro:', error);
+      throw error;
+    }
+  },
+  
+  //metodo search
+  searchMembers: async (searchString, startAfterDoc = null, pageSize = 10)=> {
+    try {
+      const membersRef = db.collection('Member');
+      let query = membersRef;
+  
+      // Construir la consulta en función del término de búsqueda
+      query = query.where('Name', '>=', searchString)
+                   .where('Name', '<=', searchString + '\uf8ff'); // Búsqueda parcial insensible a mayúsculas y minúsculas
+  
+      // Paginación
+      if (startAfterDoc) {
+        query = query.startAfter(startAfterDoc);
+      }
+      query = query.limit(pageSize);
+  
+      const querySnapshot = await query.get();
+      const members = [];
+      querySnapshot.forEach((doc) => {
+        members.push({ id: doc.id, ...doc.data() });
+      });
+  
+      const lastDoc = membersSnapshot.docs[membersSnapshot.docs.length - 1];
+      return { members, lastDoc };
+    } catch (error) {
+      console.error('Error al buscar miembros:', error);
+      throw new Error('Ocurrió un error al intentar buscar miembros. Por favor, inténtalo más tarde.');
+    }
+  },
 };
 
 module.exports = memberService;

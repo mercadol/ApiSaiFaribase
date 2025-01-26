@@ -15,7 +15,7 @@ const swaggerOptions = {
       },
     ],
   },
-  apis: ['./routes/*.js'], // Ruta donde se encuentran las rutas documentadas
+  apis: ['./routes/*.js','./routerLoader.js',], // Ruta donde se encuentran las rutas documentadas
 };
 
 const swaggerSpec = swaggerJsdoc(swaggerOptions);

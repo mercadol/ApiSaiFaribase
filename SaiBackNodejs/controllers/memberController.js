@@ -4,15 +4,11 @@ const memberService = require('../services/memberService'); // Importar el servi
 const validator = require('validator');
 
 var memberController = {
-  test: (req, res) => {
-    return res.status(200).send({
-      message: "Soy la accion test de mi controlador",
-    });
-  },
-
+  
   // Ruta para obtener miembros con paginación
   /**
    * Obtiene un Todos los Miembros de forma paginada.
+   * @group Miembros - Operaciones sobre miembros
    * @param {Object} req - Objeto de solicitud.
    * @param {Object} res - Objeto de respuesta.
    */
@@ -57,6 +53,7 @@ var memberController = {
   // Ruta para obtener un miembro por su ID
   /**
    * Obtiene un miembro específico por su ID.
+   * @group Miembros - Operaciones sobre miembros
    * @param {Object} req - Objeto de solicitud.
    * @param {Object} res - Objeto de respuesta.
    */
@@ -82,6 +79,7 @@ var memberController = {
   //Ruta para crear un nuevo Miembro
   /**
    * Crea un nuevo miembro.
+   * @group Miembros - Operaciones sobre miembros
    * @param {Object} req - Objeto de solicitud.
    * @param {Object} res - Objeto de respuesta.
    */
@@ -137,6 +135,16 @@ var memberController = {
   },
 
   //Ruta para eliminar un miembro por su ID
+  /**
+   * Elimina un miembro por su ID.
+   * @route DELETE /members/{id}
+   * @group Miembros - Operaciones sobre miembros
+   * @param {string} id.path.required - El ID del miembro a eliminar
+   * @returns {object} 200 - Miembro eliminado exitosamente
+   * @returns {object} 400 - El ID del miembro no es válido
+   * @returns {object} 404 - Miembro no encontrado
+   * @returns {object} 500 - Error interno del servidor
+   */
   deleteMember: async (req, res) =>{
     try {
       const memberId = req.params.id;
@@ -160,6 +168,62 @@ var memberController = {
     }
   },
 
+  //actualizar por id
+  updateMember: async (req, res)=> {
+    try {
+      const memberId = req.params.id;
+      const { id, Name, MemberType, EstadoCivil, Email, Telephono, Oficio, Notas, Cursos, Grupos, Eventos } = req.body;
+  
+      // Validaciones con validator
+      if (!validator.isUUID(id)) {
+        return res.status(400).json({ error: 'El ID debe ser un UUID válido' });
+      }
+      if (!validator.isEmail(Email)) {
+        return res.status(400).json({ error: 'El formato del correo electrónico es inválido' });
+      }
+      if (Telephono && !validator.isMobilePhone(Telephono)) {
+        return res.status(400).json({ error: 'El número de teléfono tiene un formato inválido' });
+      }
+      
+      // Validar campos obligatorios
+      if (!id || !Name || !MemberType) {
+        return res.status(400).json({ error: 'Los campos id, Name y MemberType son obligatorios.' });
+      }
+
+      // Validar longitud de campos
+      if (Name.length < 3) {
+        return res.status(400).json({ error: 'El campo Name debe tener al menos 3 caracteres.' });
+      }
+  
+      // Llamar al servicio para actualizar el miembro
+      const updatedMemberData = await memberService.updateMemberById(memberId, updatedMemberData);
+  
+      res.status(200).json(updatedMemberData);
+    } catch (error) {
+      console.error('Error al actualizar el miembro:', error);
+      res.status(500).json({ error: 'Error al actualizar el miembro' });
+    }
+  },
+
+  //metodo search
+  searchMember: async (req, res) => {
+    const { searchString, page, pageSize } = req.query;
+    let startAfterDoc = null; // Inicializar el documento de inicio
+  
+    try {
+      if (page > 1) {
+        // Obtener el documento de inicio para la paginación
+        const previousPageResults = await memberService.searchMembers(searchString, startAfterDoc, pageSize);
+        startAfterDoc = previousPageResults.lastDoc;
+      }
+  
+      const results = await memberService.searchMembers(searchString, startAfterDoc, pageSize);
+      res.json(results.members);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: error.message });
+    }
+  },
 
 };
 module.exports = memberController;
