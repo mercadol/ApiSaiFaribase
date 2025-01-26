@@ -40,7 +40,6 @@ const groupController = require('../controllers/groupController');
  *                 groups:
  *                   type: array
  *                   items:
- *                     $ref: '#/components/schemas/Group'
  *                 nextStartAfter:
  *                   type: string
  *       500:
@@ -50,89 +49,119 @@ router.get('/', groupController.getGrupos);
 
 /**
  * @swagger
- * components:
- *   schemas:
- *     Group:
- *       type: object
- *       properties:
- *         id:
- *           type: string
- *         Nombre:
- *           type: string
- *         Lider:
- *           type: string
- *         Descripcion:
- *           type: string
- *         Asistentes:
- *           type: array
- *           items:
- *             type: string
+ * /groups/{id}:
+ *   get:
+ *     summary: Obtiene un grupo específico
+ *     tags: [Groups]
+ *     description: Devuelve los detalles de un grupo basado en su ID.
+ *     responses:
+ *       200:
+ *         description: Detalles del grupo obtenidos correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                 nombre:
+ *                   type: string
+ *                 lider:
+ *                   type: string
+ *       404:
+ *         description: Grupo no encontrado
+ *       500:
+ *         description: Error al obtener el grupo
  */
 router.get('/:id', groupController.getGrupoById);
 
 /**
  * @swagger
- * components:
- *   schemas:
- *     Group:
- *       type: object
- *       properties:
- *         id:
- *           type: string
- *         Nombre:
- *           type: string
- *         Lider:
- *           type: string
- *         Descripcion:
- *           type: string
- *         Asistentes:
- *           type: array
- *           items:
- *             type: string
+ * /groups:
+ *   post:
+ *     summary: Crea un nuevo grupo.
+ *     tags: [Groups]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - id
+ *               - Nombre
+ *               - Lider
+ *     responses:
+ *       201:
+ *         description: Grupo creado exitosamente.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                   description: El ID del grupo creado.
+ *             example:
+ *               id: "grupo1"
+ *       400:
+ *         description: Error de validación por campos faltantes o inválidos.
+ *         content:
+ *           application/json:
+ *             example:
+ *               error: "Los campos id y nombre  son obligatorios."
+ *       500:
+ *         description: Error interno del servidor.
+ *         content:
+ *           application/json:
+ *             example:
+ *               error: "Error al guardar el grupo. Por favor, inténtalo más tarde."
  */
 router.post('/', groupController.createGrupo);
 
 /**
  * @swagger
- * components:
- *   schemas:
- *     Group:
- *       type: object
- *       properties:
- *         id:
- *           type: string
- *         Nombre:
- *           type: string
- *         Lider:
- *           type: string
- *         Descripcion:
- *           type: string
- *         Asistentes:
- *           type: array
- *           items:
- *             type: string
- */
+ * /groups/{id}:
+ *  put:
+ *      summary: Actualiza un grupo existente por su ID.
+ *      tags: [Groups]
+ *      requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - Name
+ * */
 router.put('/:id', groupController.updateGrupo);
 
 /**
+ * Elimina un grupo por su ID.
  * @swagger
- * components:
- *   schemas:
- *     Group:
- *       type: object
- *       properties:
- *         id:
+ * /groups/{id}:
+ *  delete:
+ *     summary: Elimina un grupo específico
+ *     tags: [Groups]
+ *     description: Devuelve TRUE si encuentra y elimina un grupo basado en su ID.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
  *           type: string
- *         Nombre:
- *           type: string
- *         Lider:
- *           type: string
- *         Descripcion:
- *           type: string
- *         Asistentes:
- *           type: array
- *           items:
- *             type: string
+ *         description: ID del grupo a eliminar.
+ *     responses:
+ *       200:
+ *         description: Grupo eliminado correctamente
+ *         content:
+ *           @returns {boolean} - true
+ *       404:
+ *         description: Grupo no encontrado
+ *       400:
+ *         description: Id del Grupo no es valido
+ *       500:
+ *         description: Error al eliminar el grupo
  */
 router.delete('/:id', groupController.deleteGrupo);
 
