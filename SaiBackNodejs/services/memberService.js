@@ -50,9 +50,15 @@ const memberService = {
 
   createMember: async (memberData) => {
     try {
+      const doc = await db.collection('Member').doc(memberData.memberId).get(); // Obtener documento por ID
+
+      if (doc.exists) {
+        throw new Error(`Ya existe un miembro con el ID: ${memberData.memberId}`);
+      }
+
       // Guardar el miembro en Firestore
-      await db.collection('Member').doc(memberData.id).set(memberData);
-      return memberData.id; // Retornar el ID del miembro creado
+      let guardado = await db.collection('Member').doc(memberData.memberId).set(memberData);
+      return guardado.memberId; // Retornar el ID del miembro creado
     } catch (error) {
       console.error('Error al crear miembro:', error.message);
       throw new Error('Error al guardar el miembro. Por favor, inténtalo más tarde.');

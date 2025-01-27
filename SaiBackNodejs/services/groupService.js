@@ -50,8 +50,14 @@ const groupService = {
 
   createGroup: async (groupData) => {
     try {
+      const doc = await db.collection('Group').doc(groupData.groupId).get(); // Obtener documento por ID
+
+      if (doc.exists) {
+        throw new Error(`Ya existe un Grupo con el ID: ${groupId}`);
+      }
+
       // Guardar el grupo en Firestore
-      await db.collection('Group').doc(groupData.id).set(groupData);
+      await db.collection('Group').doc(groupData.groupId).set(groupData);
       return groupData.id; // Retornar el ID del grupo creado
     } catch (error) {
       console.error('Error al crear grupo:', error.message);

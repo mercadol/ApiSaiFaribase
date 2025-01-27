@@ -101,14 +101,10 @@ router.get('/:id', memberController.getMember);
  *           schema:
  *             type: object
  *             required:
- *               - id
  *               - Name
  *               - MemberType
  *               - Notas
  *             properties:
- *               id:
- *                 type: string
- *                 description: Identificador único del miembro.
  *               Name:
  *                 type: string
  *                 description: Nombre del miembro (mínimo 3 caracteres).
@@ -148,7 +144,6 @@ router.get('/:id', memberController.getMember);
  *                   type: string
  *                 description: Lista de eventos asociados al miembro.
  *           example:
- *             id: "12345"
  *             Name: "John Doe"
  *             MemberType: "Bautizado"
  *             EstadoCivil: "Soltero"
@@ -177,7 +172,7 @@ router.get('/:id', memberController.getMember);
  *         content:
  *           application/json:
  *             example:
- *               error: "Los campos id, Name y MemberType son obligatorios."
+ *               error: "Los Name y MemberType son obligatorios."
  *       500:
  *         description: Error interno del servidor.
  *         content:

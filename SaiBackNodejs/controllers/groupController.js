@@ -1,6 +1,7 @@
 'use strict';
 
 const groupService = require('../services/groupService'); // Importar el servicio
+const idGenerator = require('../utilities/idGenerator');
 const validator = require('validator');
 
 var groupController = {
@@ -42,14 +43,16 @@ var groupController = {
   createGrupo: async (req, res) => {
     try {
       const { Nombre, Lider, Descripcion, Nota, Asistentes } = req.body;
+      const groupId = idGenerator.generateTimestampedId();
 
-      // Validaciones (puedes agregar más según tus necesidades)
+      // Validaciones
       if (!Nombre) {
         return res.status(400).json({ error: 'El nombre del grupo es obligatorio' });
       }
+      
 
       // Crear el nuevo grupo
-      const newGroup = await groupService.createGrupo({ Nombre, Lider, Descripcion, Nota, Asistentes });
+      const newGroup = await groupService.createGrupo({ groupId, Nombre, Lider, Descripcion, Nota, Asistentes });
 
       res.status(201).json(newGroup);
     } catch (error) {

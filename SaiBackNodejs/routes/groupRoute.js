@@ -88,7 +88,6 @@ router.get('/:id', groupController.getGrupoById);
  *           schema:
  *             type: object
  *             required:
- *               - id
  *               - Nombre
  *               - Lider
  *     responses:
@@ -109,7 +108,7 @@ router.get('/:id', groupController.getGrupoById);
  *         content:
  *           application/json:
  *             example:
- *               error: "Los campos id y nombre  son obligatorios."
+ *               error: "Los campos Liderid y Nombre  son obligatorios."
  *       500:
  *         description: Error interno del servidor.
  *         content:

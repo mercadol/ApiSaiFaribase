@@ -1,6 +1,7 @@
 'use strict';
 
 const courseService = require('../services/courseService'); // Importar el servicio
+const idGenerator = require('../utilities/idGenerator');
 const validator = require('validator');
 
 var courseController = {
@@ -49,7 +50,8 @@ var courseController = {
   // Ruta para crear un nuevo curso
   createCurso: async (req, res) => {
     try {
-      const { Nombre, Maestro, Descripcion, FechaInicio, FechaFin } = req.body;
+      const { Nombre, Maestro, Descripcion, FechaInicio, FechaFin } = req.body;      
+      const courseId = idGenerator.generateTimestampedId();
 
       // Validaciones (puedes agregar más según tus necesidades)
       if (!Nombre) {
@@ -57,7 +59,7 @@ var courseController = {
       }
 
       // Crear el nuevo curso
-      const newCourse = await courseService.createCurso({ Nombre, Maestro, Descripcion, FechaInicio, FechaFin });
+      const newCourse = await courseService.createCurso({ courseId, Nombre, Maestro, Descripcion, FechaInicio, FechaFin });
 
       res.status(201).json(newCourse);
     } catch (error) {

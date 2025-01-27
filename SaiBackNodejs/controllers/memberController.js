@@ -1,6 +1,8 @@
 'use strict';
 
 const memberService = require('../services/memberService'); // Importar el servicio
+const idGenerator = require('../utilities/idGenerator');
+
 const validator = require('validator');
 
 var memberController = {
@@ -54,12 +56,9 @@ var memberController = {
   //Ruta para crear un nuevo Miembro
   createMember: async (req, res) => {
     try {
-      const { id, Name, MemberType, EstadoCivil, Email, Telephono, Oficio, Notas, Cursos, Grupos, Eventos } = req.body;
+      const { Name, MemberType, EstadoCivil, Email, Telephono, Oficio, Notas, Cursos, Grupos, Eventos } = req.body;
 
       // Validaciones con validator
-      if (!validator.isUUID(id)) {
-        return res.status(400).json({ error: 'El ID debe ser un UUID válido' });
-      }
       if (!validator.isEmail(Email)) {
         return res.status(400).json({ error: 'El formato del correo electrónico es inválido' });
       }
@@ -68,8 +67,8 @@ var memberController = {
       }
       
       // Validar campos obligatorios
-      if (!id || !Name || !MemberType) {
-        return res.status(400).json({ error: 'Los campos id, Name y MemberType son obligatorios.' });
+      if ( !Name || !MemberType) {
+        return res.status(400).json({ error: 'Los campos Name y MemberType son obligatorios.' });
       }
 
       // Validar longitud de campos
@@ -78,8 +77,10 @@ var memberController = {
       }
 
       // Construir el objeto del miembro
+      const memberId = idGenerator.generateTimestampedId();
+      
       const memberData = {
-        id,
+        memberId,
         Name,
         MemberType,
         EstadoCivil: EstadoCivil || null,
