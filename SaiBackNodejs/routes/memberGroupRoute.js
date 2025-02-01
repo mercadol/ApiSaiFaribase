@@ -37,14 +37,25 @@ const memberGroupController = require('../controllers/memberGroupController');
  *                   id:
  *                     type: string
  *                     description: ID del grupo.
- *                   name:
+ *                   groupName:
  *                     type: string
  *                     description: Nombre del grupo.
+ *                   memberName:
+ *                     type: string
+ *                     description: Nombre del miembro en el grupo.
+ *                   memberRoll:
+ *                     type: string
+ *                     enum: [Asistente, Líder]
+ *                     description: Rol del miembro en el grupo (por defecto "Asistente").
  *             example:
  *               - id: "123"
- *                 name: "Grupo de jóvenes"
+ *                 groupName: "Grupo de jóvenes"
+ *                 memberName: "John Doe"
+ *                 memberRoll: "Asistente"
  *               - id: "456"
- *                 name: "Grupo de estudio bíblico"
+ *                 groupName: "Grupo de estudio bíblico"
+ *                 memberName: "John Doe"
+ *                 memberRoll: "Líder"
  *       404:
  *         description: No se encontraron grupos asociados al miembro.
  *         content:
@@ -86,14 +97,20 @@ router.get('/member/:memberId', memberGroupController.getGroupsOfMember);
  *                   id:
  *                     type: string
  *                     description: ID del miembro.
- *                   name:
+ *                   memberName:
  *                     type: string
  *                     description: Nombre del miembro.
+ *                   memberRoll:
+ *                     type: string
+ *                     enum: [Asistente, Líder]
+ *                     description: Rol del miembro en el grupo (por defecto "Asistente").
  *             example:
  *               - id: "789"
- *                 name: "John Doe"
+ *                 memberName: "John Doe"
+ *                 memberRoll: "Asistente"
  *               - id: "012"
- *                 name: "Jane Doe"
+ *                 memberName: "Jane Doe"
+ *                 memberRoll: "Líder"
  *       404:
  *         description: No se encontraron miembros asociados al grupo.
  *         content:
@@ -131,12 +148,44 @@ router.get('/group/:groupId', memberGroupController.getMembersOfGroup);
  *               groupId:
  *                 type: string
  *                 description: ID del grupo.
+ *               memberName:
+ *                 type: string
+ *                 description: Nombre del miembro.
+ *               memberRoll:
+ *                 type: string
+ *                 enum: [Asistente, Líder]
+ *                 description: Rol del miembro en el grupo (por defecto "Asistente").
  *           example:
  *             memberId: "123"
  *             groupId: "456"
+ *             memberName: "John Doe"
+ *             memberRoll: "Líder"
  *     responses:
  *       201:
  *         description: Relación creada exitosamente.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                   description: ID de la relación creada.
+ *                 groupName:
+ *                   type: string
+ *                   description: Nombre del grupo.
+ *                 memberName:
+ *                   type: string
+ *                   description: Nombre del miembro.
+ *                 memberRoll:
+ *                   type: string
+ *                   enum: [Asistente, Líder]
+ *                   description: Rol del miembro en el grupo.
+ *             example:
+ *               id: "789"
+ *               groupName: "Grupo de jóvenes"
+ *               memberName: "John Doe"
+ *               memberRoll: "Líder"
  *       400:
  *         description: Error de validación por campos faltantes o inválidos.
  *         content:

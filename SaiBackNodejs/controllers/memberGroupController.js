@@ -58,29 +58,48 @@ const memberGroupController = {
   // Añadir un miembro a un grupo
   addMemberToGroup: async (req, res) => {
     try {
-      const { memberId, groupId } = req.body;
+      const { memberId, groupId, memberName, memberRoll } = req.body;
 
-      // Validar los IDs de miembro y grupo
-      if (!memberId || !validator.isUUID(memberId)) {
+      // Validar que memberId existe antes de verificar si es un UUID
+      if (!memberId) {
+        return res.status(400).json({ error: "ID de miembro es obligatorio." });
+      }
+
+      // Validar que groupId existe antes de verificar si es un UUID
+      if (!groupId) {
+        return res.status(400).json({ error: "ID de grupo es obligatorio." });
+      }
+
+      // Validar que memberName es un string válido
+      if (
+        !memberName ||
+        typeof memberName !== "string" ||
+        memberName.trim() === ""
+      ) {
         return res
           .status(400)
-          .json({ error: "ID de miembro inválido o faltante." });
+          .json({
+            error:
+              "El nombre del miembro es obligatorio y debe ser un texto válido.",
+          });
       }
-      if (!groupId || !validator.isUUID(groupId)) {
-        return res
-          .status(400)
-          .json({ error: "ID de grupo inválido o faltante." });
-      }
+
+      // Validar que memberRoll sea "Asistente" o "Líder", por defecto "Asistente"
+      const validRoles = ["Asistente", "Líder"];
+      const role = validRoles.includes(memberRoll) ? memberRoll : "Asistente";
 
       // Llamar al servicio
-      const result = await memberGroupService.addMemberToGroup(
+      const result = await memberGroupService.addMemberToGroup({
         memberId,
-        groupId
-      );
+        groupId,
+        memberName,
+        memberRoll: role,
+      });
 
-      return res
-        .status(201)
-        .json({ message: "Miembro añadido al grupo con éxito.", data: result });
+      return res.status(201).json({
+        message: "Miembro añadido al grupo con éxito.",
+        data: result,
+      });
     } catch (error) {
       console.error("Error en addMemberToGroup:", error.message);
       return res.status(500).json({

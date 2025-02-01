@@ -34,38 +34,44 @@ describe("memberGroupService.addMemberToGroup", () => {
   it("debería agregar un miembro a un grupo exitosamente", async () => {
     const memberId = "23e4567";
     const groupId = "87e6543";
+    const memberName = "John Doe";
+    const memberRoll = "Lider";
 
-    const result = await memberGroupService.addMemberToGroup(memberId, groupId);
-
-    expect(mockDb.collection).toHaveBeenCalledWith("MiembroGrupo");
-    expect(mockCollection.doc).toHaveBeenCalledWith(`${memberId}_${groupId}`);
-    expect(mockDoc.set).toHaveBeenCalledWith({
+    const result = await memberGroupService.addMemberToGroup({
       memberId,
       groupId,
-      fecha: expect.any(String),
+      memberName,
+      memberRoll,
     });
 
     expect(result).toEqual({
       message: "Relación creada con éxito.",
       id: `${memberId}_${groupId}`,
+      groupId,
+      memberId,
+      memberName,
+      memberRoll,
     });
   });
 
   it("debería lanzar un error si faltan IDs", async () => {
     await expect(
-      memberGroupService.addMemberToGroup("", "123")
-    ).rejects.toThrow("El ID del miembro y del grupo son obligatorios.");
-    await expect(
-      memberGroupService.addMemberToGroup("123", "")
-    ).rejects.toThrow("El ID del miembro y del grupo son obligatorios.");
+      memberGroupService.addMemberToGroup({}) // Llamar sin argumentos
+    ).rejects.toThrow(
+      "El ID del miembro, el ID del grupo y el nombre del miembro son obligatorios."
+    );
   });
 
   it("debería manejar errores de Firestore correctamente", async () => {
-    // 🔹 Simular error en Firestore
     mockDoc.set.mockRejectedValue(new Error("Error de Firestore"));
 
     await expect(
-      memberGroupService.addMemberToGroup("123", "456")
+      memberGroupService.addMemberToGroup({
+        memberId: "123",
+        groupId: "456",
+        memberName: "John Doe",
+        memberRoll: "Asistente",
+      })
     ).rejects.toThrow(
       "Error al crear la relación. Por favor, inténtalo más tarde."
     );
@@ -108,7 +114,10 @@ describe("memberGroupService.removeMemberFromGroup", () => {
     expect(mockDb.collection).toHaveBeenCalledWith("MiembroGrupo");
     expect(mockBatch.delete).toHaveBeenCalled(); // 🔹 Verifica que se llama a delete()
     expect(mockBatch.commit).toHaveBeenCalled(); // 🔹 Verifica que se ejecuta commit()
-    expect(result).toEqual({ success: true, message: "Relación eliminada correctamente." });
+    expect(result).toEqual({
+      success: true,
+      message: "Relación eliminada correctamente.",
+    });
   });
 
   it("debería lanzar un error si la relación no existe", async () => {
@@ -123,7 +132,9 @@ describe("memberGroupService.removeMemberFromGroup", () => {
       get: jest.fn().mockResolvedValue(mockQuerySnapshot),
     });
 
-    await expect(memberGroupService.removeMemberFromGroup("123", "456")).rejects.toThrow(
+    await expect(
+      memberGroupService.removeMemberFromGroup("123", "456")
+    ).rejects.toThrow(
       "No se encontró la relación miembro-grupo para memberId: 123 y groupId: 456"
     );
   });
@@ -135,9 +146,10 @@ describe("memberGroupService.removeMemberFromGroup", () => {
       get: jest.fn().mockRejectedValue(new Error("Error de Firestore")),
     });
 
-    await expect(memberGroupService.removeMemberFromGroup("123", "456")).rejects.toThrow(
+    await expect(
+      memberGroupService.removeMemberFromGroup("123", "456")
+    ).rejects.toThrow(
       "Error al eliminar la relación. Por favor, inténtalo más tarde."
     );
   });
 });
-
