@@ -56,7 +56,7 @@ describe("memberGroupService.addMemberToGroup", () => {
 
   it("debería lanzar un error si faltan IDs", async () => {
     await expect(
-      memberGroupService.addMemberToGroup({}) // Llamar sin argumentos
+      memberGroupService.addMemberToGroup({}) 
     ).rejects.toThrow(
       "El ID del miembro, el ID del grupo y el nombre del miembro son obligatorios."
     );

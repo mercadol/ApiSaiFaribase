@@ -47,7 +47,6 @@ const memberService = {
   },
 
   //Funcion para crear un nuevo Miembro
-
   createMember: async (memberData) => {
     try {
       const doc = await db.collection('Member').doc(memberData.memberId).get(); // Obtener documento por ID
@@ -57,11 +56,23 @@ const memberService = {
       }
 
       // Guardar el miembro en Firestore
-      let guardado = await db.collection('Member').doc(memberData.memberId).set(memberData);
-      return guardado.memberId; // Retornar el ID del miembro creado
+      await db.collection('Member').doc(memberData.memberId).set(memberData); 
+      return memberData.memberId;
     } catch (error) {
-      console.error('Error al crear miembro:', error.message);
-      throw new Error('Error al guardar el miembro. Por favor, inténtalo más tarde.');
+      console.error("Error en createMember:", error);
+
+      // Si el error es específico (miembro ya existe), relanzarlo
+      if (error.message.includes("Ya existe un miembro")) {
+        throw error;
+      }
+
+      // Si es un error de Firestore
+      if (error.message.includes("Firestore")) {
+        throw new Error("Error al guardar el miembro. Por favor, inténtalo más tarde.");
+      }
+
+      // Para otros errores, relanzar el error original
+      throw error;
     }
   },
 

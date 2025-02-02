@@ -50,18 +50,37 @@ const groupService = {
 
   createGroup: async (groupData) => {
     try {
-      const doc = await db.collection('Group').doc(groupData.groupId).get(); // Obtener documento por ID
+      // Validar que groupData tenga un groupId
+      if (!groupData.groupId) {
+        throw new Error("El ID del grupo es obligatorio.");
+      }
+
+      // Verificar si el grupo ya existe
+      const doc = await db.collection("Group").doc(groupData.groupId).get();
 
       if (doc.exists) {
-        throw new Error(`Ya existe un Grupo con el ID: ${groupId}`);
+        throw new Error(`Ya existe un grupo con el ID: ${groupData.groupId}`); // 🔹 Usar groupData.groupId
       }
 
       // Guardar el grupo en Firestore
-      await db.collection('Group').doc(groupData.groupId).set(groupData);
-      return groupData.id; // Retornar el ID del grupo creado
+      await db.collection("Group").doc(groupData.groupId).set(groupData);
+
+      return groupData.groupId; // Retornar el ID del grupo creado
     } catch (error) {
-      console.error('Error al crear grupo:', error.message);
-      throw new Error('Error al guardar el grupo. Por favor, inténtalo más tarde.');
+      console.error("Error en createGroup:", error);
+
+      // Si el error es específico (grupo ya existe), relanzarlo
+      if (error.message.includes("Ya existe un grupo")) {
+        throw error;
+      }
+
+      // Si es un error de Firestore
+      if (error.message.includes("Firestore")) {
+        throw new Error("Error al guardar el grupo. Por favor, inténtalo más tarde.");
+      }
+
+      // Para otros errores, relanzar el error original
+      throw error;
     }
   },
 
@@ -77,7 +96,7 @@ const groupService = {
       throw new Error('Error al guardar Eliminar. Por favor, inténtalo más tarde.');
     }
   },
-
+  // funcion para actualizar un grupo por su ID
   updateGroupById: async (groupId, updatedData) => {
     try {
       // Actualizar el documento en Firestore
@@ -92,6 +111,7 @@ const groupService = {
       throw error;
     }
   },
+
 
   //metodo search
   searchGroups: async (searchString, startAfterDoc = null, pageSize = 10)=> {
