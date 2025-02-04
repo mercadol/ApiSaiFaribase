@@ -1,13 +1,13 @@
-'use strict';
+"use strict";
 
-const db = require('../firebase').db; // Importar la conexión a Firestore
+const db = require("../firebase").db; // Importar la conexión a Firestore
 
 const groupService = {
   // Función para obtener todos los grupos
   getGrupos: async (startAfterDoc = null, pageSize = 10) => {
     try {
-      let query = db.collection('Group').orderBy('Nombre').limit(pageSize); // Ordenar por nombre y limitar el tamaño de la página
-      
+      let query = db.collection("Group").orderBy("Nombre").limit(pageSize); // Ordenar por nombre y limitar el tamaño de la página
+
       if (startAfterDoc) {
         query = query.startAfter(startAfterDoc); // Si se proporciona un documento de inicio, utilizarlo para la paginación
       }
@@ -23,17 +23,18 @@ const groupService = {
       const lastDoc = groupsSnapshot.docs[groupsSnapshot.docs.length - 1];
 
       return { groups, lastDoc }; // Devolver los grupos y el último documento para la paginación
-      
     } catch (error) {
-      console.error('Error al obtener grupos:', error);
-      throw new Error('Ocurrió un error al intentar obtener la lista de grupos. Por favor, inténtalo más tarde.');
+      console.error("Error al obtener grupos:", error);
+      throw new Error(
+        "Ocurrió un error al intentar obtener la lista de grupos. Por favor, inténtalo más tarde."
+      );
     }
   },
 
-// Función para obtener un Grupo
+  // Función para obtener un Grupo
   getGrupo: async (id) => {
     try {
-      const doc = await db.collection('Group').doc(id).get(); // Obtener documento por ID
+      const doc = await db.collection("Group").doc(id).get(); // Obtener documento por ID
 
       if (!doc.exists) {
         throw new Error(`No se encontró ningún grupo con el ID: ${id}`);
@@ -41,8 +42,10 @@ const groupService = {
 
       return { id: doc.id, ...doc.data() }; // Retornar datos del grupo
     } catch (error) {
-      console.error('Error al obtener grupo:', error.message);
-      throw new Error('Error al obtener el grupo. Por favor, inténtalo más tarde.');
+      console.error("Error al obtener grupo:", error.message);
+      throw new Error(
+        "Error al obtener el grupo. Por favor, inténtalo más tarde."
+      );
     }
   },
 
@@ -64,11 +67,9 @@ const groupService = {
 
       // Guardar el grupo en Firestore
       await db.collection("Group").doc(groupData.groupId).set(groupData);
-
       return groupData.groupId; // Retornar el ID del grupo creado
     } catch (error) {
       console.error("Error en createGroup:", error);
-
       // Si el error es específico (grupo ya existe), relanzarlo
       if (error.message.includes("Ya existe un grupo")) {
         throw error;
@@ -76,7 +77,9 @@ const groupService = {
 
       // Si es un error de Firestore
       if (error.message.includes("Firestore")) {
-        throw new Error("Error al guardar el grupo. Por favor, inténtalo más tarde.");
+        throw new Error(
+          "Error al guardar el grupo. Por favor, inténtalo más tarde."
+        );
       }
 
       // Para otros errores, relanzar el error original
@@ -85,43 +88,99 @@ const groupService = {
   },
 
   // Función para eliminar un Grupo por ID
-  deleteGroupById: async (groupId)=> {
+  deleteGroupById: async (groupId) => {
     try {
+      // Validar que groupId no sea nulo, vacío o indefinido
+      if (!groupId) {
+        throw new Error("El ID del grupo es obligatorio.");
+      }
+  
+      // Verificar si el grupo existe antes de eliminarlo
+      const groupRef = db.collection("Group").doc(groupId);
+      const doc = await groupRef.get();
+  
+      if (!doc.exists) {
+        throw new Error(`No existe un grupo con el ID: ${groupId}`);
+      }
+  
       // Eliminar el documento del grupo por su ID
-      await db.collection('groups').doc(groupId).delete();
+      await db.collection("groups").doc(groupId).delete();
 
       return true; // Indica que la eliminación fue exitosa
     } catch (error) {
-      console.error('Error al eliminar el grupo:', error);
-      throw new Error('Error al guardar Eliminar. Por favor, inténtalo más tarde.');
+      console.error("Error al eliminar el grupo:", error);
+    
+      // Si el error es específico (grupo no existe), relanzarlo
+      if (error.message.includes("No existe un grupo")) {
+        throw error;
+      }
+  
+      // Si es un error de Firestore, lanzar un mensaje personalizado
+      if (error.message.includes("Firestore")) {
+        throw new Error("Error al eliminar el grupo. Por favor, inténtalo más tarde.");
+      }
+  
+      // Para otros errores, relanzar el error original
+      throw error;
     }
   },
   // funcion para actualizar un grupo por su ID
   updateGroupById: async (groupId, updatedData) => {
     try {
+      // Validar que groupId no sea nulo, vacío o indefinido
+      if (!groupId) {
+        throw new Error("El ID del grupo es obligatorio.");
+      }
+
+      // Validar que updatedData no esté vacío
+      if (!updatedData || Object.keys(updatedData).length === 0) {
+        throw new Error("Los datos de actualización son obligatorios.");
+      }
+
+      // Verificar si el grupo existe antes de actualizarlo
+      const groupRef = db.collection("events").doc(groupId);
+      const doc = await groupRef.get();
+
+      if (!doc.exists) {
+        throw new Error(`No existe un grupo con el ID: ${groupId}`);
+      }
+
       // Actualizar el documento en Firestore
-      const groupRef = db.collection('groups').doc(groupId);
       await groupRef.update(updatedData);
 
       // Obtener el grupo actualizado (opcional)
       const updatedGroup = await groupRef.get();
       return updatedGroup.data();
     } catch (error) {
-      console.error('Error al actualizar el grupo:', error);
+      console.error("Error al actualizar el grupo:", error);
+
+      // Si el error es específico (grupo no existe), relanzarlo
+      if (error.message.includes("No existe un grupo")) {
+        throw error;
+      }
+
+      // Si es un error de Firestore, lanzar un mensaje personalizado
+      if (error.code && error.code.startsWith("firestore/")) {
+        throw new Error(
+          "Error al actualizar el grupo. Por favor, inténtalo más tarde."
+        );
+      }
+
+      // Para otros errores, relanzar el error original
       throw error;
     }
   },
 
-
   //metodo search
-  searchGroups: async (searchString, startAfterDoc = null, pageSize = 10)=> {
+  searchGroups: async (searchString, startAfterDoc = null, pageSize = 10) => {
     try {
-      const groupsRef = db.collection('Group');
+      const groupsRef = db.collection("Group");
       let query = groupsRef;
 
       // Construir la consulta en función del término de búsqueda
-      query = query.where('Name', '>=', searchString)
-                  .where('Name', '<=', searchString + '\uf8ff'); // Búsqueda parcial insensible a mayúsculas y minúsculas
+      query = query
+        .where("Name", ">=", searchString)
+        .where("Name", "<=", searchString + "\uf8ff"); // Búsqueda parcial insensible a mayúsculas y minúsculas
 
       // Paginación
       if (startAfterDoc) {
@@ -138,11 +197,12 @@ const groupService = {
       const lastDoc = groupsSnapshot.docs[groupsSnapshot.docs.length - 1];
       return { groups, lastDoc };
     } catch (error) {
-      console.error('Error al buscar grupos:', error);
-      throw new Error('Ocurrió un error al intentar buscar grupos. Por favor, inténtalo más tarde.');
+      console.error("Error al buscar grupos:", error);
+      throw new Error(
+        "Ocurrió un error al intentar buscar grupos. Por favor, inténtalo más tarde."
+      );
     }
   },
 };
-
 
 module.exports = groupService;

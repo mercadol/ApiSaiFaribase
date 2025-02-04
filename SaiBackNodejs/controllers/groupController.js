@@ -1,6 +1,6 @@
 'use strict';
 
-const groupService = require('../services/groupService'); // Importar el servicio
+const groupService = require('../services/groupService');
 const idGenerator = require('../utilities/idGenerator');
 const validator = require('validator');
 
@@ -23,7 +23,6 @@ var groupController = {
 
       // Obtener la página de grupos correspondiente
       const { groups, lastDoc } = await groupService.getGrupos(startAfterDoc, pageSize);
-      console.log("Grupos obtenidos desde el servicio:", groups);  // Verifica los grupos obtenidos
 
       // Si hay un "lastDoc", significa que hay más grupos, por lo que el cliente puede solicitar la siguiente página.
       const nextStartAfter = lastDoc ? lastDoc.id : null;
@@ -42,17 +41,30 @@ var groupController = {
   // Ruta para crear un nuevo grupo
   createGrupo: async (req, res) => {
     try {
-      const { Nombre, Lider, Descripcion, Nota, Asistentes } = req.body;
+      const { Nombre, Descripcion, Nota } = req.body;
       const groupId = idGenerator.generateTimestampedId();
 
-      // Validaciones
-      if (!Nombre) {
-        return res.status(400).json({ error: 'El nombre del grupo es obligatorio' });
-      }
-      
+      // **Validaciones**
+    // Validar Nombre
+    if (!Nombre) {
+      return res.status(400).json({ error: 'El nombre del grupo es obligatorio' });
+    }
+    if (!validator.isLength(Nombre, { min: 3, max: 50 })) {
+      return res.status(400).json({ error: 'El nombre debe tener entre 3 y 50 caracteres' });
+    }
+
+    // Validar Descripcion (opcional)
+    if (Descripcion && !validator.isLength(Descripcion, { max: 500 })) {
+      return res.status(400).json({ error: 'La descripción no puede superar los 500 caracteres' });
+    }
+
+    // Validar Nota (opcional)
+    if (Nota && !validator.isLength(Nota, { max: 1000 })) {
+      return res.status(400).json({ error: 'La nota no puede superar los 1000 caracteres' });
+    }
 
       // Crear el nuevo grupo
-      const newGroup = await groupService.createGrupo({ groupId, Nombre, Lider, Descripcion, Nota, Asistentes });
+      const newGroup = await groupService.createGrupo({ groupId, Nombre, Descripcion, Nota });
 
       res.status(201).json(newGroup);
     } catch (error) {

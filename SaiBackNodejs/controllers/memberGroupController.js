@@ -1,7 +1,6 @@
 "use strict";
 
-const memberGroupService = require("../services/memberGroupService"); // Importar el servicio
-const idGenerator = require("../utilities/idGenerator");
+const memberGroupService = require("../services/memberGroupService");
 const validator = require("validator");
 
 const memberGroupController = {
@@ -11,7 +10,7 @@ const memberGroupController = {
       const { memberId } = req.params;
 
       // Validar el ID del miembro
-      if (!memberId || !validator.isUUID(memberId)) {
+      if (!memberId) {
         return res
           .status(400)
           .json({ error: "ID de miembro inválido o faltante." });
@@ -36,7 +35,7 @@ const memberGroupController = {
       const { groupId } = req.params;
 
       // Validar el ID del grupo
-      if (!groupId || !validator.isUUID(groupId)) {
+      if (!groupId) {
         return res
           .status(400)
           .json({ error: "ID de grupo inválido o faltante." });

@@ -86,32 +86,83 @@ const eventService = {
       }
     },
   
-    // Función para eliminar un Evento por ID
-    deleteEventById: async (eventId) => {
+    deleteEventById: async (id) => {
       try {
+        // Validar que id no sea nulo, vacío o indefinido
+        if (!id) {
+          throw new Error("El ID del evento es obligatorio.");
+        }
+    
+        // Verificar si el evento existe antes de eliminarlo
+        const eventRef = db.collection("Event").doc(id);
+        const doc = await eventRef.get();
+    
+        if (!doc.exists) {
+          throw new Error(`No existe un evento con el ID: ${id}`);
+        }
+    
         // Eliminar el documento del evento por su ID
-        await db.collection("events").doc(eventId).delete();
-  
+        await eventRef.delete();
+    
         return true; // Indica que la eliminación fue exitosa
       } catch (error) {
         console.error("Error al eliminar el evento:", error);
-        throw new Error(
-          "Error al guardar Eliminar. Por favor, inténtalo más tarde."
-        );
+    
+        // Si el error es específico (evento no existe), relanzarlo
+        if (error.message.includes("No existe un evento")) {
+          throw error;
+        }
+    
+        // Si es un error de Firestore, lanzar un mensaje personalizado
+        if (error.message.includes("Firestore")) {
+          throw new Error("Error al eliminar el evento. Por favor, inténtalo más tarde.");
+        }
+    
+        // Para otros errores, relanzar el error original
+        throw error;
       }
     },
   
-    updateEventById: async (eventId, updatedData) => {
+    updateEventById: async (id, updatedData) => {
       try {
+        // Validar que id no sea nulo, vacío o indefinido
+        if (!id) {
+          throw new Error("El ID del evento es obligatorio.");
+        }
+    
+        // Validar que updatedData no esté vacío
+        if (!updatedData || Object.keys(updatedData).length === 0) {
+          throw new Error("Los datos de actualización son obligatorios.");
+        }
+    
+        // Verificar si el evento existe antes de actualizarlo
+        const eventRef = db.collection("events").doc(id);
+        const doc = await eventRef.get();
+    
+        if (!doc.exists) {
+          throw new Error(`No existe un evento con el ID: ${id}`);
+        }
+    
         // Actualizar el documento en Firestore
-        const eventRef = db.collection("events").doc(eventId);
         await eventRef.update(updatedData);
-  
+    
         // Obtener el evento actualizado (opcional)
         const updatedEvent = await eventRef.get();
         return updatedEvent.data();
       } catch (error) {
         console.error("Error al actualizar el evento:", error);
+    
+        // Si el error es específico (evento no existe), relanzarlo
+        if (error.message.includes("No existe un evento")) {
+          throw error;
+        }
+    
+        // Si es un error de Firestore, lanzar un mensaje personalizado
+        if (error.code && error.code.startsWith("firestore/")) {
+          throw new Error("Error al actualizar el evento. Por favor, inténtalo más tarde.");
+        }
+    
+        // Para otros errores, relanzar el error original
         throw error;
       }
     },

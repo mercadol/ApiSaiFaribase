@@ -3,6 +3,7 @@
 // 🔹 Mock de Firestore correctamente estructurado
 const mockDoc = {
   set: jest.fn(() => Promise.resolve()),
+  delete: jest.fn(() => Promise.resolve()), // 🔹 Mock de delete()
   get: jest.fn(() => Promise.resolve({ exists: false })), // 🔹 Mock de get()
 };
 
@@ -64,9 +65,8 @@ describe("groupService.createGroup", () => {
       description: "Este es un grupo de prueba",
     };
 
-    // 🔹 Simular error en Firestore con un código específico
+    // 🔹 Simular error en Firestore
     const firestoreError = new Error("Error de Firestore");
-    firestoreError.code = "firestore/unknown-error"; // 🔹 Añadir un código de Firestore
     mockDoc.get.mockRejectedValueOnce(firestoreError);
 
     await expect(groupService.createGroup(groupData)).rejects.toThrow(
@@ -81,6 +81,68 @@ describe("groupService.createGroup", () => {
     mockDoc.set.mockRejectedValueOnce(new Error("Other error"));
 
     await expect(groupService.createGroup(groupData)).rejects.toThrow(
+      "Other error"
+    );
+  });
+});
+
+describe("groupService.deleteGroupById", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.spyOn(console, "error").mockImplementation(() => {}); // 🔹 Oculta console.error
+  });
+
+  afterAll(() => {
+    console.error.mockRestore(); // 🔹 Restaura console.error después de los tests
+  });
+
+  it("debería eliminar un grupo exitosamente", async () => {
+    const groupId = "existingId";
+
+    // 🔹 Simular que el grupo existe
+    mockDoc.get.mockResolvedValueOnce({ exists: true });
+
+    const result = await groupService.deleteGroupById(groupId);
+
+    expect(result).toBe(true); // 🔹 Verificar que la eliminación fue exitosa
+    expect(mockDb.collection).toHaveBeenCalledWith("Group");
+    expect(mockCollection.doc).toHaveBeenCalledWith(groupId);
+    expect(mockDoc.delete).toHaveBeenCalled();
+  });
+
+  it("Debería generar un error si el grupo no existe", async () => {
+    const groupId = "nonExistingId";
+
+    // 🔹 Simular que el grupo no existe
+    mockDoc.get.mockResolvedValueOnce({ exists: false });
+
+    await expect(groupService.deleteGroupById(groupId)).rejects.toThrow(
+      `No existe un grupo con el ID: ${groupId}`
+    );
+  });
+
+  it("debería manejar errores de Firestore correctamente", async () => {
+    const groupId = "existingid";
+
+    // 🔹 Simular error en Firestore
+    const firestoreError = new Error("Error de Firestore");
+    mockDoc.get.mockRejectedValueOnce(firestoreError);
+
+    await expect(groupService.deleteGroupById(groupId)).rejects.toThrow(
+      "Error al eliminar el grupo. Por favor, inténtalo más tarde."
+    );
+  });
+
+  it("should handle other errors correctly", async () => {
+    const groupId = "existingid";
+
+    // 🔹 Simular que el grupo existe
+    mockDoc.get.mockResolvedValueOnce({ exists: true });
+
+    // 🔹 Simular un error en la operación delete
+    mockDoc.delete.mockRejectedValueOnce(new Error("Other error"));
+
+    await expect(groupService.deleteGroupById(groupId)).rejects.toThrow(
       "Other error"
     );
   });

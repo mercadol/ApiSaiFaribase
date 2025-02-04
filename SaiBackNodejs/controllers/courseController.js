@@ -1,15 +1,10 @@
 'use strict';
 
-const courseService = require('../services/courseService'); // Importar el servicio
+const courseService = require('../services/courseService');
 const idGenerator = require('../utilities/idGenerator');
 const validator = require('validator');
 
 var courseController = {
-  test: (req, res) => {
-    return res.status(200).send({
-      message: "Soy la accion test de mi controlador",
-    });
-  },
 
   // Ruta para obtener cursos con paginación
   getCursos: async (req, res) => {
@@ -50,16 +45,25 @@ var courseController = {
   // Ruta para crear un nuevo curso
   createCurso: async (req, res) => {
     try {
-      const { Nombre, Maestro, Descripcion, FechaInicio, FechaFin } = req.body;      
+      const { Nombre, Descripcion, FechaInicio, FechaFin } = req.body;      
       const courseId = idGenerator.generateTimestampedId();
 
-      // Validaciones (puedes agregar más según tus necesidades)
-      if (!Nombre) {
-        return res.status(400).json({ error: 'El nombre del curso es obligatorio' });
-      }
+      // **Validaciones**
+    // Validar Nombre
+    if (!Nombre) {
+      return res.status(400).json({ error: 'El nombre es obligatorio' });
+    }
+    if (!validator.isLength(Nombre, { min: 3, max: 50 })) {
+      return res.status(400).json({ error: 'El nombre debe tener entre 3 y 50 caracteres' });
+    }
+
+    // Validar Descripcion (opcional)
+    if (Descripcion && !validator.isLength(Descripcion, { max: 500 })) {
+      return res.status(400).json({ error: 'La descripción no puede superar los 500 caracteres' });
+    }
 
       // Crear el nuevo curso
-      const newCourse = await courseService.createCurso({ courseId, Nombre, Maestro, Descripcion, FechaInicio, FechaFin });
+      const newCourse = await courseService.createCurso({ courseId, Nombre, Descripcion, FechaInicio, FechaFin });
 
       res.status(201).json(newCourse);
     } catch (error) {

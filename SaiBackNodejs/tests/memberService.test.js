@@ -2,6 +2,7 @@
 
 const mockDoc = {
   set: jest.fn(() => Promise.resolve()),
+  delete: jest.fn(() => Promise.resolve()), // 🔹 Mock de delete()
   get: jest.fn(() => Promise.resolve({ exists: false })), // 🔹 Mock de get()
 };
 
