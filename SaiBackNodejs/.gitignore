@@ -3,3 +3,4 @@
 firebase.js
 package-lock.json
 .env
+/coverage
