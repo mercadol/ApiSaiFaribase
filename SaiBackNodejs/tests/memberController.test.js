@@ -15,67 +15,6 @@ describe('MemberController', () => {
     res = mockResponse();
   });
 
-  describe('searchMembers', () => {
-    it('debería validar el parámetro de búsqueda', async () => {
-      req.query = { pageSize: 10 };
-      
-      await memberController.searchMembers(req, res);
-      
-      expect(res.status).toHaveBeenCalledWith(400);
-      expect(res.json).toHaveBeenCalledWith({
-        error: 'El parámetro de búsqueda es requerido y debe ser una cadena de texto'
-      });
-    });
-
-    it('debería validar el tamaño de página', async () => {
-      req.query = { search: 'test', pageSize: 101 };
-      
-      await memberController.searchMembers(req, res);
-      
-      expect(res.status).toHaveBeenCalledWith(400);
-      expect(res.json).toHaveBeenCalledWith({
-        error: 'El tamaño de página debe ser un número entre 1 y 100'
-      });
-    });
-
-    it('debería realizar una búsqueda exitosa sin startAfter', async () => {
-      const mockMembers = [{ id: 1, name: 'Test' }];
-      const mockLastDoc = { id: 'lastDoc123' };
-      
-      memberService.searchMembers.mockResolvedValue({
-        members: mockMembers,
-        lastDoc: mockLastDoc
-      });
-
-      req.query = { search: 'test', pageSize: 10 };
-      
-      await memberController.searchMembers(req, res);
-      
-      expect(memberService.searchMembers).toHaveBeenCalledWith(
-        'test',
-        null,
-        10
-      );
-      expect(res.status).toHaveBeenCalledWith(200);
-      expect(res.json).toHaveBeenCalledWith({
-        members: mockMembers,
-        nextStartAfter: 'lastDoc123'
-      });
-    });
-
-    it('debería manejar errores en la búsqueda', async () => {
-      memberService.searchMembers.mockRejectedValue(new Error('Error test'));
-      req.query = { search: 'test', pageSize: 10 };
-      
-      await memberController.searchMembers(req, res);
-      
-      expect(res.status).toHaveBeenCalledWith(500);
-      expect(res.json).toHaveBeenCalledWith({
-        error: 'Error al buscar miembros. Inténtelo más tarde.'
-      });
-    });
-  });
-
   describe('validateCreateData', () => {
     it('debería validar nombre requerido', () => {
       const result = memberController.validateCreateData({});

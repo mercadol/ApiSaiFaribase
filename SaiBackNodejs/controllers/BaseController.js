@@ -19,6 +19,7 @@ class BaseController {
     this.create = this.create.bind(this);
     this.update = this.update.bind(this);
     this.delete = this.delete.bind(this);
+    this.search = this.search.bind(this);
   }
 
   async getAll(req, res) {
@@ -61,7 +62,7 @@ class BaseController {
   async create(req, res) {
     try {
       const generatedId = this.idGenerator();
-      const data = req.body;
+      const data = req.body;      
 
       // Validaciones específicas
       const validationError = this.validateCreateData(data);
@@ -106,6 +107,48 @@ class BaseController {
       res.status(500).json({ error: error.message });
     }
   }
+
+  async search(req, res) {
+      try {
+        const { searchString, pageSize = 10, startAfter } = req.query;
+        
+  
+        // Validar parámetros de búsqueda
+        if (!searchString || typeof searchString !== 'string') {
+          return res.status(400).json({ error: 'El parámetro de búsqueda es requerido y debe ser una cadena de texto' });
+        }
+  
+        if (isNaN(pageSize) || pageSize < 1 || pageSize > 100) {
+          return res.status(400).json({ error: 'El tamaño de página debe ser un número entre 1 y 100' });
+        }
+  
+        // Obtener el documento de inicio para la paginación
+        let startAfterDoc = null;
+        if (startAfter) {
+          const docRef = this.service.collection.doc(startAfter);
+          startAfterDoc = await docRef.get();
+          if (!startAfterDoc.exists) startAfterDoc = null;
+        }
+  
+        // Realizar la búsqueda
+        const { results, lastDoc } = await this.service.search(
+          searchString,
+          startAfterDoc,
+          parseInt(pageSize)
+        );
+  
+        // Preparar respuesta
+        const response = {
+          results,
+          nextStartAfter: lastDoc ? lastDoc.id : null
+        };
+  
+        res.status(200).json(response);
+      } catch (error) {
+        console.error('Error al buscar elementos:', error);
+        res.status(500).json({ error: 'Error al buscar elementos. Inténtelo más tarde.' });
+      }
+    }
 
   // Métodos para sobrescribir en los controladores hijos
   validateCreateData(/* data */) {

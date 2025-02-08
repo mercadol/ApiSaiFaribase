@@ -8,7 +8,7 @@ class MemberService extends BaseOperationsService {
     super("Member");
   }
 
-  async searchMembers(searchString, startAfterDoc = null, pageSize = 10) {
+  async search(searchString, startAfterDoc = null, pageSize = 10) {
     try {
       let query = this.collection
         .where("Name", ">=", searchString)
@@ -57,9 +57,9 @@ class MemberRelationService extends RelationOperationsService {
 }
 
 module.exports = {
-  MemberService,
-  CourseService,
-  GroupService,
-  EventService,
+  MemberService: new MemberService(),
+  CourseService: new CourseService(),
+  GroupService: new GroupService(),
+  EventService: new EventService(),
   MemberRelationService,
 };

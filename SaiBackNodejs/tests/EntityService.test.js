@@ -17,7 +17,7 @@ const mockDb = {
 
     describe('CourseService', () => {
         it('should use correct collection name', () => {
-          const service = new CourseService();
+          const service = CourseService;
           expect(mockDb.collection).toHaveBeenCalledWith('Course');
         });
     
@@ -25,7 +25,7 @@ const mockDb = {
 
       describe('EventService', () => {
         it('should use correct collection name', () => {
-          const service = new EventService();
+          const service = EventService;
           expect(mockDb.collection).toHaveBeenCalledWith('Event');
         });
     
@@ -33,7 +33,7 @@ const mockDb = {
 
       describe('GroupService', () => {
         it('should use correct collection name', () => {
-          const service = new GroupService();
+          const service = GroupService;
           expect(mockDb.collection).toHaveBeenCalledWith('Group');
         });
     

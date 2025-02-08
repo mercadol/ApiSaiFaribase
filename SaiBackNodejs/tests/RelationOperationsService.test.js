@@ -58,7 +58,14 @@ describe('RelationOperationsService', () => {
     it('should throw error if ids are missing', async () => {
       await expect(service.addRelation(null, 'to456'))
         .rejects.toThrow('Both fromId and toId are required.');
+
+      await expect(service.addRelation('from123', null))
+      .rejects.toThrow('Both fromId and toId are required.');
+
+      await expect(service.addRelation(null, null))
+        .rejects.toThrow('Both fromId and toId are required.');
     });
+    
   });
 
   describe('getRelatedDocuments', () => {
