@@ -154,6 +154,12 @@ router.delete('/:id', eventController.delete);
  * /events/{id}:
  *  put:
  *      summary: Actualiza un evento existente por su ID.
+ *      parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
  *      tags: [Events]
  *      requestBody:
  *       required: true

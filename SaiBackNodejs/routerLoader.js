@@ -6,6 +6,7 @@ const express = require('express');
 const memberRoute = require('./routes/memberRoute');
 const groupRoute = require('./routes/groupRoute');
 const courseRoute = require('./routes/courseRoute');
+const eventRoute = require('./routes/eventRoute');
 
 
 const loadRouter = express.Router();
@@ -39,5 +40,7 @@ loadRouter.use('/members', memberRoute);
 loadRouter.use('/groups', groupRoute);
 
 loadRouter.use('/courses', courseRoute);
+
+loadRouter.use('/events', eventRoute);
 
 module.exports = loadRouter;
