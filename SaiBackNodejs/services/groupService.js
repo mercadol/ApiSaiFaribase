@@ -1,9 +1,8 @@
 "use strict";
 
-const { GroupService } = require("./EntityService");
-const { RelationOperationsService } = require("./RelationOperationsService");
+const { GroupService, MemberRelationService } = require("./EntityService");
 
-const groupRelations = new RelationOperationsService("MemberGroup");
+const groupRelations = new MemberRelationService("MemberGroup");
 
 const groupService = {
   // Base operations

@@ -1,9 +1,8 @@
 "use strict";
 
-const { EventService } = require("./EntityService");
-const { RelationOperationsService } = require("./RelationOperationsService");
+const { EventService, MemberRelationService } = require("./EntityService");
 
-const eventRelations = new RelationOperationsService("MemberEvent");
+const eventRelations = new MemberRelationService("MemberEvent");
 
 const eventService = {
   // Base operations
