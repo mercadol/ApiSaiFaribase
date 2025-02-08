@@ -2,12 +2,16 @@
 
 const mockDoc = {
   set: jest.fn(() => Promise.resolve()),
-  delete: jest.fn(() => Promise.resolve()), // 🔹 Mock de delete()
-  get: jest.fn(() => Promise.resolve({ exists: false })), // 🔹 Mock de get()
+  get: jest.fn(() => Promise.resolve({ exists: false, data: () => ({}) })),
 };
 
 const mockCollection = {
   doc: jest.fn(() => mockDoc),
+  where: jest.fn(() => mockCollection),
+  orderBy: jest.fn(() => mockCollection),
+  limit: jest.fn(() => mockCollection),
+  startAfter: jest.fn(() => mockCollection),
+  get: jest.fn(() => Promise.resolve({ docs: [] })),
 };
 
 const mockDb = {
@@ -15,77 +19,55 @@ const mockDb = {
 };
 
 jest.mock("../firebase", () => ({
-  db: mockDb,
+  db: mockDb
 }));
 
-// Ahora importamos el servicio después de definir el mock
-const memberService = require("../services/memberService");
+const { MemberService } = require("../services/EntityService");
 
-describe("memberService.createMember", () => {
+describe("MemberService", () => {
+  let service;
+
   beforeEach(() => {
     jest.clearAllMocks();
-    jest.spyOn(console, "error").mockImplementation(() => {}); // 🔹 Oculta console.error
+    service = new MemberService();
   });
 
-  afterAll(() => {
-    console.error.mockRestore(); // 🔹 Restaura console.error después de los tests
-  });
-
-  it("debería crear un nuevo miembro exitosamente", async () => {
-    const memberData = {
-      memberId: "newMemberId",
-      name: "John Doe",
-      memberType: "visitante",
-      Oficio: "docente",
-      telephono: "5555-5555",
-      nota: "Invitado por maria",
-      estadoCivil: "Casado",
-    };
-    const result = await memberService.createMember(memberData);
-
-    expect(result).toBe(memberData.memberId);
+  it("should initialize with Member collection", () => {
     expect(mockDb.collection).toHaveBeenCalledWith("Member");
-    expect(mockCollection.doc).toHaveBeenCalledWith(memberData.memberId);
-    expect(mockDoc.set).toHaveBeenCalledWith(memberData);
   });
 
-  it("Debería generar un error si el miembro ya existe", async () => {
-    const memberData = { memberId: "existingMemberId" };
-    mockDoc.get.mockResolvedValueOnce({ exists: true });
+  describe("searchMembers", () => {
+    it("should return search results", async () => {
+      const mockDocs = [
+        { id: "1", data: () => ({ Name: "John Doe" }) },
+        { id: "2", data: () => ({ Name: "John Smith" }) }
+      ];
+      mockCollection.get.mockResolvedValueOnce({ docs: mockDocs });
 
-    await expect(memberService.createMember(memberData)).rejects.toThrow(
-      "Ya existe un miembro con el ID: existingMemberId"
-    );
-  });
+      const result = await service.searchMembers("John");
 
-  it("debería manejar errores de Firestore correctamente", async () => {
-    const memberData = {
-      memberId: "newMemberId",
-      name: "John Doe",
-      memberType: "visitante",
-      Oficio: "docente",
-      telephono: "5555-5555",
-      nota: "Invitado por maria",
-      estadoCivil: "Casado",
-    };
+      expect(mockCollection.where).toHaveBeenCalledWith("Name", ">=", "John");
+      expect(mockCollection.where).toHaveBeenCalledWith("Name", "<=", "John\uf8ff");
+      expect(mockCollection.orderBy).toHaveBeenCalledWith("Name");
+      expect(result).toEqual({
+        members: mockDocs.map(doc => ({ id: doc.id, ...doc.data() })),
+        lastDoc: mockDocs[mockDocs.length - 1]
+      });
+    });
 
-    // 🔹 Simular error en Firestore
-    mockDoc.get.mockRejectedValueOnce(new Error("Error de Firestore"));
+    it("should handle pagination", async () => {
+      const startAfterDoc = { id: "0", data: () => ({ Name: "Previous" }) };
+      await service.searchMembers("John", startAfterDoc, 5);
 
-    await expect(memberService.createMember(memberData)).rejects.toThrow(
-      "Error al guardar el miembro. Por favor, inténtalo más tarde."
-    );
-  });
+      expect(mockCollection.startAfter).toHaveBeenCalledWith(startAfterDoc);
+      expect(mockCollection.limit).toHaveBeenCalledWith(5);
+    });
 
-  it("should handle other errors correctly", async () => {
-    const memberData = { memberId: "newMemberId" };
-  
-    // 🔹 Simular otro error
-    mockDoc.set.mockRejectedValueOnce(new Error("Other error"));
-  
-    await expect(memberService.createMember(memberData)).rejects.toThrow(
-      "Other error"
-    );
+    it("should handle search errors", async () => {
+      mockCollection.get.mockRejectedValueOnce(new Error("Search failed"));
+
+      await expect(service.searchMembers("John"))
+        .rejects.toThrow("Error al buscar miembros. Inténtalo más tarde.");
+    });
   });
 });
-
