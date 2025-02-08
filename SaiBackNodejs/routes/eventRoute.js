@@ -2,22 +2,22 @@
 
 const express = require('express');
 const router = express.Router();
-const courseController = require('../controllers/courseController');
+const eventController = require('../controllers/eventController');
 
 /**
  * @swagger
  * tags:
- *   name: Courses
- *   description: The course managing API
+ *   name: Events
+ *   description: The events managing API
  */
 
 /**
  * @swagger
- * /courses:
+ * /events:
  *   get:
- *     summary: Returns a list of courses
- *     tags: [Courses]
- *     description: Retrieves a list of courses with optional pagination.
+ *     summary: Returns a list of events
+ *     tags: [Events]
+ *     description: Retrieves a list of events with optional pagination.
  *     parameters:
  *       - in: query
  *         name: startAfter
@@ -31,13 +31,13 @@ const courseController = require('../controllers/courseController');
  *         description: Number of items to return per page.
  *     responses:
  *       200:
- *         description: A list of courses
+ *         description: A list of events
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
- *                 courses:
+ *                 events:
  *                   type: array
  *                   items:
  *                 nextStartAfter:
@@ -45,18 +45,18 @@ const courseController = require('../controllers/courseController');
  *       500:
  *         description: An error occurred
  */
-router.get('/', courseController.getAll);
+router.get('/', eventController.getAll);
 
 /**
  * @swagger
- * /courses/{id}:
+ * /events/{id}:
  *   get:
- *     summary: Obtiene un curso específico
- *     tags: [Courses]
- *     description: Devuelve los detalles de un curso basado en su ID.
+ *     summary: Obtiene un evento específico
+ *     tags: [Events]
+ *     description: Devuelve los detalles de un evento basado en su ID.
  *     responses:
  *       200:
- *         description: Detalles del curso obtenidos correctamente
+ *         description: Detalles del evento obtenidos correctamente
  *         content:
  *           application/json:
  *             schema:
@@ -64,23 +64,23 @@ router.get('/', courseController.getAll);
  *               properties:
  *                 id:
  *                   type: string
- *                 nombre:
+ *                 Nombre:
  *                   type: string
- *                 maestro:
+ *                 Descripcion:
  *                   type: string
  *       404:
- *         description: Curso no encontrado
+ *         description: Evento no encontrado
  *       500:
- *         description: Error al obtener el curso
+ *         description: Error al obtener el evento
  */
-router.get('/:id', courseController.getById);
+router.get('/:id', eventController.getById);
 
 /**
  * @swagger
- * /courses:
+ * /events:
  *   post:
- *     summary: Crea un nuevo course.
- *     tags: [Courses]
+ *     summary: Crea un nuevo evento.
+ *     tags: [Events]
  *     requestBody:
  *       required: true
  *       content:
@@ -90,11 +90,11 @@ router.get('/:id', courseController.getById);
  *             required:
  *               - Nombre
  *               - Descripcion
- *               - FechaInicio
- *               - FechaFin
+ *               - Fecha
+ * 
  *     responses:
  *       201:
- *         description: Curso creado exitosamente.
+ *         description: Evento creado exitosamente.
  *         content:
  *           application/json:
  *             schema:
@@ -102,9 +102,9 @@ router.get('/:id', courseController.getById);
  *               properties:
  *                 id:
  *                   type: string
- *                   description: El ID del curso creado.
+ *                   description: El ID del evento creado.
  *             example:
- *               id: "curso1"
+ *               id: "evento1"
  *       400:
  *         description: Error de validación por campos faltantes o inválidos.
  *         content:
@@ -116,45 +116,45 @@ router.get('/:id', courseController.getById);
  *         content:
  *           application/json:
  *             example:
- *               error: "Error al guardar el curso. Por favor, inténtalo más tarde."
+ *               error: "Error al guardar el evento. Por favor, inténtalo más tarde."
  */
-router.post('/', courseController.create);
+router.post('/', eventController.create);
 
 /**
- * Elimina un curso por su ID.
+ * Elimina un evento por su ID.
  * @swagger
- * /courses/{id}:
+ * /events/{id}:
  *  delete:
- *     summary: Elimina un curso específico
- *     tags: [Courses]
- *     description: Devuelve TRUE si encuentra y elimina un curso basado en su ID.
+ *     summary: Elimina un evento específico
+ *     tags: [Events]
+ *     description: Devuelve TRUE si encuentra y elimina un evento basado en su ID.
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
  *           type: string
- *         description: ID del curso a eliminar.
+ *         description: ID del evento a eliminar.
  *     responses:
  *       200:
- *         description: Curso eliminado correctamente
+ *         description: Evento eliminado correctamente
  *         content:
  *           @returns {boolean} - true
  *       404:
- *         description: Curso no encontrado
+ *         description: Evento no encontrado
  *       400:
- *         description: Id del Curso no es valido
+ *         description: Id del Evento no es valido
  *       500:
- *         description: Error al eliminar el curso
+ *         description: Error al eliminar el evento
  */
-router.delete('/:id', courseController.delete);
+router.delete('/:id', eventController.delete);
 
 /**
  * @swagger
- * /courses/{id}:
+ * /events/{id}:
  *  put:
- *      summary: Actualiza un curso existente por su ID.
- *      tags: [Courses]
+ *      summary: Actualiza un evento existente por su ID.
+ *      tags: [Events]
  *      requestBody:
  *       required: true
  *       content:
@@ -165,22 +165,22 @@ router.delete('/:id', courseController.delete);
  *               - Id
  *               - {data}
  * */
-router.put('/:id', courseController.update);
+router.put('/:id', eventController.update);
 
-//relaciones curso-Miembro
+//relaciones
 /**
  * @swagger
- * /courses/{courseId}/members:
+ * /events/{eventId}/members:
  *   post:
- *     summary: Agrega un miembro a un curso
- *     tags: [Courses]
+ *     summary: Agrega un miembro a un evento
+ *     tags: [Events]
  *     parameters:
  *       - in: path
- *         name: courseId
+ *         name: eventId
  *         required: true
  *         schema:
  *           type: string
- *         description: ID del curso
+ *         description: ID del evento
  *     requestBody:
  *       required: true
  *       content:
@@ -198,21 +198,21 @@ router.put('/:id', courseController.update);
  *       500:
  *         description: Error interno del servidor
  */
-router.post('/:courseId/members', courseController.addMember);
+router.post('/:eventId/members', eventController.addMember);
 
 /**
  * @swagger
- * /courses/{courseId}/members/{memberId}:
+ * /events/{eventId}/members/{memberId}:
  *   delete:
- *     summary: Elimina un miembro de un curso
- *     tags: [Courses]
+ *     summary: Elimina un miembro de un evento
+ *     tags: [Events]
  *     parameters:
  *       - in: path
- *         name: courseId
+ *         name: eventId
  *         required: true
  *         schema:
  *           type: string
- *         description: ID del curso
+ *         description: ID del evento
  *       - in: path
  *         name: memberId
  *         required: true
@@ -225,35 +225,35 @@ router.post('/:courseId/members', courseController.addMember);
  *       500:
  *         description: Error interno del servidor
  */
-router.delete('/:courseId/members/:memberId', courseController.removeMember);
+router.delete('/:eventId/members/:memberId', eventController.removeMember);
 
 /**
  * @swagger
- * /courses/{courseId}/members:
+ * /events/{eventId}/members:
  *   get:
- *     summary: Obtiene la lista de miembros de un curso
- *     tags: [Courses]
+ *     summary: Obtiene la lista de miembros de un evento
+ *     tags: [Events]
  *     parameters:
  *       - in: path
- *         name: courseId
+ *         name: eventId
  *         required: true
  *         schema:
  *           type: string
- *         description: ID del curso
+ *         description: ID del evento
  *     responses:
  *       200:
  *         description: Lista de miembros obtenida exitosamente
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/:courseId/members', courseController.getCourseMembers);
+router.get('/:eventId/members', eventController.getEventMembers);
 
 /**
  * @swagger
- * /members/{memberId}/courses:
+ * /members/{memberId}/events:
  *   get:
- *     summary: Obtiene la lista de cursos a los que pertenece un miembro
- *     tags: [Courses]
+ *     summary: Obtiene la lista de eventos a los que pertenece un miembro
+ *     tags: [Events]
  *     parameters:
  *       - in: path
  *         name: memberId
@@ -263,10 +263,10 @@ router.get('/:courseId/members', courseController.getCourseMembers);
  *         description: ID del miembro
  *     responses:
  *       200:
- *         description: Lista de cursos obtenida exitosamente
+ *         description: Lista de eventos obtenida exitosamente
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/members/:memberId/courses', courseController.getMemberCourses);
+router.get('/members/:memberId/events', eventController.getMemberEvents);
 
 module.exports = router;

@@ -51,7 +51,7 @@ const router = express.Router();
  *       500:
  *         description: Error al obtener los miembros
  */
-router.get('/', memberController.getMembers);
+router.get('/', memberController.getAll);
 
 /**
  * @swagger
@@ -86,7 +86,7 @@ router.get('/', memberController.getMembers);
  *       500:
  *         description: Error al obtener el miembro
  */
-router.get('/:id', memberController.getMember);
+router.get('/:id', memberController.getById);
 
 /**
  * @swagger
@@ -180,7 +180,7 @@ router.get('/:id', memberController.getMember);
  *             example:
  *               error: "Error al guardar el miembro. Por favor, inténtalo más tarde."
  */
-router.post('/', memberController.createMember);
+router.post('/', memberController.create);
 
 /**
  * Elimina un miembro por su ID.
@@ -209,7 +209,7 @@ router.post('/', memberController.createMember);
  *       500:
  *         description: Error al eliminar el miembro
  */
-router.delete('/:id', memberController.deleteMember);
+router.delete('/:id', memberController.delete);
 
 /**
  * @swagger
@@ -269,7 +269,7 @@ router.delete('/:id', memberController.deleteMember);
  * @returns {object} 404 - Miembro no encontrado
  * @returns {object} 500 - Error interno del servidor
  */
-router.put('/:id', memberController.updateMember);
+router.put('/:id', memberController.update);
 
 /**
  * @swagger
@@ -311,7 +311,7 @@ router.put('/:id', memberController.updateMember);
  *       500:
  *         description: Error al realizar la búsqueda
  */
-router.get('/search', memberController.searchMember);
+router.get('/search', memberController.searchMembers);
 
 module.exports = router;
 
