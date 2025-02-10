@@ -63,9 +63,8 @@ describe('GroupController', () => {
       const result = groupController.prepareCreateData(data, generatedId);
 
       expect(result).toEqual({
-        groupId: generatedId,
-        Nombre: data.Nombre,
-        Descripcion: data.Descripcion
+        generatedId,
+        data
       });
     });
   });

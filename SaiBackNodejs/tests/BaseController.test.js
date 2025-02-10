@@ -225,8 +225,7 @@ describe("BaseController", () => {
 
       expect(idGenerator).toHaveBeenCalled();
       expect(service.create).toHaveBeenCalledWith("generated-id", {
-        ...data,
-        id: "generated-id",
+        ...data
       });
       expect(res.status).toHaveBeenCalledWith(201);
       expect(res.json).toHaveBeenCalledWith(createdResult);

@@ -42,7 +42,7 @@ class memberController extends BaseController {
   }
 
   prepareCreateData(data, generatedId) {
-
+    
     for (let key in data) {
       if (data[key] === null || data[key] === undefined) {
       
@@ -53,11 +53,14 @@ class memberController extends BaseController {
         data[key] = data[key].trim();
       }
     }
+    if (typeof generatedId === 'string')
+      generatedId = generatedId.trim();
 
-    return {
-      memberId: generatedId,
-      ...data
-    };
+    return { generatedId, data};
+
+    /*
+    
+    */
   }
 
 }

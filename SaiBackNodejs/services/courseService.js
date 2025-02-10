@@ -6,23 +6,23 @@ const courseRelations = new MemberRelationService("MemberCourse");
 
 const courseService = {
   // Base operations
-  getCourses: async (startAfterDoc = null, pageSize = 10) => {
+  getAll: async (startAfterDoc = null, pageSize = 10) => {
     return CourseService.getAll(startAfterDoc, pageSize, "Name");
   },
 
-  getCourse: async (id) => {
+  getById: async (id) => {
     return CourseService.getById(id);
   },
 
-  createCourse: async (courseData) => {
+  create: async (courseData) => {
     return CourseService.create(courseData.id, courseData);
   },
 
-  updateCourseById: async (id, updatedData) => {
+  update: async (id, updatedData) => {
     return CourseService.update(id, updatedData);
   },
 
-  deleteCourseById: async (id) => {
+  delete: async (id) => {
     return CourseService.delete(id);
   },
 

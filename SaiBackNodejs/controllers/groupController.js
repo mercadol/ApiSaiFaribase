@@ -34,12 +34,22 @@ class groupController extends BaseController {
   }
 
   prepareCreateData(data, generatedId) {
-    return {
-      groupId: generatedId,
-      Nombre: data.Nombre,
-      Descripcion: data.Descripcion,
-      Nota: data.Nota
-    };
+    
+    for (let key in data) {
+      if (data[key] === null || data[key] === undefined) {
+      
+        // Si es null o undefined, lo cambiamos por una cadena vacía
+        data[key] = "";
+      } else if (typeof data[key] === 'string') {
+        // Si es una cadena, aplicamos trim()
+        data[key] = data[key].trim();
+      }
+    }
+    if (typeof generatedId === 'string')
+      generatedId = generatedId.trim();
+
+    return { generatedId, data};
+    
   }
 
   async addMember(req, res) {

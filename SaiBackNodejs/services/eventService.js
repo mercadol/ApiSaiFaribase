@@ -6,23 +6,23 @@ const eventRelations = new MemberRelationService("MemberEvent");
 
 const eventService = {
   // Base operations
-  getEvents: async (startAfterDoc = null, pageSize = 10) => {
+  getAll: async (startAfterDoc = null, pageSize = 10) => {
     return EventService.getAll(startAfterDoc, pageSize, "Name");
   },
 
-  getEvent: async (id) => {
+  getById: async (id) => {
     return EventService.getById(id);
   },
 
-  createEvent: async (eventData) => {
+  create: async (eventData) => {
     return EventService.create(eventData.id, eventData);
   },
 
-  updateEventById: async (id, updatedData) => {
+  update: async (id, updatedData) => {
     return EventService.update(id, updatedData);
   },
 
-  deleteEventById: async (id) => {
+  delete: async (id) => {
     return EventService.delete(id);
   },
 

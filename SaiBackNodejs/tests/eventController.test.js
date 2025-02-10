@@ -63,9 +63,8 @@ describe('EventController', () => {
       const result = eventController.prepareCreateData(data, generatedId);
 
       expect(result).toEqual({
-        eventId: generatedId,
-        Nombre: data.Nombre,
-        Descripcion: data.Descripcion
+        generatedId,
+        data
       });
     });
   });

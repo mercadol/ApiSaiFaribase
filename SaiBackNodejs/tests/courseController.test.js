@@ -64,9 +64,8 @@ describe('CourseController', () => {
       const result = courseController.prepareCreateData(data, generatedId);
 
       expect(result).toEqual({
-        courseId: generatedId,
-        Nombre: data.Nombre,
-        Descripcion: data.Descripcion
+        generatedId,
+        data
       });
     });
   });

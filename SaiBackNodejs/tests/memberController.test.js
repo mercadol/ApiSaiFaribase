@@ -88,8 +88,8 @@ describe('MemberController', () => {
       const result = memberController.prepareCreateData(data, generatedId);
       
       expect(result).toEqual({
-        memberId: generatedId,
-        ...data
+        generatedId,
+        data
       });
     });
   });

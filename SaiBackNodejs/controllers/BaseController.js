@@ -61,18 +61,18 @@ class BaseController {
 
   async create(req, res) {
     try {
-      const generatedId = this.idGenerator();
-      const data = req.body;      
+      let generatedId = this.idGenerator();
+      let data = req.body;      
 
       // Validaciones específicas
       const validationError = this.validateCreateData(data);
       if (validationError) return res.status(400).json({ error: validationError });
 
       // Preparar datos específicos
-      const entityData = this.prepareCreateData(data, generatedId);
-
+      data, generatedId = this.prepareCreateData(data, generatedId);
+      
       // Crear en el servicio
-      const result = await this.service.create(generatedId, entityData);
+      const result = await this.service.create(generatedId, data);
       
       res.status(201).json(result);
     } catch (error) {

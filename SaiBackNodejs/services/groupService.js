@@ -6,24 +6,28 @@ const groupRelations = new MemberRelationService("MemberGroup");
 
 const groupService = {
   // Base operations
-  getGroups: async (startAfterDoc = null, pageSize = 10) => {
+  getAll: async (startAfterDoc = null, pageSize = 10) => {
     return GroupService.getAll(startAfterDoc, pageSize, "Name");
   },
 
-  getGroup: async (id) => {
+  getById: async (id) => {
     return GroupService.getById(id);
   },
 
-  createGroup: async (groupData) => {
+  create: async (groupData) => {
     return GroupService.create(groupData.id, groupData);
   },
 
-  updateGroupById: async (id, updatedData) => {
+  update: async (id, updatedData) => {
     return GroupService.update(id, updatedData);
   },
 
-  deleteGroupById: async (id) => {
+  delete: async (id) => {
     return GroupService.delete(id);
+  },
+
+  search: async (searchString, startAfterDoc = null, pageSize = 10) => {
+    return GroupService.search(searchString, startAfterDoc, pageSize);
   },
   
   // Relation operations

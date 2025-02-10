@@ -8,6 +8,7 @@ class BaseOperationsService {
       throw new Error("Error: El nombre de la colección no se pasó correctamente.");
     }
     this.collection = db.collection(collectionName);
+    
   }
 
   async getAll(startAfterDoc = null, pageSize = 10, orderByField = "name") {
@@ -16,8 +17,9 @@ class BaseOperationsService {
       if (startAfterDoc) query = query.startAfter(startAfterDoc);
 
       const snapshot = await query.get();
-      const items = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
+      const items = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      
       return { items, lastDoc: snapshot.docs[snapshot.docs.length - 1] };
     } catch (error) {
       console.error(`Error getting documents from ${this.collection.id}:`, error);
@@ -29,7 +31,7 @@ class BaseOperationsService {
     try {
       const doc = await this.collection.doc(id).get();
       if (!doc.exists) throw new Error(`Document with ID ${id} not found`);
-      return { id: doc.id, ...doc.data() };
+      return { id: doc.id, ...doc };
     } catch (error) {
       console.error(`Error getting document ${id} from ${this.collection.id}:`, error);
       if (error.message.includes("not found")) throw error;
@@ -43,12 +45,8 @@ class BaseOperationsService {
 
   async create(id, data) {
     try {
-      const docRef = this.collection.doc(id);
-      const doc = await docRef.get();
-      if (doc.exists) throw new Error(`ID ${id} already exists.`);
-
-      await docRef.set(data);
-      return id;
+      const docRef = await this.collection.add(data); // Usa add()
+      return docRef.id; // Devuelve el ID generado por Firestore
     } catch (error) {
       console.error(`Error creating document in ${this.collection.id}:`, error);
       if (error.message.includes("already exists")) throw error;
@@ -61,7 +59,7 @@ class BaseOperationsService {
   }
 
   async update(id, updatedData) {
-    try {
+    try {     
       await this.collection.doc(id).update(updatedData);
       return await this.getById(id);
     } catch (error) {
