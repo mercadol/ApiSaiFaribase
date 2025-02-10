@@ -43,7 +43,7 @@ class BaseOperationsService {
     }
   }
 
-  async create(id, data) {
+  async create( data) {
     try {
       const docRef = await this.collection.add(data); // Usa add()
       return docRef.id; // Devuelve el ID generado por Firestore

@@ -7,7 +7,7 @@ const eventRelations = new MemberRelationService("MemberEvent");
 const eventService = {
   // Base operations
   getAll: async (startAfterDoc = null, pageSize = 10) => {
-    return EventService.getAll(startAfterDoc, pageSize, "Name");
+    return EventService.getAll(startAfterDoc, pageSize, "Nombre");
   },
 
   getById: async (id) => {

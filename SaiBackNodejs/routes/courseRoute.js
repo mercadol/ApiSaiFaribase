@@ -54,6 +54,13 @@ router.get('/', courseController.getAll);
  *     summary: Obtiene un curso específico
  *     tags: [Courses]
  *     description: Devuelve los detalles de un curso basado en su ID.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID del Curso.
  *     responses:
  *       200:
  *         description: Detalles del curso obtenidos correctamente
@@ -154,6 +161,12 @@ router.delete('/:id', courseController.delete);
  * /courses/{id}:
  *  put:
  *      summary: Actualiza un curso existente por su ID.
+ *      parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
  *      tags: [Courses]
  *      requestBody:
  *       required: true

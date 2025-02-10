@@ -2,7 +2,7 @@
 
 // Firebase mocks
 const mockDoc = {
-  set: jest.fn(() => Promise.resolve()),
+  add: jest.fn(() => Promise.resolve()),
   delete: jest.fn(() => Promise.resolve()),
   update: jest.fn(() => Promise.resolve()),
   get: jest.fn(() => Promise.resolve({ exists: false, id: "testId", data: () => ({ foo: "bar" }) })),
@@ -40,17 +40,10 @@ describe('BaseOperationsService', () => {
       mockDoc.get.mockResolvedValueOnce({ exists: false });
       const data = { name: 'Test' };
 
-      await service.create('test-id', data);
+      await service.create( data);
 
       expect(mockCollection.doc).toHaveBeenCalledWith('test-id');
-      expect(mockDoc.set).toHaveBeenCalledWith(data);
-    });
-
-    it('should throw error if document already exists', async () => {
-      mockDoc.get.mockResolvedValueOnce({ exists: true });
-      
-      await expect(service.create('test-id', {}))
-        .rejects.toThrow('ID test-id already exists.');
+      expect(mockDoc.add).toHaveBeenCalledWith(data);
     });
   });
 

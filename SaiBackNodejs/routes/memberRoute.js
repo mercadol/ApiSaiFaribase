@@ -128,21 +128,6 @@ router.get('/:id', memberController.getById);
  *               Notas:
  *                 type: string
  *                 description: Notas adicionales sobre el miembro.
- *               Cursos:
- *                 type: array
- *                 items:
- *                   type: string
- *                 description: Lista de cursos asociados al miembro.
- *               Grupos:
- *                 type: array
- *                 items:
- *                   type: string
- *                 description: Lista de grupos asociados al miembro.
- *               Eventos:
- *                 type: array
- *                 items:
- *                   type: string
- *                 description: Lista de eventos asociados al miembro.
  *           example:
  *             Name: "John Doe"
  *             MemberType: "Bautizado"
@@ -151,9 +136,6 @@ router.get('/:id', memberController.getById);
  *             Telephono: "1234567890"
  *             Oficio: "Desarrollador"
  *             Notas: "Este miembro ha sido registrado como parte del grupo Bautizado."
- *             Cursos: ["Curso de liderazgo", "Curso de comunicación"]
- *             Grupos: ["Grupo A", "Grupo B"]
- *             Eventos: ["Evento 1", "Evento 2"]
  *     responses:
  *       201:
  *         description: Miembro creado exitosamente.
@@ -216,6 +198,12 @@ router.delete('/:id', memberController.delete);
  * /members/{id}:
  *  put:
  *      summary: Actualiza un miembro existente por su ID.
+ *      parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
  *      tags: [Members]
  *      requestBody:
  *       required: true
@@ -224,6 +212,7 @@ router.delete('/:id', memberController.delete);
  *           schema:
  *             type: object
  *             required:
+ *               - id
  *               - Name
  *               - MemberType
  *             properties:
@@ -273,7 +262,7 @@ router.put('/:id', memberController.update);
 
 /**
  * @swagger
- * /members/search:
+ * /members/search/searchString:
  *   get:
  *     summary: Busca miembros por nombre
  *     tags: [Members]
@@ -311,7 +300,7 @@ router.put('/:id', memberController.update);
  *       500:
  *         description: Error al realizar la búsqueda
  */
-router.get('/search', memberController.searchMembers);
+router.get('/search/:searchString', memberController.search);
 
 module.exports = router;
 

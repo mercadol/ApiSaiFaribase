@@ -54,6 +54,13 @@ router.get('/', eventController.getAll);
  *     summary: Obtiene un evento específico
  *     tags: [Events]
  *     description: Devuelve los detalles de un evento basado en su ID.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID del evento.
  *     responses:
  *       200:
  *         description: Detalles del evento obtenidos correctamente

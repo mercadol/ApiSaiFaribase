@@ -54,6 +54,13 @@ router.get('/', groupController.getAll);
  *     summary: Obtiene un grupo específico
  *     tags: [Groups]
  *     description: Devuelve los detalles de un grupo basado en su ID.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID del grupo.
  *     responses:
  *       200:
  *         description: Detalles del grupo obtenidos correctamente
@@ -154,6 +161,12 @@ router.delete('/:id', groupController.delete);
  * /groups/{id}:
  *  put:
  *      summary: Actualiza un grupo existente por su ID.
+ *      parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
  *      tags: [Groups]
  *      requestBody:
  *       required: true
@@ -166,6 +179,48 @@ router.delete('/:id', groupController.delete);
  *               - {data}
  * */
 router.put('/:id', groupController.update);
+
+/**
+ * @swagger
+ * /group/search/searchString:
+ *   get:
+ *     summary: Busca resultados por nombre
+ *     tags: [Groups]
+ *     description: Busca resultados cuyo nombre coincida con el término de búsqueda.
+ *     parameters:
+ *       - in: query
+ *         name: searchString
+ *         schema:
+ *           type: string
+ *         description: Término de búsqueda
+ *       - in: query
+ *         name: startAfter
+ *         schema:
+ *           type: string
+ *         description: ID del documento desde el que se debe comenzar la paginación.
+ *       - in: query
+ *         name: pageSize
+ *         schema:
+ *           type: integer
+ *         description: Número de documentos por página (por defecto, 10).
+ *     responses:
+ *       200:
+ *         description: Lista de resultados encontrados
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 members:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Groups'
+ *       404:
+ *         description: No se encontraron grupos
+ *       500:
+ *         description: Error al realizar la búsqueda
+ */
+router.get('/search/:searchString', groupController.search);
 
 //relaciones
 /**

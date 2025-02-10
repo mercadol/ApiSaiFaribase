@@ -7,7 +7,7 @@ const groupRelations = new MemberRelationService("MemberGroup");
 const groupService = {
   // Base operations
   getAll: async (startAfterDoc = null, pageSize = 10) => {
-    return GroupService.getAll(startAfterDoc, pageSize, "Name");
+    return GroupService.getAll(startAfterDoc, pageSize, "Nombre");
   },
 
   getById: async (id) => {
