@@ -3,15 +3,13 @@
 
 const BaseController = require('./BaseController');
 const courseService = require('../services/courseService');
-const idGenerator = require('../utilities/idGenerator');
 
 class courseController extends BaseController {
   constructor() {
     super({
       service: courseService,
       entityName: 'Course',
-      entityPlural: 'courses',
-      idGenerator: idGenerator.generateTimestampedId
+      entityPlural: 'courses'
     });
   }
 
@@ -28,7 +26,7 @@ class courseController extends BaseController {
     return null;
   }
 
-  prepareCreateData(data, generatedId) {
+  prepareCreateData(data) {
 
     for (let key in data) {
       if (data[key] === null || data[key] === undefined) {
@@ -40,15 +38,15 @@ class courseController extends BaseController {
         data[key] = data[key].trim();
       }
     }
-    if (typeof generatedId === 'string')
-      generatedId = generatedId.trim();
 
-    return { generatedId, data};
+    return  data;
   }
 
   async addMember(req, res) {
     try {
-      const { memberId, courseId } = req.body;
+      const courseId = req.params.courseId;
+
+      const { memberId } = req.body;
       const data = req.body.data || {};
       const result = await courseService.addMemberToCourse(memberId, courseId, data);
       res.status(201).json({ message: 'Member added successfully', result });

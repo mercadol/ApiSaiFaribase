@@ -3,7 +3,6 @@
 
 const BaseController = require('./BaseController');
 const memberService = require('../services/memberService');
-const idGenerator = require('../utilities/idGenerator');
 const validator = require('validator');
 
 class memberController extends BaseController {
@@ -11,8 +10,7 @@ class memberController extends BaseController {
     super({
       service: memberService,
       entityName: 'Member',
-      entityPlural: 'members',
-      idGenerator: idGenerator.generateTimestampedId
+      entityPlural: 'members'
     });
   }
 
@@ -41,7 +39,7 @@ class memberController extends BaseController {
     return null;
   }
 
-  prepareCreateData(data, generatedId) {
+  prepareCreateData(data) {
     
     for (let key in data) {
       if (data[key] === null || data[key] === undefined) {
@@ -53,14 +51,9 @@ class memberController extends BaseController {
         data[key] = data[key].trim();
       }
     }
-    if (typeof generatedId === 'string')
-      generatedId = generatedId.trim();
 
-    return { generatedId, data};
+    return  data;
 
-    /*
-    
-    */
   }
 
 }

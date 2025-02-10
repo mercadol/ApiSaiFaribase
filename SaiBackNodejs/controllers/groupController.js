@@ -3,15 +3,13 @@
 
 const BaseController = require('./BaseController');
 const groupService = require('../services/groupService');
-const idGenerator = require('../utilities/idGenerator');
 
 class groupController extends BaseController {
   constructor() {
     super({
       service: groupService,
       entityName: 'Group',
-      entityPlural: 'groups',
-      idGenerator: idGenerator.generateTimestampedId
+      entityPlural: 'groups'
     });
   }
 
@@ -33,7 +31,7 @@ class groupController extends BaseController {
     return null;
   }
 
-  prepareCreateData(data, generatedId) {
+  prepareCreateData(data) {
     
     for (let key in data) {
       if (data[key] === null || data[key] === undefined) {
@@ -45,16 +43,16 @@ class groupController extends BaseController {
         data[key] = data[key].trim();
       }
     }
-    if (typeof generatedId === 'string')
-      generatedId = generatedId.trim();
 
-    return { generatedId, data};
+    return data;
     
   }
 
   async addMember(req, res) {
     try {
-      const { memberId, groupId } = req.body;
+      const groupId = req.params.groupId;
+
+      const { memberId} = req.body;
       const data = req.body.data || {};
       const result = await groupService.addMemberToGroup(memberId, groupId, data);
       res.status(201).json({ message: 'Member added successfully', result });

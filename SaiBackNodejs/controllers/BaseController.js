@@ -10,7 +10,6 @@ class BaseController {
     this.service = config.service;
     this.entityName = config.entityName;
     this.entityPlural = config.entityPlural;
-    this.idGenerator = config.idGenerator;
     this.validator = validator;
     
     // Bindear métodos para mantener el contexto
@@ -61,7 +60,6 @@ class BaseController {
 
   async create(req, res) {
     try {
-      let generatedId = this.idGenerator();
       let data = req.body;      
 
       // Validaciones específicas
@@ -69,10 +67,10 @@ class BaseController {
       if (validationError) return res.status(400).json({ error: validationError });
 
       // Preparar datos específicos
-      data, generatedId = this.prepareCreateData(data, generatedId);
+      data = this.prepareCreateData(data);
       
       // Crear en el servicio
-      const result = await this.service.create(generatedId, data);
+      const result = await this.service.create( data);
       
       res.status(201).json(result);
     } catch (error) {
@@ -155,7 +153,7 @@ class BaseController {
     throw new Error('Método validateCreateData no implementado');
   }
 
-  prepareCreateData(/* data, generatedId */) {
+  prepareCreateData(/* data */) {
     throw new Error('Método prepareCreateData no implementado');
   }
 

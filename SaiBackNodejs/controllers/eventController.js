@@ -2,16 +2,14 @@
 'use strict';
 
 const BaseController = require('./BaseController');
-const eventService = require('../services/eventService'); // Importar el servicio
-const idGenerator = require('../utilities/idGenerator');
+const eventService = require('../services/eventService'); 
 
 class eventController extends BaseController {
   constructor() {
     super({
       service: eventService,
       entityName: 'Event',
-      entityPlural: 'events',
-      idGenerator: idGenerator.generateTimestampedId
+      entityPlural: 'events'
     });
   }
 
@@ -31,7 +29,7 @@ class eventController extends BaseController {
     return null;
   }
 
-  prepareCreateData(data, generatedId) {
+  prepareCreateData(data) {
 
     for (let key in data) {
       if (data[key] === null || data[key] === undefined) {
@@ -43,15 +41,15 @@ class eventController extends BaseController {
         data[key] = data[key].trim();
       }
     }
-    if (typeof generatedId === 'string')
-      generatedId = generatedId.trim();
 
-    return { generatedId, data};
+    return data;
   }
 
   async addMember(req, res) {
     try {
-      const { memberId, eventId } = req.body;
+      const {eventId} = req.params;
+
+      const { memberId  } = req.body;
       const data = req.body.data || {};
       const result = await eventService.addMemberToEvent(memberId, eventId, data);
       res.status(201).json({ message: 'Member added successfully', result });
