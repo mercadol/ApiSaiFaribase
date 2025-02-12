@@ -1,18 +1,20 @@
-
 // BaseController.js
-'use strict';
+"use strict";
 
-const db = require('../firebase').db;
-const validator = require('validator');
+const ApiError = require("../utils/ApiError");
+const asyncHandler = require("../middlewares/asyncHandler");
+const validator = require("validator");
 
 class BaseController {
   constructor(config) {
+    if (!config.service) {
+      throw new Error("Service is required in BaseController");
+  }
     this.service = config.service;
     this.entityName = config.entityName;
     this.entityPlural = config.entityPlural;
     this.validator = validator;
-    
-    // Bindear métodos para mantener el contexto
+
     this.getAll = this.getAll.bind(this);
     this.getById = this.getById.bind(this);
     this.create = this.create.bind(this);
@@ -21,140 +23,94 @@ class BaseController {
     this.search = this.search.bind(this);
   }
 
-  async getAll(req, res) {
+  async getAll(req, res, next) {
     try {
       const pageSize = parseInt(req.query.pageSize) || 10;
-      const startAfterId = req.query.startAfter;
-      let startAfterDoc = null;
-
-      if (startAfterId) {
-        const collectionName = this.service.collection.id;
-        const docRef = db.collection(collectionName).doc(startAfterId);
-        startAfterDoc = await docRef.get();
-        if (!startAfterDoc.exists) startAfterDoc = null;
-      }
-
-      const { items, lastDoc } = await this.service.getAll(startAfterDoc, pageSize);
-      const nextStartAfter = lastDoc ? lastDoc.id : null;
-
-      res.json({
-        [this.entityPlural]: items,
-        nextStartAfter
-      });
+      const startAfterId = req.query.startAfter || null;
+      const result = await this.service.getAll(startAfterId, pageSize);
+      res.status(200).json(result);
     } catch (error) {
-      console.error(`Error al obtener ${this.entityPlural}:`, error);
-      res.status(500).json({ error: error.message });
+      next(error);
     }
   }
 
   async getById(req, res) {
-    try {
-      const { id } = req.params;
-      const result = await this.service.getById(id);
-      res.status(200).json(result);
-    } catch (error) {
-      console.error(`Error al obtener ${this.entityName}:`, error);
-      res.status(error.message.includes('No se encontró') ? 404 : 500).json({ error: error.message });
+    const { id } = req.params;
+    const result = await this.service.getById(id);
+    if (!result) {
+      throw new ApiError(404, `${this.entityName} no encontrado`); // Not Found
     }
+    res.status(200).json(result);
   }
 
   async create(req, res) {
-    try {
-      let data = req.body;      
+    const data = req.body;
 
-      // Validaciones específicas
-      const validationError = this.validateCreateData(data);
-      if (validationError) return res.status(400).json({ error: validationError });
-
-      // Preparar datos específicos
-      data = this.prepareCreateData(data);
-      
-      // Crear en el servicio
-      const result = await this.service.create( data);
-      
-      res.status(201).json(result);
-    } catch (error) {
-      console.error(`Error al crear ${this.entityName}:`, error);
-      res.status(error.message.includes('ya existe') ? 409 : 500).json({ error: error.message });
+    // Validaciones específicas antes de crear
+    const validationError = this.validateCreateData(data);
+    if (validationError) {
+      throw new ApiError(400, validationError); // Bad Request
     }
+
+    // Preparar datos específicos
+    //data = this.prepareCreateData(data);
+    // Crear en el servicio
+    const result = await this.service.create(data);
+    res.status(201).json(result); // Created
   }
 
   async update(req, res) {
-    try {
-      const { id } = req.params;
-      const updatedData = req.body;
-      
-      const validationError = this.validateUpdateData(updatedData);
-      if (validationError) return res.status(400).json({ error: validationError });
+    const { id } = req.params;
+    const updatedData = req.body;
 
-      const result = await this.service.update(id, updatedData);
-      res.status(200).json(result);
-    } catch (error) {
-      console.error(`Error al actualizar ${this.entityName}:`, error);
-      res.status(500).json({ error: error.message });
+    // Validación de datos antes de actualizar
+    const validationError = this.validateUpdateData(updatedData);
+    if (validationError) {
+      throw new ApiError(400, validationError); // Bad Request
     }
+    const result = await this.service.update(id, updatedData);
+    res.status(200).json(result);
   }
 
   async delete(req, res) {
-    try {
-      const { id } = req.params;
-      await this.service.delete(id);
-      res.status(200).json({ message: `${this.entityName} eliminado correctamente` });
-    } catch (error) {
-      console.error(`Error al eliminar ${this.entityName}:`, error);
-      res.status(500).json({ error: error.message });
+    const { id } = req.params;
+    const result = await this.service.delete(id);
+    if (!result) {
+      throw new ApiError(404, `${this.entityName} no encontrado`); // Not Found
     }
+
+    res
+      .status(200)
+      .json({ message: `${this.entityName} eliminado correctamente` });
   }
 
   async search(req, res) {
-      try {
-        const { searchString, pageSize = 10, startAfter } = req.query;
-        
-  
-        // Validar parámetros de búsqueda
-        if (!searchString || typeof searchString !== 'string') {
-          return res.status(400).json({ error: 'El parámetro de búsqueda es requerido y debe ser una cadena de texto' });
-        }
-  
-        if (isNaN(pageSize) || pageSize < 1 || pageSize > 100) {
-          return res.status(400).json({ error: 'El tamaño de página debe ser un número entre 1 y 100' });
-        }
-  
-        // Obtener el documento de inicio para la paginación
-        let startAfterDoc = null;
-        if (startAfter) {
-          const docRef = this.service.collection.doc(startAfter);
-          startAfterDoc = await docRef.get();
-          if (!startAfterDoc.exists) startAfterDoc = null;
-        }
-  
-        // Realizar la búsqueda
-        const { results, lastDoc } = await this.service.search(
-          searchString,
-          startAfterDoc,
-          parseInt(pageSize)
-        );
-  
-        // Preparar respuesta
-        const response = {
-          results,
-          nextStartAfter: lastDoc ? lastDoc.id : null
-        };
-  
-        res.status(200).json(response);
-      } catch (error) {
-        console.error('Error al buscar elementos:', error);
-        res.status(500).json({ error: 'Error al buscar elementos. Inténtelo más tarde.' });
-      }
+    const { searchString } = req.query;
+    const pageSize = parseInt(req.query.pageSize) || 10;
+    const startAfterId = req.query.startAfter || null;
+
+    // Validar parámetros de búsqueda
+    if (!searchString || typeof searchString !== "string") {
+      throw new ApiError(400, "El parámetro de búsqueda es requerido");
     }
+
+    // Llamamos al servicio de búsqueda
+    const result = await this.service.search(
+      searchString,
+      startAfterId,
+      pageSize
+    );
+
+    res.status(200).json(result);
+  }
 
   // Métodos para sobrescribir en los controladores hijos
   validateCreateData(/* data */) {
-    throw new Error('Método validateCreateData no implementado');
+    throw new Error("Método validateCreateData no implementado");
   }
 
   prepareCreateData(/* data */) {
-    throw new Error('Método prepareCreateData no implementado');
+    throw new Error("Método prepareCreateData no implementado");
   }
 
   validateUpdateData(/* data */) {

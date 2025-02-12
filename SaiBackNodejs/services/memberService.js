@@ -3,7 +3,7 @@
 const { MemberService } = require("./EntityService");
 
 const memberService = {
-  // Operaciones base de miembros
+  // Operaciones base
   getAll: async (startAfterDoc = null, pageSize = 10) => {
     return MemberService.getAll(startAfterDoc, pageSize, "Name");
   },
@@ -24,8 +24,8 @@ const memberService = {
     return MemberService.delete(id);
   },
 
-  searchMembers: async (searchString, startAfterDoc = null, pageSize = 10) => {
-    return MemberService.searchMembers(searchString, startAfterDoc, pageSize);
+  search: async (searchString, startAfterDoc = null, pageSize = 10) => {
+    return MemberService.search(searchString, startAfterDoc, pageSize);
   },
 
 };

@@ -3,7 +3,6 @@
 
 const BaseController = require('./BaseController');
 const memberService = require('../services/memberService');
-const validator = require('validator');
 
 class memberController extends BaseController {
   constructor() {
@@ -32,7 +31,7 @@ class memberController extends BaseController {
       return `EstadoCivil debe ser: ${validEstadosCiviles.join(', ')}`;
     }
 
-    if (data.Email && !validator.isEmail(data.Email)) {
+    if (data.Email && !this.validator.isEmail(data.Email)) {
       return 'Formato de email inválido';
     }
 

@@ -7,7 +7,7 @@ const courseRelations = new MemberRelationService("MemberCourse");
 const courseService = {
   // Base operations
   getAll: async (startAfterDoc = null, pageSize = 10) => {
-    return CourseService.getAll(startAfterDoc, pageSize, "Name");
+    return CourseService.getAll(startAfterDoc, pageSize, "Nombre");
   },
 
   getById: async (id) => {
@@ -31,6 +31,11 @@ const courseService = {
     return courseRelations.addRelation(memberId, courseId, data);
   },
 
+  addMemberToCourse: async (memberId, courseId, data = {}) => {
+    const service = new CourseService();
+    return service.addMemberToCourse(memberId, courseId, data);
+  },
+
   removeMemberFromCourse: async (memberId, courseId) => {
     return courseRelations.removeRelation(memberId, courseId);
   },
@@ -52,6 +57,8 @@ const courseService = {
       "toId"
     );
   }
+
+  
 };
 
 module.exports = courseService;

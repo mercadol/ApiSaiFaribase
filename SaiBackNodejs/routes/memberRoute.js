@@ -51,7 +51,7 @@ const router = express.Router();
  *       500:
  *         description: Error al obtener los miembros
  */
-router.get('/', memberController.getAll);
+router.get('/', (req, res, next) => memberController.getAll(req, res, next));
 
 /**
  * @swagger
