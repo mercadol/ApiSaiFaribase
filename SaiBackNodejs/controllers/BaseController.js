@@ -2,7 +2,6 @@
 "use strict";
 
 const ApiError = require("../utils/ApiError");
-const asyncHandler = require("../middlewares/asyncHandler");
 const validator = require("validator");
 
 class BaseController {
@@ -52,9 +51,6 @@ class BaseController {
       throw new ApiError(400, validationError); // Bad Request
     }
 
-    // Preparar datos específicos
-    //data = this.prepareCreateData(data);
-    // Crear en el servicio
     const result = await this.service.create(data);
     res.status(201).json(result); // Created
   }

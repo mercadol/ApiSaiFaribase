@@ -1,5 +1,7 @@
 'use strict';
 
+const ApiError = require("../utils/ApiError");
+
 class RelationController {
   constructor(service, entityName) {
     this.service = service;
@@ -11,7 +13,7 @@ class RelationController {
     this.getMemberEntities = this.getMemberEntities.bind(this);
   }
 
-  async addMember(req, res) {
+  async addMember(req, res, next) {
     try {
       const { entityId } = req.params;
       const { memberId } = req.body;
@@ -20,37 +22,37 @@ class RelationController {
       const result = await this.service.addMember(memberId, entityId, data);
       res.status(201).json({ message: `Member added to ${this.entityName} successfully`, result });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      next(new ApiError(500, error.message)); // Usar next() para pasar al middleware
     }
   }
 
-  async removeMember(req, res) {
+  async removeMember(req, res, next) {
     try {
       const { memberId, entityId } = req.params;
       await this.service.removeMember(memberId, entityId);
       res.status(200).json({ message: `Member removed from ${this.entityName} successfully` });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      next(new ApiError(500, error.message)); // Usar next() para pasar al middleware
     }
   }
 
-  async getEntityMembers(req, res) {
+  async getEntityMembers(req, res, next) {
     try {
       const { entityId } = req.params;
       const members = await this.service.getEntityMembers(entityId);
       res.status(200).json(members);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      next(new ApiError(500, error.message)); // Usar next() para pasar al middleware
     }
   }
 
-  async getMemberEntities(req, res) {
+  async getMemberEntities(req, res, next) {
     try {
       const { memberId } = req.params;
       const entities = await this.service.getMemberEntities(memberId);
       res.status(200).json(entities);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      next(new ApiError(500, error.message)); // Usar next() para pasar al middleware
     }
   }
 }

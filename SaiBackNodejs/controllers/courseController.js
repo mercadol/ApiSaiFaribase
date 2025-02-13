@@ -2,15 +2,18 @@
 'use strict';
 
 const BaseController = require('./BaseController');
+const RelationController = require('./RelationController');
 const courseService = require('../services/courseService');
 
-class courseController extends BaseController {
+class CourseController extends BaseController {
   constructor() {
     super({
       service: courseService,
       entityName: 'Course',
       entityPlural: 'courses'
     });
+
+    this.relationController = new RelationController(courseService, 'Course');
   }
 
   validateCreateData(data) {
@@ -44,14 +47,20 @@ class courseController extends BaseController {
 
   async addMember(req, res) {
     try {
-      const courseId = req.params.courseId;
-
+      const {courseId} = req.params;
       const { memberId } = req.body;
       const data = req.body.data || {};
-      const result = await courseService.addMemberToCourse(memberId, courseId, data);
-      res.status(201).json({ message: 'Member added successfully', result });
+
+      await this.executeInTransaction([
+        t => this.service.validateMemberExists(memberId, t),
+        t => this.service.validateCourseExists(courseId, t),
+        t => this.service.addMemberToCourse(memberId, courseId, data, t)
+      ]);
+
+      res.status(201).json({ message: 'Member added successfully' });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      const { status, body } = this.errorHandler(error, this.entityName);
+      res.status(status).json(body);
     }
   }
 
@@ -85,5 +94,13 @@ class courseController extends BaseController {
     }
   }
 }
+const courseController = new CourseController();
 
-module.exports = new courseController();
+  // Delegar métodos de relaciones
+  courseController.addMember = courseController.relationController.addMember;
+  courseController.removeMember = courseController.relationController.removeMember;
+  courseController.getCourseMembers = courseController.relationController.getEntityMembers;
+  courseController.getMemberCourses = courseController.relationController.getMemberEntities;
+  
+  module.exports = courseController;
+  //module.exports = new courseController();

@@ -4,25 +4,45 @@ const db = require("../firebase").db;
 
 class RelationOperationsService {
   constructor(collectionName) {
-    if (!collectionName) {
-      throw new Error("Error: Collection name is required.");
-    }
+      if (!collectionName) throw new Error("INVALID_COLLECTION");
     this.collection = db.collection(collectionName);
   }
 
+  // metodo para validaciones
+  async validateExists(id, transaction = null) {
+    const docRef = this.collection.doc(id);
+    const doc = transaction ? 
+      await transaction.get(docRef) : 
+      await docRef.get();
+    
+    if (!doc.exists) {
+      throw {
+        type: 'NOT_FOUND',
+        message: `Document ${id} not found in ${this.collection.id}`
+      };
+    }
+    return doc;
+  }
+
+  //soporte de transacciones
+  async executeTransaction(operations) {
+    return db.runTransaction(async transaction => {
+      for (const operation of operations) {
+        await operation(transaction);
+      }
+    });
+  }
+
+
+
   async getRelatedDocuments(toId, relatedCollection, toField, fromField) {
     try {
-      const querySnapshot = await this.collection
-        .where(toField, "==", toId)
-        .get();
-
-      if (querySnapshot.empty) return [];
-
-      const relatedIds = querySnapshot.docs.map((doc) => doc.data()[fromField]);
+      const query = this.collection.where(toField, "==", toId);
+      const { items } = await this._executeQuery(query);
+      const relatedIds = items.map(doc => doc[fromField]);
       return this.getDocumentsFromIds(relatedCollection, relatedIds);
     } catch (error) {
-      console.error("Error getting related documents:", error);
-      throw new Error("Error retrieving related data. Please try again later.");
+      throw this._handleError(error);
     }
   }
 
@@ -80,6 +100,20 @@ class RelationOperationsService {
           : "Error removing relation. Please try again later."
       );
     }
+  }
+
+  _handleError(error) {
+    // Similar al manejo de errores en BaseOperationsService
+    const errorTypes = {
+      'NOT_FOUND': true,
+      'ALREADY_EXISTS': true,
+      'VALIDATION_ERROR': true
+    };
+
+    return {
+      type: errorTypes[error.type] ? error.type : 'DEFAULT',
+      message: error.message || 'Error en la operación de relación'
+    };
   }
 }
 
