@@ -15,7 +15,7 @@ const groupService = {
   },
 
   create: async (groupData) => {
-    return GroupService.create(groupData.id, groupData);
+    return GroupService.create( groupData);
   },
 
   update: async (id, updatedData) => {

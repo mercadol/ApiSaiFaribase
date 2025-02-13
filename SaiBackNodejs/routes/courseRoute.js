@@ -1,15 +1,8 @@
 'use strict';
 
 const express = require('express');
-const router = express.Router();
 const courseController = require('../controllers/courseController');
-
-/**
- * @swagger
- * tags:
- *   name: Courses
- *   description: The course managing API
- */
+const router = express.Router();
 
 /**
  * @swagger
@@ -179,6 +172,48 @@ router.delete('/:id', courseController.delete);
  *               - {data}
  * */
 router.put('/:id', courseController.update);
+
+/**
+ * @swagger
+ * /courses/search/searchString:
+ *   get:
+ *     summary: Busca cursos por nombre
+ *     tags: [Courses]
+ *     description: Busca cursos cuyo nombre coincida con el término de búsqueda.
+ *     parameters:
+ *       - in: query
+ *         name: searchString
+ *         schema:
+ *           type: string
+ *         description: Término de búsqueda
+ *       - in: query
+ *         name: startAfter
+ *         schema:
+ *           type: string
+ *         description: ID del documento desde el que se debe comenzar la paginación.
+ *       - in: query
+ *         name: pageSize
+ *         schema:
+ *           type: integer
+ *         description: Número de documentos por página (por defecto, 10).
+ *     responses:
+ *       200:
+ *         description: Lista de cursos encontrados
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 courses:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Course'
+ *       404:
+ *         description: No se encontraron cursos
+ *       500:
+ *         description: Error al realizar la búsqueda
+ */
+router.get('/search/:searchString', courseController.search);
 
 //relaciones curso-Miembro
 /**

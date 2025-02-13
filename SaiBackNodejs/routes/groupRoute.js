@@ -1,15 +1,8 @@
 'use strict';
 
 const express = require('express');
-const router = express.Router();
 const groupController = require('../controllers/groupController');
-
-/**
- * @swagger
- * tags:
- *   name: Groups
- *   description: The groups managing API
- */
+const router = express.Router();
 
 /**
  * @swagger

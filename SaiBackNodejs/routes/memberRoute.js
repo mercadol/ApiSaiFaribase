@@ -6,13 +6,6 @@ const router = express.Router();
 
 /**
  * @swagger
- * tags:
- *   name: Members
- *   description: The members managing API
- */
-
-/**
- * @swagger
  * /members:
  *   get:
  *     summary: Obtiene la lista de miembros
@@ -303,4 +296,3 @@ router.put('/:id', memberController.update);
 router.get('/search/:searchString', memberController.search);
 
 module.exports = router;
-

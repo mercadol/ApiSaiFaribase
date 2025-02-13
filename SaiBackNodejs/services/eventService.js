@@ -15,7 +15,7 @@ const eventService = {
   },
 
   create: async (eventData) => {
-    return EventService.create(eventData.id, eventData);
+    return EventService.create( eventData);
   },
 
   update: async (id, updatedData) => {

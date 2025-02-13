@@ -15,7 +15,7 @@ const courseService = {
   },
 
   create: async (courseData) => {
-    return CourseService.create(courseData.id, courseData);
+    return CourseService.create(courseData);
   },
 
   update: async (id, updatedData) => {
@@ -29,11 +29,6 @@ const courseService = {
   // Relation operations
   addMemberToCourse: async (memberId, courseId, data = {}) => {
     return courseRelations.addRelation(memberId, courseId, data);
-  },
-
-  addMemberToCourse: async (memberId, courseId, data = {}) => {
-    const service = new CourseService();
-    return service.addMemberToCourse(memberId, courseId, data);
   },
 
   removeMemberFromCourse: async (memberId, courseId) => {

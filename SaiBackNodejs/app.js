@@ -2,7 +2,7 @@
 //cargar modulos de node para crear servidor
 const express = require("express");
 const bodyParser = require("body-parser");
-const loadRoutes = require("./routerLoader");
+const loadRoutes = require("./routes/routerLoader");
 const errorHandler = require("./middlewares/errorHandler");
 const ApiError = require('./utils/ApiError');
 const setupSwagger = require("./swagger");
@@ -30,13 +30,13 @@ app.use((req, res, next) => {
 //Añadir prefijos o rutas
 
 app.use("/api", loadRoutes); // todas las rutas inician por API
+// Configurar Swagger
+setupSwagger(app);
 app.use(errorHandler);
 // Middleware para manejar rutas no encontradas (404)
 app.use((req, res, next) => {
   next(new ApiError(404, "Route Not Found")); // Lanza un error 404
 });
-// Configurar Swagger
-setupSwagger(app);
 
 // exportar modulo
 module.exports = app;

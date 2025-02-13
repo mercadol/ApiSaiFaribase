@@ -13,7 +13,7 @@ const memberService = {
   },
 
   create: async (memberData) => {
-    return MemberService.create(memberData.id, memberData);
+    return MemberService.create( memberData);
   },
 
   update: async (id, updatedData) => {

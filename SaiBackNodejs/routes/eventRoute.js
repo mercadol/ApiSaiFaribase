@@ -1,15 +1,8 @@
 'use strict';
 
 const express = require('express');
-const router = express.Router();
 const eventController = require('../controllers/eventController');
-
-/**
- * @swagger
- * tags:
- *   name: Events
- *   description: The events managing API
- */
+const router = express.Router();
 
 /**
  * @swagger
@@ -179,6 +172,48 @@ router.delete('/:id', eventController.delete);
  *               - {data}
  * */
 router.put('/:id', eventController.update);
+
+/**
+ * @swagger
+ * /events/search/searchString:
+ *   get:
+ *     summary: Busca eventos por nombre
+ *     tags: [Events]
+ *     description: Busca eventos cuyo nombre coincida con el término de búsqueda.
+ *     parameters:
+ *       - in: query
+ *         name: searchString
+ *         schema:
+ *           type: string
+ *         description: Término de búsqueda
+ *       - in: query
+ *         name: startAfter
+ *         schema:
+ *           type: string
+ *         description: ID del documento desde el que se debe comenzar la paginación.
+ *       - in: query
+ *         name: pageSize
+ *         schema:
+ *           type: integer
+ *         description: Número de documentos por página (por defecto, 10).
+ *     responses:
+ *       200:
+ *         description: Lista de eventos encontrados
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 events:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Event'
+ *       404:
+ *         description: No se encontraron eventos
+ *       500:
+ *         description: Error al realizar la búsqueda
+ */
+router.get('/search/:searchString', eventController.search);
 
 //relaciones
 /**
