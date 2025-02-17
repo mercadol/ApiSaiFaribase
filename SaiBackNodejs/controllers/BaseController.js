@@ -71,7 +71,6 @@ class BaseController {
   async delete(req, res) {
     const { id } = req.params;
     const result = await this.service.delete(id);
-    console.log(result)
     if (!result) {
       throw new ApiError(404, `${this.entityName} no encontrado`); // Not Found
     }

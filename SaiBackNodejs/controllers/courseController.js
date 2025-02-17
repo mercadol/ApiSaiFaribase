@@ -44,7 +44,7 @@ class CourseController extends BaseController {
 
     return  data;
   }
-
+/*
   async addMember(req, res) {
     try {
       const {courseId} = req.params;
@@ -93,6 +93,7 @@ class CourseController extends BaseController {
       res.status(500).json({ error: error.message });
     }
   }
+  */
 }
 const courseController = new CourseController();
 
@@ -103,4 +104,3 @@ const courseController = new CourseController();
   courseController.getMemberCourses = courseController.relationController.getMemberEntities;
   
   module.exports = courseController;
-  //module.exports = new courseController();
