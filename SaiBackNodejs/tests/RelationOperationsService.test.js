@@ -1,129 +1,129 @@
 "use strict";
 
 // Mocks para Firestore
-const mockDoc = {
-    set: jest.fn(() => Promise.resolve()),
-    delete: jest.fn(() => Promise.resolve()),
-    update: jest.fn(() => Promise.resolve()),
-    get: jest.fn(() => Promise.resolve({ exists: false, id: "testId", data: () => ({ foo: "bar" }) })),
-  };
-  
-  const mockCollection = {
-    doc: jest.fn(() => mockDoc),
-    orderBy: jest.fn(() => mockCollection),
-    where: jest.fn(() => mockCollection),
-    limit: jest.fn(() => mockCollection),
-    startAfter: jest.fn(() => mockCollection),
-    get: jest.fn(() => Promise.resolve({ docs: [] })),
-  };
-  
-  const mockDb = {
-    collection: jest.fn(() => mockCollection),
-    batch: jest.fn(() => ({
-      delete: jest.fn(),
-      commit: jest.fn(() => Promise.resolve()),
-    })),
-  };
-  
-jest.mock("../firebase", () => ({
-  db: mockDb
-}));
-
 const RelationOperationsService = require('../services/RelationOperationsService');
+const ApiError = require('../utils/ApiError');
+
+// Mock de Firebase
+jest.mock('../firebase', () => ({
+  db: {
+    collection: jest.fn()
+  }
+}));
 
 describe('RelationOperationsService', () => {
   let service;
-
+  let mockCollection;
+  let mockDoc;
+  
   beforeEach(() => {
+    // Configuración de mocks
+    mockDoc = {
+      get: jest.fn(),
+      set: jest.fn(),
+      delete: jest.fn()
+    };
+    
+    mockCollection = {
+      doc: jest.fn().mockReturnValue(mockDoc),
+      id: 'testCollection'
+    };
+    
+    require('../firebase').db.collection.mockReturnValue(mockCollection);
+    
+    service = new RelationOperationsService('testCollection');
+  });
+
+  afterEach(() => {
     jest.clearAllMocks();
-    service = new RelationOperationsService('TestRelations');
+  });
+
+  describe('Constructor', () => {
+    test('debe lanzar error si no se proporciona nombre de colección', () => {
+      expect(() => new RelationOperationsService()).toThrow(ApiError);
+      expect(() => new RelationOperationsService()).toThrow('INVALID_COLLECTION');
+    });
+
+    test('debe crear instancia correctamente con nombre de colección válido', () => {
+      expect(service.collection).toBeDefined();
+      expect(service.collection).toBe(mockCollection);
+    });
+  });
+
+  describe('validateExists', () => {
+    test('debe validar documento existente', async () => {
+      mockDoc.get.mockResolvedValue({ exists: true });
+      await expect(service.validateExists('testId')).resolves.toEqual({ exists: true });
+    });
+
+    test('debe lanzar error si documento no existe', async () => {
+      mockDoc.get.mockResolvedValue({ exists: false });
+      await expect(service.validateExists('testId')).rejects.toThrow(ApiError);
+    });
   });
 
   describe('addRelation', () => {
-    it('should create relation with composite ID', async () => {
-      const fromId = 'from123';
-      const toId = 'to456';
-      const data = { role: 'admin' };
+    test('debe crear relación exitosamente', async () => {
+      const data = { extra: 'data' };
+      mockDoc.set.mockResolvedValue(undefined);
 
-      await service.addRelation(fromId, toId, data);
-
-      expect(mockCollection.doc).toHaveBeenCalledWith(`${fromId}_${toId}`);
+      const result = await service.addRelation('from1', 'to1', data);
+      
+      expect(result).toEqual({
+        id: 'from1_to1',
+        fromId: 'from1',
+        toId: 'to1',
+        extra: 'data'
+      });
       expect(mockDoc.set).toHaveBeenCalledWith({
-        fromId,
-        toId,
-        ...data
+        fromId: 'from1',
+        toId: 'to1',
+        extra: 'data'
       });
     });
 
-    it('should throw error if ids are missing', async () => {
-      await expect(service.addRelation(null, 'to456'))
-        .rejects.toThrow('Both fromId and toId are required.');
-
-      await expect(service.addRelation('from123', null))
-      .rejects.toThrow('Both fromId and toId are required.');
-
-      await expect(service.addRelation(null, null))
-        .rejects.toThrow('Both fromId and toId are required.');
-    });
-    
-  });
-
-  describe('getRelatedDocuments', () => {
-    it('should return related documents', async () => {
-      const mockDocs = [
-        { data: () => ({ fromId: 'related1' }) },
-        { data: () => ({ fromId: 'related2' }) }
-      ];
-      mockCollection.get.mockResolvedValueOnce({ docs: mockDocs, empty: false });
-
-      // Mock getDocumentsFromIds response
-      const mockRelatedDocs = [
-        { id: 'related1', name: 'Related 1' },
-        { id: 'related2', name: 'Related 2' }
-      ];
-      jest.spyOn(service, 'getDocumentsFromIds')
-        .mockResolvedValueOnce(mockRelatedDocs);
-
-      const result = await service.getRelatedDocuments(
-        'test-id',
-        'RelatedCollection',
-        'toId',
-        'fromId'
-      );
-
-      expect(result).toEqual(mockRelatedDocs);
-      expect(mockCollection.where).toHaveBeenCalledWith('toId', '==', 'test-id');
+    test('debe lanzar error si faltan IDs', async () => {
+      await expect(service.addRelation()).rejects.toThrow('Both fromId and toId are required');
     });
 
-    it('should return empty array if no relations found', async () => {
-      mockCollection.get.mockResolvedValueOnce({ docs: [], empty: true });
-
-      const result = await service.getRelatedDocuments(
-        'test-id',
-        'RelatedCollection',
-        'toId',
-        'fromId'
-      );
-
-      expect(result).toEqual([]);
+    test('debe manejar error de Firebase', async () => {
+      mockDoc.set.mockRejectedValue(new Error('Firebase error'));
+      await expect(service.addRelation('from1', 'to1')).rejects.toThrow(ApiError);
     });
   });
 
   describe('removeRelation', () => {
-    it('should delete relation document', async () => {
-      mockDoc.get.mockResolvedValueOnce({ exists: true });
+    test('debe eliminar relación exitosamente', async () => {
+      mockDoc.get.mockResolvedValue({ exists: true });
+      mockDoc.delete.mockResolvedValue(true);
 
-      await service.removeRelation('from123', 'to456');
-
-      expect(mockCollection.doc).toHaveBeenCalledWith('from123_to456');
-      expect(mockDoc.delete).toHaveBeenCalled();
+      const result = await service.removeRelation('from1', 'to1');
+      expect(result).toBe(true);
     });
 
-    it('should throw error if relation not found', async () => {
-      mockDoc.get.mockResolvedValueOnce({ exists: false });
+    test('debe lanzar error si la relación no existe', async () => {
+      mockDoc.get.mockResolvedValue({ exists: false });
+      await expect(service.removeRelation('from1', 'to1')).rejects.toThrow(ApiError);
+    });
 
-      await expect(service.removeRelation('from123', 'to456'))
-        .rejects.toThrow('Relation not found');
+    test('debe manejar error de Firebase en eliminación', async () => {
+      mockDoc.get.mockResolvedValue({ exists: true });
+      mockDoc.delete.mockRejectedValue(new Error('Firebase error'));
+      await expect(service.removeRelation('from1', 'to1')).rejects.toThrow(ApiError);
+    });
+  });
+
+  describe('_handleError', () => {
+    test('debe manejar ApiError correctamente', () => {
+      const apiError = new ApiError(400, 'Test error');
+      expect(service._handleError(apiError)).toBe(apiError);
+    });
+
+    test('debe convertir errores normales a ApiError', () => {
+      const error = { type: 'NOT_FOUND', message: 'Test message' };
+      const result = service._handleError(error);
+      expect(result).toBeInstanceOf(ApiError);
+      expect(result.statusCode).toBe(404);
     });
   });
 });

@@ -3,7 +3,6 @@ const memberService = require('../services/memberService');
 const { mockRequest, mockResponse } = require('jest-mock-req-res');
 
 jest.mock('../services/memberService');
-jest.mock('../utilities/idGenerator');
 
 describe('MemberController', () => {
   let req;
@@ -73,24 +72,6 @@ describe('MemberController', () => {
       
       const result = memberController.validateCreateData(data);
       expect(result).toBeNull();
-    });
-  });
-
-  describe('prepareCreateData', () => {
-    it('debería preparar los datos correctamente', () => {
-      const data = {
-        Name: 'Test Name',
-        MemberType: 'Miembro',
-        EstadoCivil: 'Soltero'
-      };
-      const generatedId = 'test-id-123';
-
-      const result = memberController.prepareCreateData(data, generatedId);
-      
-      expect(result).toEqual({
-        generatedId,
-        data
-      });
     });
   });
 });

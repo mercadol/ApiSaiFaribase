@@ -7,6 +7,7 @@ const memberRoute = require('./memberRoute');
 const groupRoute = require('./groupRoute');
 const courseRoute = require('./courseRoute');
 const eventRoute = require('./eventRoute');
+const userRoute = require('./userRoute');
 const asyncHandler = require("../middlewares/asyncHandler");
 
 
@@ -34,6 +35,14 @@ loadRouter.get('/test', (req, res) => {
       message: "Soy la accion test de mi controlador",
     });
   });
+
+  /**
+ * @swagger
+ * tags:
+ *   name: Authentication
+ *   description: API para la gestión de usuarios y autenticación
+ */
+loadRouter.use('/auth', asyncHandler(userRoute));
 
 /**
  * @swagger
