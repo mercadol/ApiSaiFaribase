@@ -12,7 +12,7 @@ class MemberService extends BaseOperationsService {
   async search(searchString, startAfterDoc = null, pageSize = 10) {
     try {
       let query = this.collection
-        .where("Name", ">=", searchString)
+        .where("Name", ">=", searchString) 
         .where("Name", "<=", searchString + "\uf8ff")
         .orderBy("Name")
         .limit(pageSize);
@@ -61,18 +61,8 @@ class CourseService extends BaseOperationsService {
 
   async validateMemberExists(memberId, transaction) {
     try {
-      const memberDoc = await db.collection("Member").doc(memberId);
-      const member = transaction
-        ? await transaction.get(memberDoc)
-        : await memberDoc.get();
-
-      if (!member.exists) {
-        throw {
-          type: "NOT_FOUND",
-          message: `Member ${memberId} not found`,
-        };
-      }
-      return member;
+      const memberDoc = await this.validateExists(memberId, transaction);
+      return memberDoc;
     } catch (error) {
       throw this._handleError(error);
     }

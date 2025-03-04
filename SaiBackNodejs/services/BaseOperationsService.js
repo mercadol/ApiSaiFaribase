@@ -86,9 +86,9 @@ class BaseOperationsService {
     }
   }
 
-  async search(searchString, startAfterId = null, pageSize = 10, searchField = "Nombre") {
+  async search(searchString, startAfterDoc = null, pageSize = 10, searchField = "Nombre") {
     try {
-      const startAfterDoc = await this.getStartAfterDoc(startAfterId);
+      //const startAfterDoc = await this.getStartAfterDoc(startAfterId);
 
       let query = this.collection
         .where(searchField, ">=", searchString)
@@ -100,8 +100,10 @@ class BaseOperationsService {
 
       const snapshot = await query.get();
       const items = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      
+      return { items, lastDoc: snapshot.docs[snapshot.docs.length - 1] };
 
-      return this.formatPaginationResponse(items, snapshot.docs[snapshot.docs.length - 1], pageSize);
+      //return this.formatPaginationResponse(items, snapshot.docs[snapshot.docs.length - 1], pageSize);
     } catch (error) {
       console.error(`Error buscando en ${this.collection.id}:`, error);
       throw new Error("Error al buscar datos. Inténtelo más tarde.");

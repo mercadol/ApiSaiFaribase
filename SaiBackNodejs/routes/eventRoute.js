@@ -100,11 +100,15 @@ router.get('/:id', eventController.getById);
  *             schema:
  *               type: object
  *               properties:
- *                 id:
+ *                 Nombre:
  *                   type: string
- *                   description: El ID del evento creado.
+ *                   description: El Nombre del Evento creado.
+ *                 Descripcion:
+ *                   type: string
+ *                   description: Breve descripcion del Evento.
  *             example:
- *               id: "evento1"
+ *               Nombre: "Concierto"
+ *               Descripcion: "Concierto de jovenes de este sabado"
  *       400:
  *         description: Error de validación por campos faltantes o inválidos.
  *         content:
@@ -218,13 +222,13 @@ router.get('/search/:searchString', eventController.search);
 //relaciones
 /**
  * @swagger
- * /events/{eventId}/members:
+ * /events/{entityId}/members:
  *   post:
  *     summary: Agrega un miembro a un evento
  *     tags: [Events]
  *     parameters:
  *       - in: path
- *         name: eventId
+ *         name: entityId
  *         required: true
  *         schema:
  *           type: string
@@ -246,17 +250,17 @@ router.get('/search/:searchString', eventController.search);
  *       500:
  *         description: Error interno del servidor
  */
-router.post('/:eventId/members', eventController.addMember);
+router.post('/:entityId/members', eventController.addMember);
 
 /**
  * @swagger
- * /events/{eventId}/members/{memberId}:
+ * /events/{entityId}/members/{memberId}:
  *   delete:
  *     summary: Elimina un miembro de un evento
  *     tags: [Events]
  *     parameters:
  *       - in: path
- *         name: eventId
+ *         name: entityId
  *         required: true
  *         schema:
  *           type: string
@@ -273,17 +277,17 @@ router.post('/:eventId/members', eventController.addMember);
  *       500:
  *         description: Error interno del servidor
  */
-router.delete('/:eventId/members/:memberId', eventController.removeMember);
+router.delete('/:entityId/members/:memberId', eventController.removeMember);
 
 /**
  * @swagger
- * /events/{eventId}/members:
+ * /events/{entityId}/members:
  *   get:
  *     summary: Obtiene la lista de miembros de un evento
  *     tags: [Events]
  *     parameters:
  *       - in: path
- *         name: eventId
+ *         name: entityId
  *         required: true
  *         schema:
  *           type: string
@@ -294,7 +298,7 @@ router.delete('/:eventId/members/:memberId', eventController.removeMember);
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/:eventId/members', eventController.getEventMembers);
+router.get('/:entityId/members', eventController.getEventMembers);
 
 /**
  * @swagger

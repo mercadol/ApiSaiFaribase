@@ -50,7 +50,7 @@ const groupController = new GroupController();
 // Delegar métodos de relaciones
 groupController.addMember = groupController.relationController.addMember;
 groupController.removeMember = groupController.relationController.removeMember;
-groupController.getGroupMembers = groupController.relationController.getEntityMembers;
-groupController.getMemberGroups = groupController.relationController.getMemberEntities;
+groupController.getEntityMembers = groupController.relationController.getEntityMembers;
+groupController.getMemberEntities = groupController.relationController.getMemberEntities;
 
 module.exports = groupController;

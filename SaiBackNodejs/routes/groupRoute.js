@@ -100,11 +100,15 @@ router.get('/:id', groupController.getById);
  *             schema:
  *               type: object
  *               properties:
- *                 id:
+ *                 Nombre:
  *                   type: string
- *                   description: El ID del grupo creado.
+ *                   description: El Nombre del grupo creado.
+ *                 Descripcion:
+ *                   type: string
+ *                   description: Breve descripcion del grupo o su finalidad.
  *             example:
- *               id: "grupo1"
+ *               Nombre: "Grupo de aseo"
+ *               Descripcion: "Grupo encargado de velar por el aseo de las instalaciones"
  *       400:
  *         description: Error de validación por campos faltantes o inválidos.
  *         content:
@@ -218,13 +222,13 @@ router.get('/search/:searchString', groupController.search);
 //relaciones
 /**
  * @swagger
- * /groups/{groupId}/members:
+ * /groups/{entityId}/members:
  *   post:
  *     summary: Agrega un miembro a un grupo
  *     tags: [Groups]
  *     parameters:
  *       - in: path
- *         name: groupId
+ *         name: entityId
  *         required: true
  *         schema:
  *           type: string
@@ -246,17 +250,17 @@ router.get('/search/:searchString', groupController.search);
  *       500:
  *         description: Error interno del servidor
  */
-router.post('/:groupId/members', groupController.addMember);
+router.post('/:entityId/members', groupController.addMember);
 
 /**
  * @swagger
- * /groups/{groupId}/members/{memberId}:
+ * /groups/{entityId}/members/{memberId}:
  *   delete:
  *     summary: Elimina un miembro de un grupo
  *     tags: [Groups]
  *     parameters:
  *       - in: path
- *         name: groupId
+ *         name: entityId
  *         required: true
  *         schema:
  *           type: string
@@ -273,17 +277,17 @@ router.post('/:groupId/members', groupController.addMember);
  *       500:
  *         description: Error interno del servidor
  */
-router.delete('/:groupId/members/:memberId', groupController.removeMember);
+router.delete('/:entityId/members/:memberId', groupController.removeMember);
 
 /**
  * @swagger
- * /groups/{groupId}/members:
+ * /groups/{entityId}/members:
  *   get:
  *     summary: Obtiene la lista de miembros de un grupo
  *     tags: [Groups]
  *     parameters:
  *       - in: path
- *         name: groupId
+ *         name: entityId
  *         required: true
  *         schema:
  *           type: string
@@ -294,7 +298,7 @@ router.delete('/:groupId/members/:memberId', groupController.removeMember);
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/:groupId/members', groupController.getGroupMembers);
+router.get('/:entityId/members', groupController.getEntityMembers);
 
 /**
  * @swagger
@@ -315,6 +319,6 @@ router.get('/:groupId/members', groupController.getGroupMembers);
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/members/:memberId/groups', groupController.getMemberGroups);
+router.get('/members/:memberId/groups', groupController.getEntityMembers);
 
 module.exports = router;

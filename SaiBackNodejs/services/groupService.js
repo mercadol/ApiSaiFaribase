@@ -31,11 +31,11 @@ const groupService = {
   },
   
   // Relation operations
-  addMemberToGroup: async (memberId, groupId, data = {}) => {
+  addMember: async (memberId, groupId, data = {}) => {
     return groupRelations.addRelation(memberId, groupId, data);
   },
 
-  removeMemberFromGroup: async (memberId, groupId) => {
+  removeMember: async (memberId, groupId) => {
     return groupRelations.removeRelation(memberId, groupId);
   },
 

@@ -100,11 +100,21 @@ router.get('/:id', courseController.getById);
  *             schema:
  *               type: object
  *               properties:
- *                 id:
+ *                 Nombre:
  *                   type: string
- *                   description: El ID del curso creado.
+ *                   description: El Nombre del Curso creado.
+ *                 Descripcion:
+ *                   type: string
+ *                   description: Breve descripcion del Curso.
+ *                 FechaInicio:
+ *                   type: Data
+ *                   description: Fecha de inicio del curso.
+ *                 FechaFin:
+ *                   type: Data
+ *                   description: Fecha clausura del curso.
  *             example:
- *               id: "curso1"
+ *               Nombre: "Grupo de aseo"
+ *               Descripcion: "Grupo encargado de velar por el aseo de las instalaciones"
  *       400:
  *         description: Error de validación por campos faltantes o inválidos.
  *         content:
@@ -218,13 +228,13 @@ router.get('/search/:searchString', courseController.search);
 //relaciones curso-Miembro
 /**
  * @swagger
- * /courses/{courseId}/members:
+ * /courses/{entityId}/members:
  *   post:
  *     summary: Agrega un miembro a un curso
  *     tags: [Courses]
  *     parameters:
  *       - in: path
- *         name: courseId
+ *         name: entityId
  *         required: true
  *         schema:
  *           type: string
@@ -246,17 +256,17 @@ router.get('/search/:searchString', courseController.search);
  *       500:
  *         description: Error interno del servidor
  */
-router.post('/:courseId/members', courseController.addMember);
+router.post('/:entityId/members', courseController.addMember);
 
 /**
  * @swagger
- * /courses/{courseId}/members/{memberId}:
+ * /courses/{entityId}/members/{memberId}:
  *   delete:
  *     summary: Elimina un miembro de un curso
  *     tags: [Courses]
  *     parameters:
  *       - in: path
- *         name: courseId
+ *         name: entityId
  *         required: true
  *         schema:
  *           type: string
@@ -273,17 +283,17 @@ router.post('/:courseId/members', courseController.addMember);
  *       500:
  *         description: Error interno del servidor
  */
-router.delete('/:courseId/members/:memberId', courseController.removeMember);
+router.delete('/:entityId/members/:memberId', courseController.removeMember);
 
 /**
  * @swagger
- * /courses/{courseId}/members:
+ * /courses/{entityId}/members:
  *   get:
  *     summary: Obtiene la lista de miembros de un curso
  *     tags: [Courses]
  *     parameters:
  *       - in: path
- *         name: courseId
+ *         name: entityId
  *         required: true
  *         schema:
  *           type: string
@@ -294,7 +304,7 @@ router.delete('/:courseId/members/:memberId', courseController.removeMember);
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/:courseId/members', courseController.getCourseMembers);
+router.get('/:entityId/members', courseController.getCourseMembers);
 
 /**
  * @swagger

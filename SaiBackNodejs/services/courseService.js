@@ -27,11 +27,11 @@ const courseService = {
   },
 
   // Relation operations
-  addMemberToCourse: async (memberId, courseId, data = {}) => {
+  addMember: async (memberId, courseId, data = {}) => {
     return courseRelations.addRelation(memberId, courseId, data);
   },
 
-  removeMemberFromCourse: async (memberId, courseId) => {
+  removeMember: async (memberId, courseId) => {
     return courseRelations.removeRelation(memberId, courseId);
   },
 

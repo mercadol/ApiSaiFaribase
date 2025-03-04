@@ -27,11 +27,11 @@ const eventService = {
   },
 
   // Relation operations
-  addMemberToEvent: async (memberId, eventId, data = {}) => {
+  addMember: async (memberId, eventId, data = {}) => {
     return eventRelations.addRelation(memberId, eventId, data);
   },
 
-  removeMemberFromEvent: async (memberId, eventId) => {
+  removeMember: async (memberId, eventId) => {
     return eventRelations.removeRelation(memberId, eventId);
   },
 
