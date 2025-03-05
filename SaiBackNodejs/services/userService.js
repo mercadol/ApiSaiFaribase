@@ -1,6 +1,9 @@
+// userService.js
 "use strict";
 
-const { db, auth } = require('../firebase');
+const { auth } = require('../firebase');
+const firebase = require('../firebase');
+const UserModel = require('../models/UserModel');
 
 const userService = {
   // Crear un nuevo usuario con correo electrónico y contraseña
@@ -9,10 +12,9 @@ const userService = {
       const userCredential = await auth.createUserWithEmailAndPassword(email, password);
       const user = userCredential.user;
 
-      // Guarda información adicional del usuario en Firestore (opcional)
-      await db.collection('users').doc(user.uid).set({
-        email: user.email,
-      });
+      // Guarda información adicional del usuario en Firestore
+      const userModel = new UserModel({ uid: user.uid, email: user.email });
+      await userModel.save();
 
       return user;
     } catch (error) {
@@ -33,7 +35,7 @@ const userService = {
   // Iniciar sesión con Google
   signInWithGoogle: async () => {
     try {
-      const provider = new firebase.auth.GoogleAuthProvider(); // Asegúrate de tener firebase importado
+      const provider = new firebase.auth.GoogleAuthProvider();
       const userCredential = await auth.signInWithPopup(provider);
       return userCredential.user;
     } catch (error) {
@@ -68,14 +70,17 @@ const userService = {
         throw new Error('Token no proporcionado');
       }
 
-      const decodedToken = await auth.verifyIdToken(token);
-      const user = await auth.getUser(decodedToken.uid);
-      return user;
+      // Utiliza el modelo para obtener el usuario actual
+      return await UserModel.getCurrentUser(token);
     } catch (error) {
       throw error;
     }
   },
 
+  // Obtener información adicional del usuario por UID
+  getUserByUid: async (uid) => {
+    return await UserModel.findByUid(uid);
+  },
 };
 
 module.exports = userService;
