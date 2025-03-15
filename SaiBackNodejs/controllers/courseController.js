@@ -44,56 +44,6 @@ class CourseController extends BaseController {
 
     return  data;
   }
-/*
-  async addMember(req, res) {
-    try {
-      const {courseId} = req.params;
-      const { memberId } = req.body;
-      const data = req.body.data || {};
-
-      await this.executeInTransaction([
-        t => this.service.validateMemberExists(memberId, t),
-        t => this.service.validateCourseExists(courseId, t),
-        t => this.service.addMemberToCourse(memberId, courseId, data, t)
-      ]);
-
-      res.status(201).json({ message: 'Member added successfully' });
-    } catch (error) {
-      const { status, body } = this.errorHandler(error, this.entityName);
-      res.status(status).json(body);
-    }
-  }
-
-  async removeMember(req, res) {
-    try {
-      const { memberId, courseId } = req.params;
-      await courseService.removeMemberFromCourse(memberId, courseId);
-      res.status(200).json({ message: 'Member removed successfully' });
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  }
-
-  async getCourseMembers(req, res) {
-    try {
-      const { courseId } = req.params;
-      const members = await courseService.getCourseMembers(courseId);
-      res.status(200).json(members);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  }
-
-  async getMemberCourses(req, res) {
-    try {
-      const { memberId } = req.params;
-      const courses = await courseService.getMemberCourses(memberId);
-      res.status(200).json(courses);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  }
-  */
 }
 const courseController = new CourseController();
 

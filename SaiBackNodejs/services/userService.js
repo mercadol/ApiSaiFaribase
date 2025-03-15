@@ -1,8 +1,7 @@
-// userService.js
+// services/userService.js
 "use strict";
 
 const { auth } = require('../firebase');
-const firebase = require('../firebase');
 const UserModel = require('../models/UserModel');
 
 const userService = {
@@ -32,16 +31,6 @@ const userService = {
     }
   },
 
-  // Iniciar sesión con Google
-  signInWithGoogle: async () => {
-    try {
-      const provider = new firebase.auth.GoogleAuthProvider();
-      const userCredential = await auth.signInWithPopup(provider);
-      return userCredential.user;
-    } catch (error) {
-      throw error;
-    }
-  },
 
   // Iniciar sesión de forma anónima
   signInAnonymously: async () => {
@@ -65,7 +54,7 @@ const userService = {
   // Obtener información del usuario actual (protegido por middleware de autenticación)
   getCurrentUser: async (req) => {
     try {
-      const token = req.headers.authorization?.split('Bearer ')[1]; // Obtiene el token del encabezado
+      const token = req.headers?.authorization?.split('Bearer ')[1]; // Validación mejorada
       if (!token) {
         throw new Error('Token no proporcionado');
       }

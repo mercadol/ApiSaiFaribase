@@ -22,7 +22,6 @@ class UserModel {
         // Agrega otros campos según sea necesario
       });
     } catch (error) {
-      console.error("Error guardando el usuario:", error);
       throw new ApiError(500, "Error al guardar el usuario. Inténtelo más tarde.");
     }
   }
@@ -36,10 +35,13 @@ class UserModel {
       }
       return new UserModel({ uid: doc.id, ...doc.data() });
     } catch (error) {
-      console.error("Error buscando el usuario:", error);
+      // Reenviar errores ApiError sin modificarlos
+      if (error instanceof ApiError) {
+        throw error;
+      }
       throw new ApiError(500, "Error al buscar el usuario. Inténtelo más tarde.");
     }
-  }
+  }  
 
   // Método estático para obtener el usuario actual
   static async getCurrentUser(token) {
@@ -48,7 +50,6 @@ class UserModel {
       const user = await auth.getUser(decodedToken.uid);
       return new UserModel({ uid: user.uid, email: user.email });
     } catch (error) {
-      console.error("Error obteniendo el usuario actual:", error);
       throw new ApiError(500, "Error al obtener el usuario actual. Inténtelo más tarde.");
     }
   }

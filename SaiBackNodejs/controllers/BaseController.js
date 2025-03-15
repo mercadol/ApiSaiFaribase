@@ -23,14 +23,12 @@ class BaseController {
   }
 
   async getAll(req, res, next) {
-    try {
+    
       const pageSize = parseInt(req.query.pageSize) || 10;
       const startAfterId = req.query.startAfter || null;
       const result = await this.service.getAll(startAfterId, pageSize);
       res.status(200).json(result);
-    } catch (error) {
-      next(error);
-    }
+    
   }
 
   async getById(req, res) {
@@ -43,7 +41,7 @@ class BaseController {
   }
 
   async create(req, res) {
-    const data = req.body;
+    const data = this.prepareCreateData(req.body);
 
     // Validaciones específicas antes de crear
     const validationError = this.validateCreateData(data);

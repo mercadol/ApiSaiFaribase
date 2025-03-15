@@ -1,5 +1,5 @@
-const RelationController = require('../controllers/RelationController');
-const ApiError = require('../utils/ApiError');
+const RelationController = require('../../controllers/RelationController');
+const ApiError = require('../../utils/ApiError');
 
 describe('RelationController', () => {
   let controller;

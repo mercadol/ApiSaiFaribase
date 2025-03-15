@@ -3,6 +3,7 @@
 const express = require('express');
 const memberController = require('../controllers/memberController');
 const router = express.Router();
+const asyncHandler = require("../middlewares/asyncHandler");
 
 /**
  * @swagger
@@ -44,7 +45,7 @@ const router = express.Router();
  *       500:
  *         description: Error al obtener los miembros
  */
-router.get('/', (req, res, next) => memberController.getAll(req, res, next));
+router.get('/', asyncHandler((req, res, next) => memberController.getAll(req, res, next)));
 
 /**
  * @swagger

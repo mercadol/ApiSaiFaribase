@@ -1,4 +1,4 @@
-// memberController.js
+// controller/memberController.js
 'use strict';
 
 const BaseController = require('./BaseController');
@@ -13,18 +13,27 @@ class memberController extends BaseController {
     });
   }
 
-
+  validateUpdateData(data) {
+    // Implementa validaciones similares a las de create
+    if (data.Nombre && (data.Nombre.length < 3 || data.Nombre.length > 50)) {
+      return 'El campo Nombre debe tener entre 3 y 50 caracteres';
+    }
+    // Agrega más validaciones según sea necesario
+    return null;
+  }  
   validateCreateData(data) {
     const validMemberTypes = ['Miembro', 'Visitante', 'Bautizado'];
     const validEstadosCiviles = ['Soltero', 'Casado', 'Divorciado', 'Viudo'];
 
-    if (!data.Name) return 'El campo Name es obligatorio';
-    if (data.Name.length < 3 || data.Name.length > 50) {
-      return 'El campo Name debe tener entre 3 y 50 caracteres';
+    if (!data.Nombre) return 'El campo Nombre es obligatorio';
+    if (data.Nombre.length < 3 || data.Nombre.length > 50) {
+      return 'El campo Nombre debe tener entre 3 y 50 caracteres';
     }
 
-    if (!validMemberTypes.includes(data.MemberType)) {
-      return `MemberType debe ser: ${validMemberTypes.join(', ')}`;
+    if (!validMemberTypes.includes(data.TipoMiembro)) {
+      console.log("data: ",data);
+      console.log("tipoMiembro: ", data.TipoMiembro);
+      return `TipoMiembro debe ser: ${validMemberTypes.join(', ')}`;
     }
 
     if (data.EstadoCivil && !validEstadosCiviles.includes(data.EstadoCivil)) {
@@ -42,7 +51,6 @@ class memberController extends BaseController {
     
     for (let key in data) {
       if (data[key] === null || data[key] === undefined) {
-      
         // Si es null o undefined, lo cambiamos por una cadena vacía
         data[key] = "";
       } else if (typeof data[key] === 'string') {
@@ -51,9 +59,8 @@ class memberController extends BaseController {
       }
     }
 
-    return  data;
-
+    return data;
   }
-
 }
+
 module.exports = new memberController();

@@ -1,8 +1,8 @@
-const memberController = require('../controllers/memberController');
-const memberService = require('../services/memberService');
+const memberController = require('../../controllers/memberController');
+const memberService = require('../../services/memberService');
 const { mockRequest, mockResponse } = require('jest-mock-req-res');
 
-jest.mock('../services/memberService');
+jest.mock('../../services/memberService');
 
 describe('MemberController', () => {
   let req;
@@ -17,33 +17,33 @@ describe('MemberController', () => {
   describe('validateCreateData', () => {
     it('debería validar nombre requerido', () => {
       const result = memberController.validateCreateData({});
-      expect(result).toBe('El campo Name es obligatorio');
+      expect(result).toBe('El campo Nombre es obligatorio');
     });
 
     it('debería validar longitud del nombre', () => {
-      const shortName = { Name: 'ab', MemberType: 'Miembro' };
-      const longName = { Name: 'a'.repeat(51), MemberType: 'Miembro' };
+      const shortName = { Nombre: 'ab', TipoMiembro: 'Miembro' };
+      const longName = { Nombre: 'a'.repeat(51), TipoMiembro: 'Miembro' };
       
       expect(memberController.validateCreateData(shortName))
-        .toBe('El campo Name debe tener entre 3 y 50 caracteres');
+        .toBe('El campo Nombre debe tener entre 3 y 50 caracteres');
       expect(memberController.validateCreateData(longName))
-        .toBe('El campo Name debe tener entre 3 y 50 caracteres');
+        .toBe('El campo Nombre debe tener entre 3 y 50 caracteres');
     });
 
     it('debería validar tipo de miembro', () => {
       const data = {
-        Name: 'Test Name',
-        MemberType: 'InvalidType'
+        Nombre: 'Test Name',
+        TipoMiembro: 'InvalidType'
       };
       
       const result = memberController.validateCreateData(data);
-      expect(result).toBe('MemberType debe ser: Miembro, Visitante, Bautizado');
+      expect(result).toBe('TipoMiembro debe ser: Miembro, Visitante, Bautizado');
     });
 
     it('debería validar estado civil', () => {
       const data = {
-        Name: 'Test Name',
-        MemberType: 'Miembro',
+        Nombre: 'Test Name',
+        TipoMiembro: 'Miembro',
         EstadoCivil: 'InvalidStatus'
       };
       
@@ -53,8 +53,8 @@ describe('MemberController', () => {
 
     it('debería validar email', () => {
       const data = {
-        Name: 'Test Name',
-        MemberType: 'Miembro',
+        Nombre: 'Test Name',
+        TipoMiembro: 'Miembro',
         Email: 'invalid-email'
       };
       
@@ -64,8 +64,8 @@ describe('MemberController', () => {
 
     it('debería aceptar datos válidos', () => {
       const data = {
-        Name: 'Test Name',
-        MemberType: 'Miembro',
+        Nombre: 'Test Name',
+        TipoMiembro: 'Visitante',
         EstadoCivil: 'Soltero',
         Email: 'test@example.com'
       };

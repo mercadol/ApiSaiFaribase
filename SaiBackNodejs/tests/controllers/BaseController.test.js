@@ -1,9 +1,9 @@
 // tests/BaseController.test.js
-const BaseController = require("../controllers/BaseController");
+const BaseController = require("../../controllers/BaseController");
 const { mockRequest, mockResponse } = require("jest-mock-req-res");
-const ApiError = require("../utils/ApiError"); // Importa ApiError
+const ApiError = require("../../utils/ApiError"); // Importa ApiError
 
-jest.mock("../firebase", () => ({})); // Mock vacío
+jest.mock("../../firebase", () => ({})); // Mock vacío
 
 // Creamos una subclase de BaseController que implementa los métodos abstractos
 class TestController extends BaseController {
@@ -117,8 +117,8 @@ describe("BaseController", () => {
 
       await controller.create(req, res);
 
-      expect(controller.validateCreateData).toHaveBeenCalledWith(mockData);
-      expect(service.create).toHaveBeenCalledWith(mockData);
+      expect(controller.validateCreateData).toHaveBeenCalledWith({ data: mockData });
+      expect(service.create).toHaveBeenCalledWith({ data: mockData });
       expect(res.status).toHaveBeenCalledWith(201);
       expect(res.json).toHaveBeenCalledWith({ id: 1, ...mockData });
     });

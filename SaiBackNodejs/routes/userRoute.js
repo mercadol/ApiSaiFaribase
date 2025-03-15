@@ -3,7 +3,7 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
-const authenticate = require('../middleware/authenticate');
+const authenticate = require('../middlewares/authenticate');
 
 
 /**
@@ -63,20 +63,6 @@ router.post('/signup', userController.createUser);
  *         description: Error interno del servidor
  */
 router.post('/signin', userController.signIn);
-
-/**
- * @swagger
- * /auth/signin/google:
- *   post:
- *     summary: Iniciar sesión con Google
- *     tags: [Authentication]
- *     responses:
- *       200:
- *         description: Inicio de sesión con Google exitoso
- *       500:
- *         description: Error interno del servidor
- */
-router.post('/signin/google', userController.signInWithGoogle);
 
 /**
  * @swagger

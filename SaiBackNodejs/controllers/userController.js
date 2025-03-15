@@ -47,16 +47,6 @@ const userController = {
     }
   },
 
-  // Iniciar sesión con Google
-  signInWithGoogle: async (req, res) => {
-    try {
-      const user = await userService.signInWithGoogle();
-      res.json(user);
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
-  },
-
   // Iniciar sesión de forma anónima
   signInAnonymously: async (req, res) => {
     try {

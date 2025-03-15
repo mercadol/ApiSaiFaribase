@@ -1,58 +1,72 @@
+// services/evenServices.js
 "use strict";
 
-const { EventService, MemberRelationService } = require("./EntityService");
-
-const eventRelations = new MemberRelationService("MemberEvent");
+const EventModel = require("../models/EventModel");
 
 const eventService = {
   // Base operations
-  getAll: async (startAfterDoc = null, pageSize = 10) => {
-    return EventService.getAll(startAfterDoc, pageSize, "Nombre");
+  getAll: async (startAfterId = null, pageSize = 10) => {
+    return EventModel.findAll(startAfterId, pageSize);
   },
 
   getById: async (id) => {
-    return EventService.getById(id);
+    return EventModel.findById(id);;
   },
 
   create: async (eventData) => {
-    return EventService.create( eventData);
+    
+    const event = new EventModel({
+      nombre: eventData.Nombre,
+      descripcion: eventData.Descripcion,
+      fecha: eventData.Fecha || new Date()
+    });
+    await event.save();
+    return event.id;
   },
 
   update: async (id, updatedData) => {
-    return EventService.update(id, updatedData);
+    const event = await EventModel.findById(id);
+    
+    // Actualizar propiedades
+    if (updatedData.Nombre) event.nombre = updatedData.Nombre;
+    if (updatedData.Descripcion) event.descripcion = updatedData.Descripcion;
+    if (updatedData.Fecha) event.fecha = updatedData.Fecha;
+    
+    await event.save();
+    return event;
   },
 
   delete: async (id) => {
-    return EventService.delete(id);
+    const event = await EventModel.findById(id);
+    await event.delete();
+    return true;
+  },
+
+  search: async (searchString, startAfterId = null, pageSize = 10) => {
+    return EventModel.search(searchString, startAfterId, pageSize);
   },
 
   // Relation operations
-  addMember: async (memberId, eventId, data = {}) => {
-    return eventRelations.addRelation(memberId, eventId, data);
+  addMember: async (memberId, eventId) => {
+    const event = await EventModel.findById(eventId);
+    await event.addMember(memberId);
+    return { eventId, memberId };
   },
 
   removeMember: async (memberId, eventId) => {
-    return eventRelations.removeRelation(memberId, eventId);
+    const event = await EventModel.findById(eventId);
+    await event.removeMember(memberId);
+    return true;
   },
 
   getEventMembers: async (eventId) => {
-    return eventRelations.getRelatedDocuments(
-      eventId,
-      "Member",
-      "toId",
-      "fromId"
-    );
+    return EventModel.getEventMembers(eventId);
   },
 
   getMemberEvents: async (memberId) => {
-    return eventRelations.getRelatedDocuments(
-      memberId,
-      "Event", 
-      "fromId",
-      "toId"
-    );
-  }
+    return EventModel.getMemberEvents(memberId);
+  },
+  
 };
 
 module.exports = eventService;
-

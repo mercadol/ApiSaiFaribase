@@ -1,58 +1,68 @@
+// services/courseService.js
 "use strict";
 
-const { CourseService, MemberRelationService } = require("./EntityService");
-
-const courseRelations = new MemberRelationService("MemberCourse");
+const CourseModel = require("../models/CourseModel");
 
 const courseService = {
-  // Base operations
-  getAll: async (startAfterDoc = null, pageSize = 10) => {
-    return CourseService.getAll(startAfterDoc, pageSize, "Nombre");
+  getAll: async (startAfterId = null, pageSize = 10) => {
+    return CourseModel.findAll(startAfterId, pageSize);
   },
 
   getById: async (id) => {
-    return CourseService.getById(id);
+    const course = await CourseModel.findById(id);
+    return course;
   },
 
   create: async (courseData) => {
-    return CourseService.create(courseData);
+    const course = new CourseModel({
+      nombre: courseData.Nombre,
+      descripcion: courseData.Descripcion,
+      fechaCreacion: courseData.FechaCreacion || new Date()
+    });
+    await course.save();
+    return course.id;
   },
 
   update: async (id, updatedData) => {
-    return CourseService.update(id, updatedData);
+    const course = await CourseModel.findById(id);
+    
+    // Actualizar propiedades
+    if (updatedData.Nombre) course.nombre = updatedData.Nombre;
+    if (updatedData.Descripcion) course.descripcion = updatedData.Descripcion;
+    
+    await course.save();
+    return course;
   },
 
   delete: async (id) => {
-    return CourseService.delete(id);
+    const course = await CourseModel.findById(id);
+    await course.delete();
+    return true;
   },
 
-  // Relation operations
-  addMember: async (memberId, courseId, data = {}) => {
-    return courseRelations.addRelation(memberId, courseId, data);
+  search: async (searchString, startAfterId = null, pageSize = 10) => {
+    return CourseModel.search(searchString, startAfterId, pageSize);
+  },
+
+  addMember: async (memberId, courseId) => {
+    const course = await CourseModel.findById(courseId);
+    await course.addMember(memberId);
+    return { courseId, memberId };
   },
 
   removeMember: async (memberId, courseId) => {
-    return courseRelations.removeRelation(memberId, courseId);
+    const course = await CourseModel.findById(courseId);
+    await course.removeMember(memberId);
+    return true;
   },
 
   getCourseMembers: async (courseId) => {
-    return courseRelations.getRelatedDocuments(
-      courseId,
-      "Member",
-      "toId",
-      "fromId"
-    );
+    return CourseModel.getCourseMembers(courseId);
   },
 
   getMemberCourses: async (memberId) => {
-    return courseRelations.getRelatedDocuments(
-      memberId,
-      "Course", 
-      "fromId",
-      "toId"
-    );
-  }
-
+    return CourseModel.getMemberCourses(memberId);
+  },
   
 };
 
