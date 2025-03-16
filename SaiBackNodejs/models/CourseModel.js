@@ -10,7 +10,7 @@ class CourseModel {
    */
   constructor(data) {
     this.id = data.id || null;
-    this.nombre = data.nombre || "";
+    this.Nombre = data.Nombre || "";
     this.descripcion = data.descripcion || "";
     this.fechaCreacion = data.fechaCreacion || new Date();
   }
@@ -22,7 +22,7 @@ class CourseModel {
   async save() {
     try {
       const courseData = {
-        nombre: this.nombre,
+        Nombre: this.Nombre,
         descripcion: this.descripcion,
         fechaCreacion: this.fechaCreacion,
       };
@@ -85,7 +85,7 @@ class CourseModel {
    */
   static async findAll(startAfterId = null, pageSize = 10) {
     try {
-      let query = db.collection("Course").orderBy("nombre").limit(pageSize);
+      let query = db.collection("Course").orderBy("Nombre").limit(pageSize);
       if (startAfterId) {
         const startAfterDoc = await db.collection("Course").doc(startAfterId).get();
         if (startAfterDoc.exists) {
@@ -101,14 +101,14 @@ class CourseModel {
     }
   }
 
-  // Método estático para buscar documento por nombre
+  // Método estático para buscar documento por Nombre
   static async search(searchString, startAfterId = null, pageSize = 10) {
     try {
       let query = db
         .collection("Course")
-        .where("nombre", ">=", searchString)
-        .where("nombre", "<=", searchString + "\uf8ff")
-        .orderBy("nombre")
+        .where("Nombre", ">=", searchString)
+        .where("Nombre", "<=", searchString + "\uf8ff")
+        .orderBy("Nombre")
         .limit(pageSize);
 
       if (startAfterId) {

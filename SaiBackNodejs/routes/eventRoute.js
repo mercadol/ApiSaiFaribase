@@ -181,9 +181,9 @@ router.put('/:id', eventController.update);
  * @swagger
  * /events/search/searchString:
  *   get:
- *     summary: Busca eventos por nombre
+ *     summary: Busca eventos por Nombre
  *     tags: [Events]
- *     description: Busca eventos cuyo nombre coincida con el término de búsqueda.
+ *     description: Busca eventos cuyo Nombre coincida con el término de búsqueda.
  *     parameters:
  *       - in: query
  *         name: searchString

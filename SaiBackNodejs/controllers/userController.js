@@ -1,10 +1,21 @@
+// controllers/userController.js
 "use strict";
 
 const userService = require('../services/userService');
 const validator = require('validator');
 
+/**
+ * Controlador para la gestión de usuarios.
+ */
 const userController = {
-  // Crear un nuevo usuario
+  /**
+   * Crea un nuevo usuario.
+   * Realiza validaciones sobre el email y contraseña antes de crear el usuario.
+   *
+   * @param {Object} req - Objeto de solicitud de Express.
+   * @param {Object} res - Objeto de respuesta de Express.
+   * @returns {Promise<void>}
+   */
   createUser: async (req, res) => {
     try {
       const { email, password } = req.body;
@@ -23,16 +34,22 @@ const userController = {
       const user = await userService.createUserWithEmailAndPassword(email, password);
       res.status(201).json(user); // 201 Created
     } catch (error) {
-      res.status(500).json({ message: error.message }); // Manejo de errores
+      res.status(500).json({ message: error.message });
     }
   },
 
-  // Iniciar sesión
+  /**
+   * Inicia sesión para un usuario existente utilizando email y contraseña.
+   *
+   * @param {Object} req - Objeto de solicitud de Express.
+   * @param {Object} res - Objeto de respuesta de Express.
+   * @returns {Promise<void>}
+   */
   signIn: async (req, res) => {
     try {
       const { email, password } = req.body;
 
-      // Validaciones (similares a createUser)
+      // Validaciones
       if (!email || !password) {
         return res.status(400).json({ message: 'Email y contraseña son requeridos' });
       }
@@ -47,7 +64,13 @@ const userController = {
     }
   },
 
-  // Iniciar sesión de forma anónima
+  /**
+   * Inicia sesión de forma anónima.
+   *
+   * @param {Object} req - Objeto de solicitud de Express.
+   * @param {Object} res - Objeto de respuesta de Express.
+   * @returns {Promise<void>}
+   */
   signInAnonymously: async (req, res) => {
     try {
       const user = await userService.signInAnonymously();
@@ -57,7 +80,13 @@ const userController = {
     }
   },
 
-  // Cerrar sesión
+  /**
+   * Cierra la sesión del usuario actual.
+   *
+   * @param {Object} req - Objeto de solicitud de Express.
+   * @param {Object} res - Objeto de respuesta de Express.
+   * @returns {Promise<void>}
+   */
   signOut: async (req, res) => {
     try {
       await userService.signOut();
@@ -67,7 +96,14 @@ const userController = {
     }
   },
 
-  // Obtener usuario actual (requiere middleware de autenticación)
+  /**
+   * Obtiene la información del usuario actual.
+   * Nota: Requiere que la petición haya pasado por un middleware de autenticación.
+   *
+   * @param {Object} req - Objeto de solicitud de Express.
+   * @param {Object} res - Objeto de respuesta de Express.
+   * @returns {Promise<void>}
+   */
   getCurrentUser: async (req, res) => {
     try {
       const user = await userService.getCurrentUser(req);
@@ -76,7 +112,6 @@ const userController = {
       res.status(500).json({ message: error.message });
     }
   },
-
 };
 
 module.exports = userController;

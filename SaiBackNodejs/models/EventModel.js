@@ -4,25 +4,31 @@
 const { db } = require("../firebase");
 const ApiError = require('../utils/ApiError');
 
+/**
+ * Modelo que representa un evento.
+ */
 class EventModel {
   /**
+   * Crea una instancia de EventModel.
+   *
    * @param {object} data - Datos del evento
    */
   constructor(data) {
     this.id = data.id || null;
-    this.nombre = data.nombre || "";
+    this.Nombre = data.Nombre || "";
     this.descripcion = data.descripcion || "";
     this.fecha = data.fecha || new Date();
   }
 
   /**
    * Método para guardar el evento en Firestore
-   * @returns {Promise<string>} - ID del evento creado
+   * @returns {Promise<string>} 
+   * @throws {ApiError} En caso de error al guardar el evento.
    */
   async save() {
     try {
       const eventData = {
-        nombre: this.nombre,
+        Nombre: this.Nombre,
         descripcion: this.descripcion,
         fecha: this.fecha,
       };
@@ -41,9 +47,10 @@ class EventModel {
   }
 
   /**
-   * Método para eliminar el evento de Firestore
-   * @param {string} id - ID del evento
-   * @returns {Promise<boolean>} - Confirmación de eliminación
+   * Método para eliminar el evento de Firestore.
+   *
+   * @returns {Promise<boolean>}
+   * @throws {ApiError} Si el ID no está especificado o si ocurre un error en la eliminación.
    */
   async delete() {
     if (!this.id) {
@@ -58,8 +65,10 @@ class EventModel {
 
   /**
    * Método estático para buscar evento por ID
-   * @param {string} id - ID del documento
-   * @returns {Promise<object>} - Documento encontrado
+   * @param {string} id - ID del documento.
+   *
+   * @returns {Promise<boolean>}
+   * @throws {ApiError} Si el ID no está especificado o si ocurre un error en la eliminación.
    */
   static async findById(id) {
     try {
@@ -78,14 +87,16 @@ class EventModel {
   }
 
   /**
-   * Método estático para buscar todos los eventos
-   * @param {number} pageSize - Tamaño de la página (por defecto 10)
-   * @param {string} startAfterId - ID del documento para paginación
-   * @returns {Promise<Array>} - Lista de documentos
+   * Obtiene todos los eventos con paginación.
+   *
+   * @param {string|null} startAfterId - ID para paginación.
+   * @param {number} pageSize - Número de documentos a retornar.
+   * @returns {Promise<EventModel[]>} Array de instancias de EventModel.
+   * @throws {ApiError} Si ocurre un error en la consulta.
    */
   static async findAll(startAfterId = null, pageSize = 10) {
     try {
-      let query = db.collection("Event").orderBy("nombre").limit(pageSize);
+      let query = db.collection("Event").orderBy("Nombre").limit(pageSize);
       if (startAfterId) {
         const startAfterDoc = await db.collection("Event").doc(startAfterId).get();
         if (startAfterDoc.exists) {
@@ -101,14 +112,22 @@ class EventModel {
     }
   }
 
-  // Método estático para buscar documento por nombre
+  /**
+   * Realiza una búsqueda de eventos por Nombre con paginación.
+   *
+   * @param {string} searchString - Cadena de búsqueda.
+   * @param {string|null} startAfterId - ID para paginación.
+   * @param {number} pageSize - Número de documentos a retornar.
+   * @returns {Promise<Object>} Objeto con los resultados y el último documento.
+   * @throws {ApiError} Si ocurre un error en la búsqueda.
+   */
   static async search(searchString, startAfterId = null, pageSize = 10) {
     try {
       let query = db
         .collection("Event")
-        .where("nombre", ">=", searchString)
-        .where("nombre", "<=", searchString + "\uf8ff")
-        .orderBy("nombre")
+        .where("Nombre", ">=", searchString)
+        .where("Nombre", "<=", searchString + "\uf8ff")
+        .orderBy("Nombre")
         .limit(pageSize);
 
       if (startAfterId) {
@@ -133,7 +152,13 @@ class EventModel {
     }
   }
 
-  // Método para agregar un miembro al evento
+  /**
+   * Agrega un miembro al evento.
+   *
+   * @param {string} memberId - ID del miembro a agregar.
+   * @returns {Promise<void>}
+   * @throws {ApiError} Si no se especifica el ID del evento o del miembro, o si ocurre un error.
+   */
   async addMember(memberId) {
     if (!this.id) {
       throw new ApiError(400, "ID del evento no especificado.");
@@ -148,12 +173,17 @@ class EventModel {
         memberId: memberId,
       });
     } catch (error) {
-        console.error("Error agregando miembro al evento:", error);
         throw new ApiError(500, "Error al agregar miembro al evento. Inténtelo más tarde.");
       }
     }
-  
-    // Método para eliminar un miembro del evento
+
+  /**
+   * Elimina un miembro del evento.
+   *
+   * @param {string} memberId - ID del miembro a eliminar.
+   * @returns {Promise<void>}
+   * @throws {ApiError} Si no se especifica el ID del evento o del miembro, o si ocurre un error.
+   */
     async removeMember(memberId) {
       if (!this.id) {
         throw new ApiError(400, "ID del evento no especificado.");
@@ -165,12 +195,17 @@ class EventModel {
         const relationId = `${this.id}_${memberId}`;
         await db.collection("EventMember").doc(relationId).delete();
       } catch (error) {
-        console.error("Error eliminando miembro del evento:", error);
         throw new ApiError(500, "Error al eliminar miembro del evento. Inténtelo más tarde.");
       }
     }
   
-    // Método para obtener todos los miembros de un evento
+  /**
+   * Obtiene todos los IDs de miembros que pertenecen a un evento.
+   *
+   * @param {string} eventId - ID del evento.
+   * @returns {Promise<string[]>} Array de IDs de miembros.
+   * @throws {ApiError} Si no se especifica el ID del evento o si ocurre un error en la consulta.
+   */
     static async getEventMembers(eventId) {
       if (!eventId) {
         throw new ApiError(400, "ID del evento no especificado.");
@@ -180,11 +215,17 @@ class EventModel {
         const members = snapshot.docs.map(doc => doc.data().memberId);
         return members; // Devuelve una lista de IDs de miembros
       } catch (error) {
-        console.error("Error obteniendo miembros del evento:", error);
         throw new ApiError(500, "Error al obtener miembros del evento. Inténtelo más tarde.");
       }
     }
 
+  /**
+   * Obtiene todos los eventos a los que pertenece un miembro.
+   *
+   * @param {string} memberId - ID del miembro.
+   * @returns {Promise<EventModel[]>} Array de instancias de EventModel.
+   * @throws {ApiError} Si no se especifica el ID del miembro o si ocurre un error en la consulta.
+   */
     static async getMemberEvents (memberId) {
       if (!memberId) {
         throw new ApiError(400, "ID del miembro no especificado.");
@@ -199,7 +240,6 @@ class EventModel {
           const event = await EventModel.findById(eventId);
           events.push(event);
         }
-        
         return events;
       } catch (error) {
         throw new ApiError(500, `Error al obtener eventos del miembro: ${error}, Inténtelo más tarde.`);

@@ -1,5 +1,15 @@
+// middlewares/authenticate.js
 const { auth } = require('../firebase');
 
+/**
+ * Middleware de autenticación.
+ * Verifica el token de autorización en el header y añade la información del usuario a la solicitud.
+ *
+ * @param {Object} req - Objeto de la solicitud.
+ * @param {Object} res - Objeto de la respuesta.
+ * @param {Function} next - Función para pasar al siguiente middleware.
+ * @returns {Promise<void>}
+ */
 const authenticate = async (req, res, next) => {
   try {
     const token = req.headers.authorization?.split('Bearer ')[1];
@@ -8,8 +18,8 @@ const authenticate = async (req, res, next) => {
     }
 
     const decodedToken = await auth.verifyIdToken(token);
-    req.user = await auth.getUser(decodedToken.uid); // Agrega la información del usuario a la solicitud
-    next(); // Continúa con la siguiente ruta
+    req.user = await auth.getUser(decodedToken.uid); // Se agrega la información del usuario a la solicitud
+    next();
   } catch (error) {
     return res.status(401).json({ message: 'Token no válido' });
   }

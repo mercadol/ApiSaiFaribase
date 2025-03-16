@@ -4,8 +4,19 @@
 const { auth } = require('../firebase');
 const UserModel = require('../models/UserModel');
 
+/**
+ * Servicio para la gestión de usuarios
+ */
 const userService = {
-  // Crear un nuevo usuario con correo electrónico y contraseña
+  /**
+   * Crea un nuevo usuario con correo electrónico y contraseña.
+   * Además, guarda información adicional del usuario en Firestore.
+   *
+   * @param {string} email - Correo electrónico del usuario.
+   * @param {string} password - Contraseña del usuario.
+   * @returns {Promise<Object>} Objeto del usuario creado.
+   * @throws {Error} Propaga errores de creación.
+   */
   createUserWithEmailAndPassword: async (email, password) => {
     try {
       const userCredential = await auth.createUserWithEmailAndPassword(email, password);
@@ -17,11 +28,18 @@ const userService = {
 
       return user;
     } catch (error) {
-      throw error; // Lanza el error para que sea manejado por el middleware
+      throw error;
     }
   },
 
-  // Iniciar sesión con correo electrónico y contraseña
+  /**
+   * Inicia sesión con correo electrónico y contraseña.
+   *
+   * @param {string} email - Correo electrónico del usuario.
+   * @param {string} password - Contraseña del usuario.
+   * @returns {Promise<Object>} Objeto del usuario autenticado.
+   * @throws {Error} Propaga errores de autenticación.
+   */
   signInWithEmailAndPassword: async (email, password) => {
     try {
       const userCredential = await auth.signInWithEmailAndPassword(email, password);
@@ -31,8 +49,12 @@ const userService = {
     }
   },
 
-
-  // Iniciar sesión de forma anónima
+  /**
+   * Inicia sesión de forma anónima.
+   *
+   * @returns {Promise<Object>} Objeto del usuario autenticado de forma anónima.
+   * @throws {Error} Propaga errores de autenticación.
+   */
   signInAnonymously: async () => {
     try {
       const userCredential = await auth.signInAnonymously();
@@ -42,7 +64,12 @@ const userService = {
     }
   },
 
-  // Cerrar sesión
+  /**
+   * Cierra la sesión actual.
+   *
+   * @returns {Promise<void>}
+   * @throws {Error} Propaga errores durante el cierre de sesión.
+   */
   signOut: async () => {
     try {
       await auth.signOut();
@@ -51,22 +78,32 @@ const userService = {
     }
   },
 
-  // Obtener información del usuario actual (protegido por middleware de autenticación)
+  /**
+   * Obtiene la información del usuario actual a partir del token
+   * en el header de la solicitud.
+   *
+   * @param {Object} req - Objeto de la solicitud que contiene el token.
+   * @returns {Promise<Object>} Información del usuario actual.
+   * @throws {Error} Si el token no está proporcionado o se produce algún error.
+   */
   getCurrentUser: async (req) => {
     try {
-      const token = req.headers?.authorization?.split('Bearer ')[1]; // Validación mejorada
+      const token = req.headers?.authorization?.split('Bearer ')[1];
       if (!token) {
         throw new Error('Token no proporcionado');
       }
-
-      // Utiliza el modelo para obtener el usuario actual
       return await UserModel.getCurrentUser(token);
     } catch (error) {
       throw error;
     }
   },
 
-  // Obtener información adicional del usuario por UID
+  /**
+   * Obtiene información adicional de un usuario mediante su UID.
+   *
+   * @param {string} uid - Identificador único del usuario.
+   * @returns {Promise<Object>} Información del usuario.
+   */
   getUserByUid: async (uid) => {
     return await UserModel.findByUid(uid);
   },

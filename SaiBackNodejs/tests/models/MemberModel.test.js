@@ -106,7 +106,7 @@ describe('MemberModel', () => {
         throw new Error('Firebase error');
       });
       
-      const member = new MemberModel({ nombre: 'Test User' });
+      const member = new MemberModel({ Nombre: 'Test User' });
       
       await expect(member.save()).rejects.toThrow(ApiError);
       await expect(member.save()).rejects.toMatchObject({
@@ -164,7 +164,7 @@ describe('MemberModel', () => {
           Nombre: 'Test User',
           email: 'test@example.com',
           estadoCivil: 'Soltero',
-          tipoMiembro: 'Miembro',
+          TipoMiembro: 'Miembro',
           oficio: 'Desarrollador',
           fechaRegistro: new Date('2023-01-01')
         })
@@ -218,11 +218,11 @@ describe('MemberModel', () => {
       const docs = [
         {
           id: 'id1',
-          data: () => ({ nombre: 'User 1', email: 'user1@example.com' })
+          data: () => ({ Nombre: 'User 1', email: 'user1@example.com' })
         },
         {
           id: 'id2',
-          data: () => ({ nombre: 'User 2', email: 'user2@example.com' })
+          data: () => ({ Nombre: 'User 2', email: 'user2@example.com' })
         }
       ];
       
@@ -247,7 +247,7 @@ describe('MemberModel', () => {
       const startAfterDocGetMock = jest.fn().mockResolvedValue({
         exists: true,
         id: 'start-id',
-        data: () => ({ nombre: 'Start User' })
+        data: () => ({ Nombre: 'Start User' })
       });
       const startAfterDocMock = jest.fn().mockReturnValue({ 
         get: startAfterDocGetMock 
@@ -257,7 +257,7 @@ describe('MemberModel', () => {
       const docs = [
         {
           id: 'id3',
-          data: () => ({ nombre: 'User 3', email: 'user3@example.com' })
+          data: () => ({ Nombre: 'User 3', email: 'user3@example.com' })
         }
       ];
       
@@ -267,8 +267,8 @@ describe('MemberModel', () => {
       const orderByMock = jest.fn().mockReturnValue({ limit: limitMock });
       
       // Configurar los mocks
-      db.collection.mockImplementation((nombre) => {
-        if (nombre === 'Member') {
+      db.collection.mockImplementation((Nombre) => {
+        if (Nombre === 'Member') {
           return { 
             orderBy: orderByMock,
             doc: startAfterDocMock 
@@ -300,7 +300,7 @@ describe('MemberModel', () => {
       const docs = [
         {
           id: 'id1',
-          data: () => ({ nombre: 'User 1', email: 'user1@example.com' })
+          data: () => ({ Nombre: 'User 1', email: 'user1@example.com' })
         }
       ];
       
@@ -309,8 +309,8 @@ describe('MemberModel', () => {
       const orderByMock = jest.fn().mockReturnValue({ limit: limitMock });
       
       // Configurar los mocks
-      db.collection.mockImplementation((nombre) => {
-        if (nombre === 'Member') {
+      db.collection.mockImplementation((Nombre) => {
+        if (Nombre === 'Member') {
           return { 
             orderBy: orderByMock,
             doc: startAfterDocMock 

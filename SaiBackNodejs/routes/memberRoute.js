@@ -1,3 +1,4 @@
+// routes/memberRoute.js
 'use strict';
 
 const express = require('express');
@@ -6,6 +7,7 @@ const router = express.Router();
 const asyncHandler = require("../middlewares/asyncHandler");
 
 /**
+ * Obtiene la lista de miembros con soporte para paginación.
  * @swagger
  * /members:
  *   get:
@@ -45,9 +47,12 @@ const asyncHandler = require("../middlewares/asyncHandler");
  *       500:
  *         description: Error al obtener los miembros
  */
-router.get('/', asyncHandler((req, res, next) => memberController.getAll(req, res, next)));
+router.get('/', asyncHandler((req, res, next) => {
+  return memberController.getAll(req, res, next);
+}));
 
 /**
+ * Obtiene un miembro específico basado en el ID proporcionado.
  * @swagger
  * /members/{id}:
  *   get:
@@ -73,7 +78,7 @@ router.get('/', asyncHandler((req, res, next) => memberController.getAll(req, re
  *                   type: string
  *                 name:
  *                   type: string
- *                 memberType:
+ *                 TipoMiembro:
  *                   type: string
  *       404:
  *         description: Miembro no encontrado
@@ -83,6 +88,7 @@ router.get('/', asyncHandler((req, res, next) => memberController.getAll(req, re
 router.get('/:id', memberController.getById);
 
 /**
+ * Crea un nuevo miembro.
  * @swagger
  * /members:
  *   post:
@@ -95,15 +101,15 @@ router.get('/:id', memberController.getById);
  *           schema:
  *             type: object
  *             required:
- *               - Name
- *               - MemberType
+ *               - Nombre
+ *               - TipoMiembro
  *               - Notas
  *             properties:
- *               Name:
+ *               Nombre:
  *                 type: string
  *                 description: Nombre del miembro (mínimo 3 caracteres).
  *                 minLength: 3
- *               MemberType:
+ *               TipoMiembro:
  *                 type: string
  *                 description: Tipo de miembro (tomará valores específicos en el futuro).
  *               EstadoCivil:
@@ -123,8 +129,8 @@ router.get('/:id', memberController.getById);
  *                 type: string
  *                 description: Notas adicionales sobre el miembro.
  *           example:
- *             Name: "John Doe"
- *             MemberType: "Bautizado"
+ *             Nombre: "John Doe"
+ *             TipoMiembro: "Bautizado"
  *             EstadoCivil: "Soltero"
  *             Email: "johndoe@example.com"
  *             Telephono: "1234567890"
@@ -148,7 +154,7 @@ router.get('/:id', memberController.getById);
  *         content:
  *           application/json:
  *             example:
- *               error: "Los Name y MemberType son obligatorios."
+ *               error: "Los Nombre y TipoMiembro son obligatorios."
  *       500:
  *         description: Error interno del servidor.
  *         content:
@@ -177,7 +183,10 @@ router.post('/', memberController.create);
  *       200:
  *         description: Miembro eliminado correctamente
  *         content:
- *           @returns {boolean} - true
+ *           application/json:
+ *             schema:
+ *               type: boolean
+ *             example: true
  *       404:
  *         description: Miembro no encontrado
  *       400:
@@ -188,6 +197,7 @@ router.post('/', memberController.create);
 router.delete('/:id', memberController.delete);
 
 /**
+ * Actualiza un miembro existente por su ID.
  * @swagger
  * /members/{id}:
  *  put:
@@ -206,15 +216,14 @@ router.delete('/:id', memberController.delete);
  *           schema:
  *             type: object
  *             required:
- *               - id
- *               - Name
- *               - MemberType
+ *               - Nombre
+ *               - TipoMiembro
  *             properties:
- *               Name:
+ *               Nombre:
  *                 type: string
  *                 description: Nombre del miembro (mínimo 3 caracteres).
  *                 minLength: 3
- *               MemberType:
+ *               TipoMiembro:
  *                 type: string
  *                 description: Tipo de miembro (tomará valores específicos en el futuro).
  *               EstadoCivil:
@@ -234,19 +243,13 @@ router.delete('/:id', memberController.delete);
  *                 type: string
  *                 description: Notas adicionales sobre el miembro.
  *           example:
- *             Name: "John Doe"
- *             MemberType: "Bautizado"
+ *             Nombre: "John Doe"
+ *             TipoMiembro: "Bautizado"
  *             EstadoCivil: "Soltero"
  *             Email: "johndoe@example.com"
  *             Telephono: "1234567890"
  *             Oficio: "Desarrollador"
  *             Notas: "Este miembro ha sido registrado como parte del grupo de servidores."
- * @group Miembros - Operaciones sobre miembros
- * @param {string} id.path.required - El ID del miembro a actualizar
- * @param {Member} member.body.required - Los nuevos datos del miembro
- * @property {string} member.body.name - El nuevo nombre del miembro
- * @property {string} member.body.email - El nuevo correo electrónico del miembro
- * ... (otros campos que se pueden actualizar)
  * @returns {object} 200 - Miembro actualizado exitosamente
  * @returns {object} 400 - Solicitud inválida (datos faltantes o incorrectos)
  * @returns {object} 404 - Miembro no encontrado
@@ -255,12 +258,13 @@ router.delete('/:id', memberController.delete);
 router.put('/:id', memberController.update);
 
 /**
+ * Busca miembros por nombre utilizando un término de búsqueda.
  * @swagger
  * /members/search/searchString:
  *   get:
- *     summary: Busca miembros por nombre
+ *     summary: Busca miembros por Nombre
  *     tags: [Members]
- *     description: Busca miembros cuyo nombre coincida con el término de búsqueda.
+ *     description: Busca miembros cuyo Nombre coincida con el término de búsqueda.
  *     parameters:
  *       - in: query
  *         name: searchString

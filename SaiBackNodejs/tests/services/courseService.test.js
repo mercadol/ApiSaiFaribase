@@ -12,7 +12,7 @@ describe('courseService', () => {
 
   describe('getAll', () => {
     it('debería devolver todos los cursos', async () => {
-      const mockCourses = [{ id: 1, nombre: 'Curso 1' }, { id: 2, nombre: 'Curso 2' }];
+      const mockCourses = [{ id: 1, Nombre: 'Curso 1' }, { id: 2, Nombre: 'Curso 2' }];
       CourseModel.findAll.mockResolvedValue(mockCourses);
 
       const result = await courseService.getAll();
@@ -23,7 +23,7 @@ describe('courseService', () => {
 
   describe('getById', () => {
     it('debería devolver un curso por ID', async () => {
-      const mockCourse = { id: 1, nombre: 'Curso 1' };
+      const mockCourse = { id: 1, Nombre: 'Curso 1' };
       CourseModel.findById.mockResolvedValue(mockCourse);
 
       const result = await courseService.getById(1);
@@ -46,13 +46,13 @@ describe('courseService', () => {
 
   describe('update', () => {
     it('debería actualizar un curso existente', async () => {
-      const mockCourse = { id: 1, nombre: 'Curso 1', descripcion: 'Descripción', save: jest.fn().mockResolvedValue() };
+      const mockCourse = { id: 1, Nombre: 'Curso 1', descripcion: 'Descripción', save: jest.fn().mockResolvedValue() };
       CourseModel.findById.mockResolvedValue(mockCourse);
 
       const updatedData = { Nombre: 'Curso Actualizado', Descripcion: 'Nueva Descripción' };
       const result = await courseService.update(1, updatedData);
 
-      expect(result.nombre).toBe(updatedData.Nombre);
+      expect(result.Nombre).toBe(updatedData.Nombre);
       expect(result.descripcion).toBe(updatedData.Descripcion);
       expect(mockCourse.save).toHaveBeenCalled();
     });
@@ -104,7 +104,7 @@ describe('courseService', () => {
 
   describe('getMemberCourses', () => {
     it('debería devolver los cursos a los que pertenece un miembro', async () => {
-      const mockCourses = [{ id: 1, nombre: 'Curso 1' }, { id: 2, nombre: 'Curso 2' }];
+      const mockCourses = [{ id: 1, Nombre: 'Curso 1' }, { id: 2, Nombre: 'Curso 2' }];
       CourseModel.getMemberCourses = jest.fn().mockResolvedValue(mockCourses);
 
       const result = await courseService.getMemberCourses('memberId');

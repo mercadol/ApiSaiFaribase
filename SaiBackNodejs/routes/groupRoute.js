@@ -64,7 +64,7 @@ router.get('/', groupController.getAll);
  *               properties:
  *                 id:
  *                   type: string
- *                 nombre:
+ *                 Nombre:
  *                   type: string
  *                 lider:
  *                   type: string
@@ -181,9 +181,9 @@ router.put('/:id', groupController.update);
  * @swagger
  * /group/search/searchString:
  *   get:
- *     summary: Busca resultados por nombre
+ *     summary: Busca resultados por Nombre
  *     tags: [Groups]
- *     description: Busca resultados cuyo nombre coincida con el término de búsqueda.
+ *     description: Busca resultados cuyo Nombre coincida con el término de búsqueda.
  *     parameters:
  *       - in: query
  *         name: searchString

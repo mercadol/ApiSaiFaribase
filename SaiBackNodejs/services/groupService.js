@@ -15,7 +15,7 @@ const groupService = {
 
   create: async (groupData) => {
     const group = new GroupModel({
-      nombre: groupData.Nombre,
+      Nombre: groupData.Nombre,
       descripcion: groupData.Descripcion,
       fechaCreacion: groupData.FechaCreacion || new Date()
     });
@@ -27,7 +27,7 @@ const groupService = {
     const group = await GroupModel.findById(id);
     
     // Actualizar propiedades
-    if (updatedData.Nombre) group.nombre = updatedData.Nombre;
+    if (updatedData.Nombre) group.Nombre = updatedData.Nombre;
     if (updatedData.Descripcion) group.descripcion = updatedData.Descripcion;
     if (updatedData.FechaCreacion) group.fechaCreacion = updatedData.FechaCreacion;
     

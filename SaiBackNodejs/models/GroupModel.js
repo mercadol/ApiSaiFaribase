@@ -2,49 +2,59 @@
 "use strict";
 
 const { db } = require("../firebase");
-const ApiError = require('../utils/ApiError');
+const ApiError = require("../utils/ApiError");
 
+/**
+ * Modelo que representa un grupo.
+ */
 class GroupModel {
-    /**
-   * @param {object} data - Datos del grupo
+  /**
+   * Crea una instancia de GroupModel.
+   *
+   * @param {object} data - Datos del grupo.
    */
   constructor(data) {
     this.id = data.id || null;
-    this.nombre = data.nombre || "";
+    this.Nombre = data.Nombre || "";
     this.descripcion = data.descripcion || "";
     this.fechaCreacion = data.fechaCreacion || new Date();
-    // Agrega otros campos según sea necesario
   }
 
   /**
-   * Método para guardar el grupo en Firestore
-   * @returns {Promise<string>} - ID del grupo creado
+   * Guarda el grupo en Firestore.
+   *
+   * @returns {Promise<void>}
+   * @throws {ApiError} En caso de error al guardar el grupo.
    */
   async save() {
-    try {
-      const groupData = {
-        nombre: this.nombre,
-        descripcion: this.descripcion,
-        fechaCreacion: this.fechaCreacion,
-      };
+    const groupData = {
+      Nombre: this.Nombre,
+      descripcion: this.descripcion,
+      fechaCreacion: this.fechaCreacion,
+    };
 
+    try {
       if (this.id) {
-        // Si ya existe un ID, actualiza el documento
+        // Actualiza el documento existente
         await db.collection("Group").doc(this.id).update(groupData);
       } else {
-        // Si no existe, crea un nuevo documento
+        // Crea un nuevo documento
         const docRef = await db.collection("Group").add(groupData);
-        this.id = docRef.id; // Asigna el ID generado
+        this.id = docRef.id;
       }
     } catch (error) {
-      throw new ApiError(500, `Error al guardar el grupo. Inténtelo más tarde: ${error.message}`);
+      throw new ApiError(
+        500,
+        `Error al guardar el grupo. Inténtelo más tarde: ${error.message}`
+      );
     }
   }
 
   /**
-   * Método para eliminar el grupo de Firestore
-   * @param {string} id - ID del grupo
-   * @returns {Promise<boolean>} - Confirmación de eliminación
+   * Elimina el grupo de Firestore.
+   *
+   * @returns {Promise<boolean>}
+   * @throws {ApiError} Si el ID no está especificado o si ocurre un error en la eliminación.
    */
   async delete() {
     if (!this.id) {
@@ -52,15 +62,22 @@ class GroupModel {
     }
     try {
       await db.collection("Group").doc(this.id).delete();
+      return true;
     } catch (error) {
-      throw new ApiError(500, `Error al eliminar el grupo. Inténtelo más tarde: ${error.message}`);
+      throw new ApiError(
+        500,
+        `Error al eliminar el grupo. Inténtelo más tarde: ${error.message}`
+      );
     }
   }
 
   /**
-   * Método estático para buscar grupo por ID
-   * @param {string} id - ID del documento
-   * @returns {Promise<object>} - Documento encontrado
+   * Busca un grupo por su ID.
+   *
+   * @param {string} id - ID del grupo.
+   *
+   * @returns {Promise<boolean>}
+   * @throws {ApiError} Si el ID no está especificado o si ocurre un error en la eliminación.
    */
   static async findById(id) {
     try {
@@ -70,53 +87,63 @@ class GroupModel {
       }
       return new GroupModel({ id: doc.id, ...doc.data() });
     } catch (error) {
-      // Reenviar errores ApiError sin modificarlos
       if (error instanceof ApiError) {
         throw error;
       }
-      throw new ApiError(500, `Error al buscar el grupo. Inténtelo más tarde: ${error.message}`);
+      throw new ApiError(
+        500,
+        `Error al buscar el grupo. Inténtelo más tarde: ${error.message}`
+      );
     }
   }
 
   /**
-   * Método estático para buscar todos los Grupos
-   * @param {number} pageSize - Tamaño de la página (por defecto 10)
-   * @param {string} startAfterId - ID del documento para paginación
-   * @returns {Promise<Array>} - Lista de documentos
+   * Obtiene todos los grupos con paginación.
+   *
+   * @param {string|null} startAfterId - ID para paginación.
+   * @param {number} pageSize - Número de documentos a retornar.
+   * @returns {Promise<GroupModel[]>} Array de instancias de GroupModel.
+   * @throws {ApiError} Si ocurre un error en la consulta.
    */
   static async findAll(startAfterId = null, pageSize = 10) {
     try {
-      let query = db.collection("Group").orderBy("nombre").limit(pageSize);
+      let query = db.collection("Group").orderBy("Nombre").limit(pageSize);
       if (startAfterId) {
         const startAfterDoc = await db.collection("Group").doc(startAfterId).get();
         if (startAfterDoc.exists) {
           query = query.startAfter(startAfterDoc);
         }
       }
-
       const snapshot = await query.get();
-      const groups = snapshot.docs.map(doc => new GroupModel({ id: doc.id, ...doc.data() }));
-      return groups;
+      return snapshot.docs.map((doc) => new GroupModel({ id: doc.id, ...doc.data() }));
     } catch (error) {
-      throw new ApiError(500, `Error al buscar grupos. Inténtelo más tarde: ${error.message}`);
+      throw new ApiError(
+        500,
+        `Error al buscar grupos. Inténtelo más tarde: ${error.message}`
+      );
     }
   }
 
-  // Método estático para buscar documento por nombre
+  /**
+   * Realiza una búsqueda de grupos por Nombre con paginación.
+   *
+   * @param {string} searchString - Cadena de búsqueda.
+   * @param {string|null} startAfterId - ID para paginación.
+   * @param {number} pageSize - Número de documentos a retornar.
+   * @returns {Promise<Object>} Objeto con los resultados y el último documento.
+   * @throws {ApiError} Si ocurre un error en la búsqueda.
+   */
   static async search(searchString, startAfterId = null, pageSize = 10) {
     try {
       let query = db
         .collection("Group")
-        .where("nombre", ">=", searchString)
-        .where("nombre", "<=", searchString + "\uf8ff")
-        .orderBy("nombre")
+        .where("Nombre", ">=", searchString)
+        .where("Nombre", "<=", searchString + "\uf8ff")
+        .orderBy("Nombre")
         .limit(pageSize);
 
       if (startAfterId) {
-        const startAfterDoc = await db
-          .collection("Group")
-          .doc(startAfterId)
-          .get();
+        const startAfterDoc = await db.collection("Group").doc(startAfterId).get();
         if (startAfterDoc.exists) {
           query = query.startAfter(startAfterDoc);
         }
@@ -130,11 +157,20 @@ class GroupModel {
         lastDoc: snapshot.docs[snapshot.docs.length - 1],
       };
     } catch (error) {
-      throw new ApiError(500, `Error al buscar grupos. Inténtelo más tarde: ${error.message}`);
+      throw new ApiError(
+        500,
+        `Error al buscar grupos. Inténtelo más tarde: ${error.message}`
+      );
     }
   }
 
-  // Método para agregar un miembro al grupo
+  /**
+   * Agrega un miembro al grupo.
+   *
+   * @param {string} memberId - ID del miembro a agregar.
+   * @returns {Promise<void>}
+   * @throws {ApiError} Si no se especifica el ID del grupo o del miembro, o si ocurre un error.
+   */
   async addMember(memberId) {
     if (!this.id) {
       throw new ApiError(400, "ID del grupo no especificado.");
@@ -149,64 +185,89 @@ class GroupModel {
         memberId: memberId,
       });
     } catch (error) {
-        console.error("Error agregando miembro al grupo:", error);
-        throw new ApiError(500, "Error al agregar miembro al grupo. Inténtelo más tarde.");
-      }
-    }
-  
-    // Método para eliminar un miembro del grupo
-    async removeMember(memberId) {
-      if (!this.id) {
-        throw new ApiError(400, "ID del grupo no especificado.");
-      }
-      if (!memberId) {
-        throw new ApiError(400, "ID del miembro no especificado.");
-      }
-      try {
-        const relationId = `${this.id}_${memberId}`;
-        await db.collection("GroupMember").doc(relationId).delete();
-      } catch (error) {
-        console.error("Error eliminando miembro del grupo:", error);
-        throw new ApiError(500, "Error al eliminar miembro del grupo. Inténtelo más tarde.");
-      }
-    }
-  
-    // Método para obtener todos los miembros de un grupo
-    static async getGroupMembers(groupId) {
-      if (!groupId) {
-        throw new ApiError(400, "ID del grupo no especificado.");
-      }
-      try {
-        const snapshot = await db.collection("GroupMember").where("groupId", "==", groupId).get();
-        const members = snapshot.docs.map(doc => doc.data().memberId);
-        return members; // Devuelve una lista de IDs de miembros
-      } catch (error) {
-        console.error("Error obteniendo miembros del grupo:", error);
-        throw new ApiError(500, "Error al obtener miembros del grupo. Inténtelo más tarde.");
-      }
-    }
-
-    // Método para obtener todos los grupos a los que pertenece un miembro
-    static async getMemberGroups(memberId) {
-      if (!memberId) {
-        throw new ApiError(400, "ID del miembro no especificado.");
-      }
-      try {
-        const snapshot = await db.collection("GroupMember").where("memberId", "==", memberId).get();
-        const groupIds = snapshot.docs.map(doc => doc.data().groupId);
-        
-        // Obtener detalles de cada grupo
-        const groups = [];
-        for (const groupId of groupIds) {
-          const group = await GroupModel.findById(groupId);
-          groups.push(group);
-        }
-        
-        return groups;
-      } catch (error) {
-        throw new ApiError(500, `Error al obtener grupos del miembro: ${error}, Inténtelo más tarde.`);
-      }
+      throw new ApiError(
+        500,
+        "Error al agregar miembro al grupo. Inténtelo más tarde."
+      );
     }
   }
-  
-  module.exports = GroupModel;  
+
+  /**
+   * Elimina un miembro del grupo.
+   *
+   * @param {string} memberId - ID del miembro a eliminar.
+   * @returns {Promise<void>}
+   * @throws {ApiError} Si no se especifica el ID del grupo o del miembro, o si ocurre un error.
+   */
+  async removeMember(memberId) {
+    if (!this.id) {
+      throw new ApiError(400, "ID del grupo no especificado.");
+    }
+    if (!memberId) {
+      throw new ApiError(400, "ID del miembro no especificado.");
+    }
+    try {
+      const relationId = `${this.id}_${memberId}`;
+      await db.collection("GroupMember").doc(relationId).delete();
+    } catch (error) {
+      throw new ApiError(
+        500,
+        "Error al eliminar miembro del grupo. Inténtelo más tarde."
+      );
+    }
+  }
+
+  /**
+   * Obtiene todos los IDs de miembros que pertenecen a un grupo.
+   *
+   * @param {string} groupId - ID del grupo.
+   * @returns {Promise<string[]>} Array de IDs de miembros.
+   * @throws {ApiError} Si no se especifica el ID del grupo o si ocurre un error en la consulta.
+   */
+  static async getGroupMembers(groupId) {
+    if (!groupId) {
+      throw new ApiError(400, "ID del grupo no especificado.");
+    }
+    try {
+      const snapshot = await db.collection("GroupMember").where("groupId", "==", groupId).get();
+      return snapshot.docs.map((doc) => doc.data().memberId);
+    } catch (error) {
+      throw new ApiError(
+        500,
+        "Error al obtener miembros del grupo. Inténtelo más tarde."
+      );
+    }
+  }
+
+  /**
+   * Obtiene todos los grupos a los que pertenece un miembro.
+   *
+   * @param {string} memberId - ID del miembro.
+   * @returns {Promise<GroupModel[]>} Array de instancias de GroupModel.
+   * @throws {ApiError} Si no se especifica el ID del miembro o si ocurre un error en la consulta.
+   */
+  static async getMemberGroups(memberId) {
+    if (!memberId) {
+      throw new ApiError(400, "ID del miembro no especificado.");
+    }
+    try {
+      const snapshot = await db.collection("GroupMember").where("memberId", "==", memberId).get();
+      const groupIds = snapshot.docs.map((doc) => doc.data().groupId);
+
+      // Obtener detalles de cada grupo
+      const groups = [];
+      for (const groupId of groupIds) {
+        const group = await GroupModel.findById(groupId);
+        groups.push(group);
+      }
+      return groups;
+    } catch (error) {
+      throw new ApiError(
+        500,
+        `Error al obtener grupos del miembro. Inténtelo más tarde: ${error.message}`
+      );
+    }
+  }
+}
+
+module.exports = GroupModel;

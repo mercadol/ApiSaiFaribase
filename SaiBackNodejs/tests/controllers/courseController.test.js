@@ -11,22 +11,22 @@ describe('CourseController', () => {
   });
 
   describe('validateCreateData', () => {
-    test('debe retornar error si el nombre no está presente', () => {
+    test('debe retornar error si el Nombre no está presente', () => {
       const data = { Descripcion: 'Un curso' };
       const error = courseController.validateCreateData(data);
-      expect(error).toBe('El nombre es obligatorio');
+      expect(error).toBe('El Nombre es obligatorio');
     });
 
-    test('debe retornar error si el nombre es demasiado corto', () => {
+    test('debe retornar error si el Nombre es demasiado corto', () => {
       const data = { Nombre: 'AB' };
       const error = courseController.validateCreateData(data);
-      expect(error).toBe('El nombre debe tener entre 3 y 50 caracteres');
+      expect(error).toBe('El Nombre debe tener entre 3 y 50 caracteres');
     });
 
-    test('debe retornar error si el nombre es demasiado largo', () => {
+    test('debe retornar error si el Nombre es demasiado largo', () => {
       const data = { Nombre: 'A'.repeat(51) };
       const error = courseController.validateCreateData(data);
-      expect(error).toBe('El nombre debe tener entre 3 y 50 caracteres');
+      expect(error).toBe('El Nombre debe tener entre 3 y 50 caracteres');
     });
 
     test('debe retornar error si la descripción es demasiado larga', () => {

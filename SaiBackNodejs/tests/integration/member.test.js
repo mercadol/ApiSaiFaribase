@@ -253,7 +253,7 @@ describe("Rutas de Miembros", () => {
   });
 
   describe("GET /api/members/search/:searchString", () => {
-    test("debe buscar miembros por nombre", async () => {
+    test("debe buscar miembros por Nombre", async () => {
       const mockMembers = [
         { id: "member1", Nombre: "Juan Pérez", TipoMiembro: "Bautizado" },
       ];

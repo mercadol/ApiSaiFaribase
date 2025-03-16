@@ -21,7 +21,7 @@ describe('EventModel', () => {
     test('debe crear objeto con propiedades por defecto', () => {
       const event = new EventModel({});
       expect(event.id).toBeNull();
-      expect(event.nombre).toBe('');
+      expect(event.Nombre).toBe('');
       expect(event.descripcion).toBe('');
       expect(event.fecha).toBeInstanceOf(Date);
     });
@@ -29,13 +29,13 @@ describe('EventModel', () => {
     test('debe crear objeto con propiedades especificadas', () => {
       const data = {
         id: 'test-id',
-        nombre: 'Test Event',
+        Nombre: 'Test Event',
         descripcion: 'Test Description',
         fecha: new Date('2023-01-01')
       };
       const event = new EventModel(data);
       expect(event.id).toBe('test-id');
-      expect(event.nombre).toBe('Test Event');
+      expect(event.Nombre).toBe('Test Event');
       expect(event.descripcion).toBe('Test Description');
       expect(event.fecha).toEqual(new Date('2023-01-01'));
     });
@@ -47,7 +47,7 @@ describe('EventModel', () => {
       db.collection.mockReturnValue({ add: addMock });
       
       const event = new EventModel({
-        nombre: 'Test Event',
+        Nombre: 'Test Event',
         descripcion: 'Test Description'
       });
       
@@ -55,7 +55,7 @@ describe('EventModel', () => {
       
       expect(db.collection).toHaveBeenCalledWith('Event');
       expect(addMock).toHaveBeenCalledWith({
-        nombre: 'Test Event',
+        Nombre: 'Test Event',
         descripcion: 'Test Description',
         fecha: expect.any(Date)
       });
@@ -69,7 +69,7 @@ describe('EventModel', () => {
       
       const event = new EventModel({
         id: 'existing-id',
-        nombre: 'Test Event',
+        Nombre: 'Test Event',
         descripcion: 'Updated Description'
       });
       
@@ -78,7 +78,7 @@ describe('EventModel', () => {
       expect(db.collection).toHaveBeenCalledWith('Event');
       expect(docMock).toHaveBeenCalledWith('existing-id');
       expect(updateMock).toHaveBeenCalledWith({
-        nombre: 'Test Event',
+        Nombre: 'Test Event',
         descripcion: 'Updated Description',
         fecha: expect.any(Date)
       });
@@ -89,7 +89,7 @@ describe('EventModel', () => {
         throw new Error('Firebase error');
       });
       
-      const event = new EventModel({ nombre: 'Test Event' });
+      const event = new EventModel({ Nombre: 'Test Event' });
       
       await expect(event.save()).rejects.toThrow(ApiError);
       await expect(event.save()).rejects.toMatchObject({
@@ -144,7 +144,7 @@ describe('EventModel', () => {
         exists: true,
         id: 'test-id',
         data: () => ({
-          nombre: 'Test Event',
+          Nombre: 'Test Event',
           descripcion: 'Test Description',
           fecha: new Date('2023-01-01')
         })
@@ -158,7 +158,7 @@ describe('EventModel', () => {
       expect(docMock).toHaveBeenCalledWith('test-id');
       expect(event).toBeInstanceOf(EventModel);
       expect(event.id).toBe('test-id');
-      expect(event.nombre).toBe('Test Event');
+      expect(event.Nombre).toBe('Test Event');
     });
 
     test('debe lanzar error si el evento no existe', async () => {
@@ -193,11 +193,11 @@ describe('EventModel', () => {
       const docs = [
         {
           id: 'id1',
-          data: () => ({ nombre: 'Event 1', descripcion: 'Description 1' })
+          data: () => ({ Nombre: 'Event 1', descripcion: 'Description 1' })
         },
         {
           id: 'id2',
-          data: () => ({ nombre: 'Event 2', descripcion: 'Description 2' })
+          data: () => ({ Nombre: 'Event 2', descripcion: 'Description 2' })
         }
       ];
       
@@ -209,7 +209,7 @@ describe('EventModel', () => {
       const events = await EventModel.findAll();
       
       expect(db.collection).toHaveBeenCalledWith('Event');
-      expect(orderByMock).toHaveBeenCalledWith('nombre');
+      expect(orderByMock).toHaveBeenCalledWith('Nombre');
       expect(limitMock).toHaveBeenCalledWith(10);
       expect(events).toHaveLength(2);
       expect(events[0]).toBeInstanceOf(EventModel);
@@ -225,7 +225,7 @@ describe('EventModel', () => {
         get: startAfterDocGetMock 
       });
       
-      const docs = [{ id: 'id3', data: () => ({ nombre: 'Event 3' }) }];
+      const docs = [{ id: 'id3', data: () => ({ Nombre: 'Event 3' }) }];
       
       const getMock = jest.fn().mockResolvedValue({ docs });
       const startAfterMock = jest.fn().mockReturnValue({ get: getMock });

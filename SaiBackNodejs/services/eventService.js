@@ -16,7 +16,7 @@ const eventService = {
   create: async (eventData) => {
     
     const event = new EventModel({
-      nombre: eventData.Nombre,
+      Nombre: eventData.Nombre,
       descripcion: eventData.Descripcion,
       fecha: eventData.Fecha || new Date()
     });
@@ -28,7 +28,7 @@ const eventService = {
     const event = await EventModel.findById(id);
     
     // Actualizar propiedades
-    if (updatedData.Nombre) event.nombre = updatedData.Nombre;
+    if (updatedData.Nombre) event.Nombre = updatedData.Nombre;
     if (updatedData.Descripcion) event.descripcion = updatedData.Descripcion;
     if (updatedData.Fecha) event.fecha = updatedData.Fecha;
     

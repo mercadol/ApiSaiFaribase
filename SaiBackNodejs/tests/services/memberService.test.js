@@ -12,8 +12,8 @@ describe("memberService", () => {
   describe("getAll", () => {
     it("should return all members", async () => {
       const mockMembers = [
-        { id: "1", nombre: "John Doe", email: "john@example.com" },
-        { id: "2", nombre: "Jane Smith", email: "jane@example.com" },
+        { id: "1", Nombre: "John Doe", email: "john@example.com" },
+        { id: "2", Nombre: "Jane Smith", email: "jane@example.com" },
       ];
       MemberModel.findAll.mockResolvedValue(mockMembers);
 
@@ -24,8 +24,8 @@ describe("memberService", () => {
 
     it("should return members with pagination", async () => {
       const mockMembers = [
-        { id: "1", nombre: "John Doe", email: "john@example.com" },
-        { id: "2", nombre: "Jane Smith", email: "jane@example.com" },
+        { id: "1", Nombre: "John Doe", email: "john@example.com" },
+        { id: "2", Nombre: "Jane Smith", email: "jane@example.com" },
       ];
       MemberModel.findAll.mockResolvedValue(mockMembers);
 
@@ -39,7 +39,7 @@ describe("memberService", () => {
     it("should return a member by ID", async () => {
       const mockMember = {
         id: "1",
-        nombre: "John Doe",
+        Nombre: "John Doe",
         email: "john@example.com",
       };
       MemberModel.findById.mockResolvedValue(mockMember);
@@ -128,8 +128,8 @@ describe("memberService", () => {
   describe("search", () => {
     it("should search for members", async () => {
       const mockMembers = [
-        { id: "1", nombre: "John Doe", email: "john@example.com" },
-        { id: "2", nombre: "Jane Smith", email: "jane@example.com" },
+        { id: "1", Nombre: "John Doe", email: "john@example.com" },
+        { id: "2", Nombre: "Jane Smith", email: "jane@example.com" },
       ];
       MemberModel.search.mockResolvedValue(mockMembers);
 

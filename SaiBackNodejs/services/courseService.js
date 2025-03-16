@@ -15,7 +15,7 @@ const courseService = {
 
   create: async (courseData) => {
     const course = new CourseModel({
-      nombre: courseData.Nombre,
+      Nombre: courseData.Nombre,
       descripcion: courseData.Descripcion,
       fechaCreacion: courseData.FechaCreacion || new Date()
     });
@@ -27,7 +27,7 @@ const courseService = {
     const course = await CourseModel.findById(id);
     
     // Actualizar propiedades
-    if (updatedData.Nombre) course.nombre = updatedData.Nombre;
+    if (updatedData.Nombre) course.Nombre = updatedData.Nombre;
     if (updatedData.Descripcion) course.descripcion = updatedData.Descripcion;
     
     await course.save();

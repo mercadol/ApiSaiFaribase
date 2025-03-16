@@ -21,7 +21,7 @@ describe('GroupModel', () => {
     test('debe crear objeto con propiedades por defecto', () => {
       const group = new GroupModel({});
       expect(group.id).toBeNull();
-      expect(group.nombre).toBe('');
+      expect(group.Nombre).toBe('');
       expect(group.descripcion).toBe('');
       expect(group.fechaCreacion).toBeInstanceOf(Date);
     });
@@ -29,13 +29,13 @@ describe('GroupModel', () => {
     test('debe crear objeto con propiedades especificadas', () => {
       const data = {
         id: 'test-id',
-        nombre: 'Test Group',
+        Nombre: 'Test Group',
         descripcion: 'Test Description',
         fechaCreacion: new Date('2023-01-01')
       };
       const group = new GroupModel(data);
       expect(group.id).toBe('test-id');
-      expect(group.nombre).toBe('Test Group');
+      expect(group.Nombre).toBe('Test Group');
       expect(group.descripcion).toBe('Test Description');
       expect(group.fechaCreacion).toEqual(new Date('2023-01-01'));
     });
@@ -47,7 +47,7 @@ describe('GroupModel', () => {
       db.collection.mockReturnValue({ add: addMock });
       
       const group = new GroupModel({
-        nombre: 'Test Group',
+        Nombre: 'Test Group',
         descripcion: 'Test Description'
       });
       
@@ -55,7 +55,7 @@ describe('GroupModel', () => {
       
       expect(db.collection).toHaveBeenCalledWith('Group');
       expect(addMock).toHaveBeenCalledWith({
-        nombre: 'Test Group',
+        Nombre: 'Test Group',
         descripcion: 'Test Description',
         fechaCreacion: expect.any(Date)
       });
@@ -69,7 +69,7 @@ describe('GroupModel', () => {
       
       const group = new GroupModel({
         id: 'existing-id',
-        nombre: 'Test Group',
+        Nombre: 'Test Group',
         descripcion: 'Updated Description'
       });
       
@@ -78,7 +78,7 @@ describe('GroupModel', () => {
       expect(db.collection).toHaveBeenCalledWith('Group');
       expect(docMock).toHaveBeenCalledWith('existing-id');
       expect(updateMock).toHaveBeenCalledWith({
-        nombre: 'Test Group',
+        Nombre: 'Test Group',
         descripcion: 'Updated Description',
         fechaCreacion: expect.any(Date)
       });
@@ -89,7 +89,7 @@ describe('GroupModel', () => {
         throw new Error('Firebase error');
       });
       
-      const group = new GroupModel({ nombre: 'Test Group' });
+      const group = new GroupModel({ Nombre: 'Test Group' });
       
       await expect(group.save()).rejects.toThrow(ApiError);
       await expect(group.save()).rejects.toMatchObject({
@@ -144,7 +144,7 @@ describe('GroupModel', () => {
         exists: true,
         id: 'test-id',
         data: () => ({
-          nombre: 'Test Group',
+          Nombre: 'Test Group',
           descripcion: 'Test Description',
           fechaCreacion: new Date('2023-01-01')
         })
@@ -158,7 +158,7 @@ describe('GroupModel', () => {
       expect(docMock).toHaveBeenCalledWith('test-id');
       expect(group).toBeInstanceOf(GroupModel);
       expect(group.id).toBe('test-id');
-      expect(group.nombre).toBe('Test Group');
+      expect(group.Nombre).toBe('Test Group');
     });
 
     test('debe lanzar error si el grupo no existe', async () => {
@@ -193,11 +193,11 @@ describe('GroupModel', () => {
       const docs = [
         {
           id: 'id1',
-          data: () => ({ nombre: 'Group 1', descripcion: 'Description 1' })
+          data: () => ({ Nombre: 'Group 1', descripcion: 'Description 1' })
         },
         {
           id: 'id2',
-          data: () => ({ nombre: 'Group 2', descripcion: 'Description 2' })
+          data: () => ({ Nombre: 'Group 2', descripcion: 'Description 2' })
         }
       ];
       
@@ -209,7 +209,7 @@ describe('GroupModel', () => {
       const groups = await GroupModel.findAll();
       
       expect(db.collection).toHaveBeenCalledWith('Group');
-      expect(orderByMock).toHaveBeenCalledWith('nombre');
+      expect(orderByMock).toHaveBeenCalledWith('Nombre');
       expect(limitMock).toHaveBeenCalledWith(10);
       expect(groups).toHaveLength(2);
       expect(groups[0]).toBeInstanceOf(GroupModel);
@@ -225,7 +225,7 @@ describe('GroupModel', () => {
         get: startAfterDocGetMock 
       });
       
-      const docs = [{ id: 'id3', data: () => ({ nombre: 'Group 3' }) }];
+      const docs = [{ id: 'id3', data: () => ({ Nombre: 'Group 3' }) }];
       
       const getMock = jest.fn().mockResolvedValue({ docs });
       const startAfterMock = jest.fn().mockReturnValue({ get: getMock });

@@ -15,12 +15,12 @@ describe('MemberController', () => {
   });
 
   describe('validateCreateData', () => {
-    it('debería validar nombre requerido', () => {
+    it('debería validar Nombre requerido', () => {
       const result = memberController.validateCreateData({});
       expect(result).toBe('El campo Nombre es obligatorio');
     });
 
-    it('debería validar longitud del nombre', () => {
+    it('debería validar longitud del Nombre', () => {
       const shortName = { Nombre: 'ab', TipoMiembro: 'Miembro' };
       const longName = { Nombre: 'a'.repeat(51), TipoMiembro: 'Miembro' };
       

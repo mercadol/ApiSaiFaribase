@@ -1,3 +1,4 @@
+// routes/userRoute.js
 'use strict';
 
 const express = require('express');
@@ -5,8 +6,9 @@ const router = express.Router();
 const userController = require('../controllers/userController');
 const authenticate = require('../middlewares/authenticate');
 
-
 /**
+ * Endpoint para registrar un nuevo usuario.
+ *
  * @swagger
  * /auth/signup:
  *   post:
@@ -36,6 +38,8 @@ const authenticate = require('../middlewares/authenticate');
 router.post('/signup', userController.createUser);
 
 /**
+ * Endpoint para iniciar sesión con email y contraseña.
+ *
  * @swagger
  * /auth/signin:
  *   post:
@@ -65,6 +69,8 @@ router.post('/signup', userController.createUser);
 router.post('/signin', userController.signIn);
 
 /**
+ * Endpoint para iniciar sesión de forma anónima.
+ *
  * @swagger
  * /auth/signin/anonymous:
  *   post:
@@ -79,6 +85,8 @@ router.post('/signin', userController.signIn);
 router.post('/signin/anonymous', userController.signInAnonymously);
 
 /**
+ * Endpoint para cerrar sesión.
+ *
  * @swagger
  * /auth/signout:
  *   post:
@@ -93,6 +101,9 @@ router.post('/signin/anonymous', userController.signInAnonymously);
 router.post('/signout', userController.signOut);
 
 /**
+ * Endpoint para obtener la información del usuario actual.
+ * Se utiliza middleware de autenticación para asegurar que la petición cuente con autorización.
+ *
  * @swagger
  * /auth/me:
  *   get:
@@ -109,6 +120,5 @@ router.post('/signout', userController.signOut);
  *         description: Error interno del servidor
  */
 router.get('/me', authenticate, userController.getCurrentUser);
-
 
 module.exports = router;

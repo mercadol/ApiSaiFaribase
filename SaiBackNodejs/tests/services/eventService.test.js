@@ -11,7 +11,7 @@ describe('eventService', () => {
 
   describe('getAll', () => {
     it('debería devolver todos los eventos', async () => {
-      const mockEvents = [{ id: 1, nombre: 'Evento 1' }, { id: 2, nombre: 'Evento 2' }];
+      const mockEvents = [{ id: 1, Nombre: 'Evento 1' }, { id: 2, Nombre: 'Evento 2' }];
       EventModel.findAll.mockResolvedValue(mockEvents);
 
       const result = await eventService.getAll();
@@ -22,7 +22,7 @@ describe('eventService', () => {
 
   describe('getById', () => {
     it('debería devolver un evento por ID', async () => {
-      const mockEvent = { id: 1, nombre: 'Evento 1' };
+      const mockEvent = { id: 1, Nombre: 'Evento 1' };
       EventModel.findById.mockResolvedValue(mockEvent);
 
       const result = await eventService.getById(1);
@@ -45,13 +45,13 @@ describe('eventService', () => {
 
   describe('update', () => {
     it('debería actualizar un evento existente', async () => {
-      const mockEvent = { id: 1, nombre: 'Evento 1', descripcion: 'Descripción', save: jest.fn().mockResolvedValue() };
+      const mockEvent = { id: 1, Nombre: 'Evento 1', descripcion: 'Descripción', save: jest.fn().mockResolvedValue() };
       EventModel.findById.mockResolvedValue(mockEvent);
 
       const updatedData = { Nombre: 'Evento Actualizado', Descripcion: 'Nueva Descripción' };
       const result = await eventService.update(1, updatedData);
 
-      expect(result.nombre).toBe(updatedData.Nombre);
+      expect(result.Nombre).toBe(updatedData.Nombre);
       expect(result.descripcion).toBe(updatedData.Descripcion);
       expect(mockEvent.save).toHaveBeenCalled();
     });
@@ -103,7 +103,7 @@ describe('eventService', () => {
 
   describe('getMemberEvents', () => {
     it('debería devolver los eventos a los que pertenece un miembro', async () => {
-      const mockEvents = [{ id: 1, nombre: 'Evento 1' }, { id: 2, nombre: 'Evento 2' }];
+      const mockEvents = [{ id: 1, Nombre: 'Evento 1' }, { id: 2, Nombre: 'Evento 2' }];
       EventModel.getMemberEvents = jest.fn().mockResolvedValue(mockEvents);
 
       const result = await eventService.getMemberEvents('memberId');

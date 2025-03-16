@@ -12,8 +12,8 @@ describe("groupService", () => {
   describe("getAll", () => {
     it("debería devolver todos los grupos", async () => {
       const mockGroups = [
-        { id: 1, nombre: "Grupo 1" },
-        { id: 2, nombre: "Grupo 2" },
+        { id: 1, Nombre: "Grupo 1" },
+        { id: 2, Nombre: "Grupo 2" },
       ];
       GroupModel.findAll.mockResolvedValue(mockGroups);
 
@@ -25,7 +25,7 @@ describe("groupService", () => {
 
   describe("getById", () => {
     it("debería devolver un grupo por ID", async () => {
-      const mockGroup = { id: 1, nombre: "Grupo 1" };
+      const mockGroup = { id: 1, Nombre: "Grupo 1" };
       GroupModel.findById.mockResolvedValue(mockGroup);
 
       const result = await groupService.getById(1);
@@ -57,7 +57,7 @@ describe("groupService", () => {
     it("debería actualizar un grupo existente", async () => {
       const mockGroup = {
         id: 1,
-        nombre: "Grupo 1",
+        Nombre: "Grupo 1",
         descripcion: "Descripción",
         save: jest.fn().mockResolvedValue(),
       };
@@ -69,7 +69,7 @@ describe("groupService", () => {
       };
       const result = await groupService.update(1, updatedData);
 
-      expect(result.nombre).toBe(updatedData.Nombre);
+      expect(result.Nombre).toBe(updatedData.Nombre);
       expect(result.descripcion).toBe(updatedData.Descripcion);
       expect(mockGroup.save).toHaveBeenCalled();
     });
@@ -122,8 +122,8 @@ describe("groupService", () => {
   describe("getMemberGroups", () => {
     it("debería devolver los grupos a los que pertenece un miembro", async () => {
       const mockGroups = [
-        { id: 1, nombre: "Grupo 1" },
-        { id: 2, nombre: "Grupo 2" },
+        { id: 1, Nombre: "Grupo 1" },
+        { id: 2, Nombre: "Grupo 2" },
       ];
       GroupModel.getMemberGroups = jest.fn().mockResolvedValue(mockGroups); // Mockear el método del modelo
 

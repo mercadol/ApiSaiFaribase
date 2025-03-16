@@ -21,7 +21,7 @@ describe('CourseModel', () => {
     test('debe crear objeto con propiedades por defecto', () => {
       const course = new CourseModel({});
       expect(course.id).toBeNull();
-      expect(course.nombre).toBe('');
+      expect(course.Nombre).toBe('');
       expect(course.descripcion).toBe('');
       expect(course.fechaCreacion).toBeInstanceOf(Date);
     });
@@ -29,13 +29,13 @@ describe('CourseModel', () => {
     test('debe crear objeto con propiedades especificadas', () => {
       const data = {
         id: 'test-id',
-        nombre: 'Test Course',
+        Nombre: 'Test Course',
         descripcion: 'Test Description',
         fechaCreacion: new Date('2023-01-01')
       };
       const course = new CourseModel(data);
       expect(course.id).toBe('test-id');
-      expect(course.nombre).toBe('Test Course');
+      expect(course.Nombre).toBe('Test Course');
       expect(course.descripcion).toBe('Test Description');
       expect(course.fechaCreacion).toEqual(new Date('2023-01-01'));
     });
@@ -47,7 +47,7 @@ describe('CourseModel', () => {
       db.collection.mockReturnValue({ add: addMock });
       
       const course = new CourseModel({
-        nombre: 'Test Course',
+        Nombre: 'Test Course',
         descripcion: 'Test Description'
       });
       
@@ -55,7 +55,7 @@ describe('CourseModel', () => {
       
       expect(db.collection).toHaveBeenCalledWith('Course');
       expect(addMock).toHaveBeenCalledWith({
-        nombre: 'Test Course',
+        Nombre: 'Test Course',
         descripcion: 'Test Description',
         fechaCreacion: expect.any(Date)
       });
@@ -69,7 +69,7 @@ describe('CourseModel', () => {
       
       const course = new CourseModel({
         id: 'existing-id',
-        nombre: 'Test Course',
+        Nombre: 'Test Course',
         descripcion: 'Updated Description'
       });
       
@@ -78,7 +78,7 @@ describe('CourseModel', () => {
       expect(db.collection).toHaveBeenCalledWith('Course');
       expect(docMock).toHaveBeenCalledWith('existing-id');
       expect(updateMock).toHaveBeenCalledWith({
-        nombre: 'Test Course',
+        Nombre: 'Test Course',
         descripcion: 'Updated Description',
         fechaCreacion: expect.any(Date)
       });
@@ -89,7 +89,7 @@ describe('CourseModel', () => {
         throw new Error('Firebase error');
       });
       
-      const course = new CourseModel({ nombre: 'Test Course' });
+      const course = new CourseModel({ Nombre: 'Test Course' });
       
       await expect(course.save()).rejects.toThrow(ApiError);
       await expect(course.save()).rejects.toMatchObject({
@@ -144,7 +144,7 @@ describe('CourseModel', () => {
         exists: true,
         id: 'test-id',
         data: () => ({
-          nombre: 'Test Course',
+          Nombre: 'Test Course',
           descripcion: 'Test Description',
           fechaCreacion: new Date('2023-01-01')
         })
@@ -158,7 +158,7 @@ describe('CourseModel', () => {
       expect(docMock).toHaveBeenCalledWith('test-id');
       expect(course).toBeInstanceOf(CourseModel);
       expect(course.id).toBe('test-id');
-      expect(course.nombre).toBe('Test Course');
+      expect(course.Nombre).toBe('Test Course');
     });
 
     test('debe lanzar error si el curso no existe', async () => {
@@ -193,11 +193,11 @@ describe('CourseModel', () => {
       const docs = [
         {
           id: 'id1',
-          data: () => ({ nombre: 'Course 1', descripcion: 'Description 1' })
+          data: () => ({ Nombre: 'Course 1', descripcion: 'Description 1' })
         },
         {
           id: 'id2',
-          data: () => ({ nombre: 'Course 2', descripcion: 'Description 2' })
+          data: () => ({ Nombre: 'Course 2', descripcion: 'Description 2' })
         }
       ];
       
@@ -209,7 +209,7 @@ describe('CourseModel', () => {
       const courses = await CourseModel.findAll();
       
       expect(db.collection).toHaveBeenCalledWith('Course');
-      expect(orderByMock).toHaveBeenCalledWith('nombre');
+      expect(orderByMock).toHaveBeenCalledWith('Nombre');
       expect(limitMock).toHaveBeenCalledWith(10);
       expect(courses).toHaveLength(2);
       expect(courses[0]).toBeInstanceOf(CourseModel);
@@ -225,7 +225,7 @@ describe('CourseModel', () => {
         get: startAfterDocGetMock 
       });
       
-      const docs = [{ id: 'id3', data: () => ({ nombre: 'Course 3' }) }];
+      const docs = [{ id: 'id3', data: () => ({ Nombre: 'Course 3' }) }];
       
       const getMock = jest.fn().mockResolvedValue({ docs });
       const startAfterMock = jest.fn().mockReturnValue({ get: getMock });

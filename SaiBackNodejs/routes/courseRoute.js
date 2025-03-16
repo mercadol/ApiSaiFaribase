@@ -64,7 +64,7 @@ router.get('/', courseController.getAll);
  *               properties:
  *                 id:
  *                   type: string
- *                 nombre:
+ *                 Nombre:
  *                   type: string
  *                 maestro:
  *                   type: string
@@ -187,9 +187,9 @@ router.put('/:id', courseController.update);
  * @swagger
  * /courses/search/searchString:
  *   get:
- *     summary: Busca cursos por nombre
+ *     summary: Busca cursos por Nombre
  *     tags: [Courses]
- *     description: Busca cursos cuyo nombre coincida con el término de búsqueda.
+ *     description: Busca cursos cuyo Nombre coincida con el término de búsqueda.
  *     parameters:
  *       - in: query
  *         name: searchString
