@@ -54,7 +54,6 @@ describe('MemberModel', () => {
   describe('save', () => {
     test('debe crear nuevo documento si no hay id', async () => {
       const addMock = jest.fn().mockResolvedValue({ id: 'new-id' });
-      const collectionMock = jest.fn().mockReturnValue({ add: addMock });
       db.collection.mockReturnValue({ add: addMock });
       
       const member = new MemberModel({

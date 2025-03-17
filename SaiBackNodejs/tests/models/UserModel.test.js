@@ -50,7 +50,6 @@ describe('UserModel', () => {
       // Mock para el método set de Firestore
       const setMock = jest.fn().mockResolvedValue(true);
       const docMock = jest.fn().mockReturnValue({ set: setMock });
-      const collectionMock = jest.fn().mockReturnValue({ doc: docMock });
       
       db.collection.mockReturnValue({ doc: docMock });
       

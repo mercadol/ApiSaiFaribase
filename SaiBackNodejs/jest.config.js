@@ -6,7 +6,7 @@ module.exports = {
     "^.+\\.js$": "babel-jest",
   },
   transformIgnorePatterns: [
-    "/node_modules/(?!nanoid).+\\.js$", // Transforma todo en node_modules *excepto* nanoid
+    "/node_modules/(?!nanoid).+\\.js$", // Transforma cualquier cosa en node_modules *excepto* nanoid
   ],
   moduleFileExtensions: ["js", "json", "node"],
 };

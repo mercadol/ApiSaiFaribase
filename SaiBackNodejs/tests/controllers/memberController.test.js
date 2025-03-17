@@ -5,13 +5,9 @@ const { mockRequest, mockResponse } = require('jest-mock-req-res');
 jest.mock('../../services/memberService');
 
 describe('MemberController', () => {
-  let req;
-  let res;
 
   beforeEach(() => {
     jest.clearAllMocks();
-    req = mockRequest();
-    res = mockResponse();
   });
 
   describe('validateCreateData', () => {
