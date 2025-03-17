@@ -4,4 +4,6 @@ firebase.js
 package-lock.json
 .env
 /coverage
-
+tests/services/userService.test.js
+tests/controllers/userController.test.js
+tests/integration/auth.test.js

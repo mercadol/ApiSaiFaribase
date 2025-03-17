@@ -1,1 +1,3 @@
 .vscode/settings.json
+SaiBackNodejs/tests/services/userService.test.js
+SaiBackNodejs/tests/integration/auth.test.js
