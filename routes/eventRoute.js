@@ -222,16 +222,17 @@ router.get('/search/:searchString', eventController.search);
 //relaciones
 /**
  * @swagger
- * /events/{entityId}/members:
+ * /events/{eventId}/members:
  *   post:
  *     summary: Agrega un miembro a un evento
  *     tags: [Events]
  *     parameters:
  *       - in: path
- *         name: entityId
+ *         name: eventId
  *         required: true
  *         schema:
  *           type: string
+ *           example: "EVENTO_ABC123"
  *         description: ID del evento
  *     requestBody:
  *       required: true
@@ -239,72 +240,113 @@ router.get('/search/:searchString', eventController.search);
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - memberId
  *             properties:
  *               memberId:
  *                 type: string
+ *                 example: "MIEMBRO_XYZ789"
+ *                 description: ID único del miembro a agregar
  *               data:
  *                 type: object
+ *                 example: { "rol": "Lider", "fecha_inscripcion": "2024-03-01" }
+ *                 description: Datos adicionales de la relación
  *     responses:
  *       201:
- *         description: Miembro agregado correctamente
+ *         description: Miembro agregado correctamente    
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Miembro agregado correctamente"
+ *               result: { courseId: "EVENTO_ABC123", memberId: "MIEMBRO_XYZ789" }
  *       500:
  *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             example:
+ *               error: "Error al agregar miembro"
  */
-router.post('/:entityId/members', eventController.addMember);
+router.post('/:eventId/members', eventController.addMember);
 
 /**
  * @swagger
- * /events/{entityId}/members/{memberId}:
+ * /events/{eventId}/members/{memberId}:
  *   delete:
  *     summary: Elimina un miembro de un evento
  *     tags: [Events]
  *     parameters:
  *       - in: path
- *         name: entityId
+ *         name: eventId
  *         required: true
  *         schema:
  *           type: string
+ *           example: "EVENTO_ABC123"
  *         description: ID del evento
  *       - in: path
  *         name: memberId
  *         required: true
  *         schema:
  *           type: string
+ *           example: "MIEMBRO_XYZ789"
  *         description: ID del miembro a eliminar
  *     responses:
  *       200:
  *         description: Miembro eliminado correctamente
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Miembro removido correctamente"
  *       500:
  *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             example:
+ *               error: "Error al eliminar miembro"
  */
-router.delete('/:entityId/members/:memberId', eventController.removeMember);
+router.delete('/:eventId/members/:memberId', eventController.removeMember);
 
 /**
  * @swagger
- * /events/{entityId}/members:
+ * /events/{eventId}/members:
  *   get:
  *     summary: Obtiene la lista de miembros de un evento
+ *     description: Devuelve la lista completa de miembros asociados
  *     tags: [Events]
  *     parameters:
  *       - in: path
- *         name: entityId
+ *         name: eventId
  *         required: true
  *         schema:
  *           type: string
+ *           example: "EVENTO_ABC123"
  *         description: ID del evento
  *     responses:
  *       200:
  *         description: Lista de miembros obtenida exitosamente
+ *         content:
+ *           application/json:
+ *             example:
+ *               - id: "MIEMBRO_XYZ789"
+ *                 nombre: "Juan Pérez"
+ *                 rol: "estudiante"
+ *               - id: "MIEMBRO_DEF456"
+ *                 nombre: "María García"
+ *                 rol: "instructor"
  *       500:
  *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             example:
+ *               error: "Error al obtener miembros"
  */
-router.get('/:entityId/members', eventController.getEventMembers);
+router.get('/:eventId/members', eventController.getEventMembers);
 
 /**
  * @swagger
- * /members/{memberId}/events:
+ * /events/members/{memberId}/events:
  *   get:
  *     summary: Obtiene la lista de eventos a los que pertenece un miembro
+ *     description: Devuelve la lista asociados a un miembro específico
  *     tags: [Events]
  *     parameters:
  *       - in: path
@@ -312,12 +354,26 @@ router.get('/:entityId/members', eventController.getEventMembers);
  *         required: true
  *         schema:
  *           type: string
+ *           example: "MIEMBRO_XYZ789"
  *         description: ID del miembro
  *     responses:
  *       200:
  *         description: Lista de eventos obtenida exitosamente
+ *         content:
+ *           application/json:
+ *             example:
+ *               - id: "EVENTO_ABC123"
+ *                 nombre: "Introducción a la programación"
+ *                 fecha_inscripcion: "2024-03-01"
+ *               - id: "EVENTO_DEF456"
+ *                 nombre: "Bases de datos avanzadas"
+ *                 fecha_inscripcion: "2024-02-15"
  *       500:
  *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             example:
+ *               error: "Error al obtener eventos del miembro"
  */
 router.get('/members/:memberId/events', eventController.getMemberEvents);
 

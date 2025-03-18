@@ -1,8 +1,6 @@
-// eventController.js
-'use strict';
+// controllers/eventController.js
 
 const BaseController = require('./BaseController');
-const RelationController = require('./RelationController');
 const eventService = require('../services/eventService');
 
 /**
@@ -21,7 +19,11 @@ class EventController extends BaseController {
       entityPlural: 'events'
     });
 
-    this.relationController = new RelationController(eventService, 'Event');
+    // Enlazar métodos de relaciones
+    this.addMember = this.addMember.bind(this);
+    this.removeMember = this.removeMember.bind(this);
+    this.getEventMembers = this.getEventMembers.bind(this);
+    this.getMemberEvents = this.getMemberEvents.bind(this);
   }
 
   /**
@@ -31,16 +33,14 @@ class EventController extends BaseController {
    * contrario null.
    */
   validateCreateData(data) {
-    const { Nombre, Descripcion, Fecha } = data;
+    const { Nombre, Descripcion } = data;
     if (!Nombre) return 'El Nombre del Evento es obligatorio';
     if (!this.validator.isLength(Nombre, { min: 3, max: 50 })) {
       return 'El Nombre debe tener entre 3 y 50 caracteres';
     }
-
     if (Descripcion && !this.validator.isLength(Descripcion, { max: 500 })) {
       return 'La descripción no puede superar los 500 caracteres';
     }
-
     return null;
   }
 
@@ -62,15 +62,52 @@ class EventController extends BaseController {
     }
     return data;
   }
+
+  async addMember(req, res, next) {
+    try {
+      const { eventId } = req.params;
+      const { memberId } = req.body;
+      const result = await this.service.addMember(memberId, eventId);
+      res
+        .status(201)
+        .json({ message: "Member added to Event successfully", result });
+    } catch (error) {
+      next(new ApiError(500, error.message));
+    }
+  }
+
+  async removeMember(req, res, next) {
+    try {
+      const { memberId, eventId } = req.params;
+      await this.service.removeMember(memberId, eventId);
+      res
+        .status(200)
+        .json({ message: "Member removed from Event successfully" });
+    } catch (error) {
+      next(new ApiError(500, error.message));
+    }
+  }
+
+  async getEventMembers(req, res, next) {
+    try {
+      const { eventId } = req.params;
+      const members = await this.service.getEventMembers(eventId);
+      res.status(200).json(members);
+    } catch (error) {
+      next(new ApiError(500, error.message));
+    }
+  }
+
+  async getMemberEvents(req, res, next) {
+    try {
+      const { memberId } = req.params;
+      const events = await this.service.getMemberEvents(memberId);
+      res.status(200).json(events);
+    } catch (error) {
+      next(new ApiError(500, error.message));
+    }
+  }
 }
 
 const eventController = new EventController();
-
-// Delegar métodos de relaciones usando la instancia de RelationController
-eventController.addMember = eventController.relationController.addMember;
-eventController.removeMember = eventController.relationController.removeMember;
-eventController.getEventMembers = eventController.relationController.getEntityMembers;
-eventController.getMemberEvents = eventController.relationController.getMemberEntities;
-
 module.exports = eventController;
-

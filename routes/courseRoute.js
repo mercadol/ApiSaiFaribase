@@ -228,89 +228,132 @@ router.get('/search/:searchString', courseController.search);
 //relaciones curso-Miembro
 /**
  * @swagger
- * /courses/{entityId}/members:
+ * /courses/{courseId}/members:
  *   post:
  *     summary: Agrega un miembro a un curso
  *     tags: [Courses]
  *     parameters:
  *       - in: path
- *         name: entityId
+ *         name: courseId
  *         required: true
  *         schema:
  *           type: string
- *         description: ID del curso
+ *           example: "CURSO_ABC123"
+ *         description: ID único del curso
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - memberId
  *             properties:
  *               memberId:
  *                 type: string
+ *                 example: "MIEMBRO_XYZ789"
+ *                 description: ID único del miembro a agregar
  *               data:
  *                 type: object
+ *                 example: { "rol": "estudiante", "fecha_inscripcion": "2024-03-01" }
+ *                 description: Datos adicionales de la relación
  *     responses:
  *       201:
- *         description: Miembro agregado correctamente
+ *         description: Miembro agregado exitosamente al curso
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Miembro agregado al curso correctamente"
+ *               result: { courseId: "CURSO_ABC123", memberId: "MIEMBRO_XYZ789" }
  *       500:
  *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             example:
+ *               error: "Error al agregar miembro al curso"
  */
-router.post('/:entityId/members', courseController.addMember);
+router.post('/:courseId/members', courseController.addMember);
 
 /**
  * @swagger
- * /courses/{entityId}/members/{memberId}:
+ * /courses/{courseId}/members/{memberId}:
  *   delete:
  *     summary: Elimina un miembro de un curso
+ *     description: Remueve la asociación de un miembro con un curso específico
  *     tags: [Courses]
  *     parameters:
  *       - in: path
- *         name: entityId
+ *         name: courseId
  *         required: true
  *         schema:
  *           type: string
- *         description: ID del curso
+ *           example: "CURSO_ABC123"
+ *         description: ID único del curso
  *       - in: path
  *         name: memberId
  *         required: true
  *         schema:
  *           type: string
- *         description: ID del miembro a eliminar
+ *           example: "MIEMBRO_XYZ789"
+ *         description: ID único del miembro a eliminar
  *     responses:
  *       200:
- *         description: Miembro eliminado correctamente
+ *         description: Miembro eliminado exitosamente del curso
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Miembro removido del curso correctamente"
  *       500:
  *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             example:
+ *               error: "Error al eliminar miembro del curso"
  */
-router.delete('/:entityId/members/:memberId', courseController.removeMember);
+router.delete('/:courseId/members/:memberId', courseController.removeMember);
 
 /**
  * @swagger
- * /courses/{entityId}/members:
+ * /courses/{courseId}/members:
  *   get:
- *     summary: Obtiene la lista de miembros de un curso
+ *     summary: Obtiene todos los miembros de un curso
+ *     description: Devuelve la lista completa de miembros asociados a un curso específico
  *     tags: [Courses]
  *     parameters:
  *       - in: path
- *         name: entityId
+ *         name: courseId
  *         required: true
  *         schema:
  *           type: string
- *         description: ID del curso
+ *           example: "CURSO_ABC123"
+ *         description: ID único del curso
  *     responses:
  *       200:
  *         description: Lista de miembros obtenida exitosamente
+ *         content:
+ *           application/json:
+ *             example:
+ *               - id: "MIEMBRO_XYZ789"
+ *                 nombre: "Juan Pérez"
+ *                 rol: "estudiante"
+ *               - id: "MIEMBRO_DEF456"
+ *                 nombre: "María García"
+ *                 rol: "instructor"
  *       500:
  *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             example:
+ *               error: "Error al obtener miembros del curso"
  */
-router.get('/:entityId/members', courseController.getCourseMembers);
+router.get('/:courseId/members', courseController.getCourseMembers);
 
 /**
  * @swagger
- * /members/{memberId}/courses:
+ * /courses/members/{memberId}/courses:
  *   get:
- *     summary: Obtiene la lista de cursos a los que pertenece un miembro
+ *     summary: Obtiene todos los cursos de un miembro
+ *     description: Devuelve la lista de cursos asociados a un miembro específico
  *     tags: [Courses]
  *     parameters:
  *       - in: path
@@ -318,13 +361,27 @@ router.get('/:entityId/members', courseController.getCourseMembers);
  *         required: true
  *         schema:
  *           type: string
- *         description: ID del miembro
+ *           example: "MIEMBRO_XYZ789"
+ *         description: ID único del miembro
  *     responses:
  *       200:
  *         description: Lista de cursos obtenida exitosamente
+ *         content:
+ *           application/json:
+ *             example:
+ *               - id: "CURSO_ABC123"
+ *                 nombre: "Introducción a la programación"
+ *                 fecha_inscripcion: "2024-03-01"
+ *               - id: "CURSO_DEF456"
+ *                 nombre: "Bases de datos avanzadas"
+ *                 fecha_inscripcion: "2024-02-15"
  *       500:
  *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             example:
+ *               error: "Error al obtener cursos del miembro"
  */
 router.get('/members/:memberId/courses', courseController.getMemberCourses);
 
-module.exports = router;
+module.exports = router;  

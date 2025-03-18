@@ -222,16 +222,17 @@ router.get('/search/:searchString', groupController.search);
 //relaciones
 /**
  * @swagger
- * /groups/{entityId}/members:
+ * /groups/{groupId}/members:
  *   post:
  *     summary: Agrega un miembro a un grupo
  *     tags: [Groups]
  *     parameters:
  *       - in: path
- *         name: entityId
+ *         name: groupId
  *         required: true
  *         schema:
  *           type: string
+ *           example: "GRUPO_ABC123"
  *         description: ID del grupo
  *     requestBody:
  *       required: true
@@ -239,72 +240,114 @@ router.get('/search/:searchString', groupController.search);
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - memberId
  *             properties:
  *               memberId:
  *                 type: string
+ *                 example: "MIEMBRO_XYZ789"
+ *                 description: ID único del miembro a agregar
  *               data:
  *                 type: object
+ *                 example: { "rol": "Lider", "fecha_inscripcion": "2024-03-01" }
+ *                 description: Datos adicionales de la relación
  *     responses:
  *       201:
  *         description: Miembro agregado correctamente
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Miembro agregado correctamente"
+ *               result: { courseId: "GRUPO_ABC123", memberId: "MIEMBRO_XYZ789" }
  *       500:
  *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             example:
+ *               error: "Error al agregar miembro"
  */
-router.post('/:entityId/members', groupController.addMember);
+router.post('/:groupId/members', groupController.addMember);
 
 /**
  * @swagger
- * /groups/{entityId}/members/{memberId}:
+ * /groups/{groupId}/members/{memberId}:
  *   delete:
  *     summary: Elimina un miembro de un grupo
+ *     description: Remueve la asociación de un miembro con un grupo específico
  *     tags: [Groups]
  *     parameters:
  *       - in: path
- *         name: entityId
+ *         name: groupId
  *         required: true
  *         schema:
  *           type: string
+ *           example: "GRUPO_ABC123"
  *         description: ID del grupo
  *       - in: path
  *         name: memberId
  *         required: true
  *         schema:
  *           type: string
+ *           example: "MIEMBRO_XYZ789"
  *         description: ID del miembro a eliminar
  *     responses:
  *       200:
  *         description: Miembro eliminado correctamente
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Miembro removido correctamente"
  *       500:
  *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             example:
+ *               error: "Error al eliminar miembro"
  */
-router.delete('/:entityId/members/:memberId', groupController.removeMember);
+router.delete('/:groupId/members/:memberId', groupController.removeMember);
 
 /**
  * @swagger
- * /groups/{entityId}/members:
+ * /groups/{groupId}/members:
  *   get:
  *     summary: Obtiene la lista de miembros de un grupo
+ *     description: Devuelve la lista completa de miembros asociados
  *     tags: [Groups]
  *     parameters:
  *       - in: path
- *         name: entityId
+ *         name: groupId
  *         required: true
  *         schema:
  *           type: string
+ *           example: "GRUPO_ABC123"
  *         description: ID del grupo
  *     responses:
  *       200:
  *         description: Lista de miembros obtenida exitosamente
+ *         content:
+ *           application/json:
+ *             example:
+ *               - id: "MIEMBRO_XYZ789"
+ *                 nombre: "Juan Pérez"
+ *                 rol: "estudiante"
+ *               - id: "MIEMBRO_DEF456"
+ *                 nombre: "María García"
+ *                 rol: "instructor"
  *       500:
  *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             example:
+ *               error: "Error al obtener miembros"
  */
-router.get('/:entityId/members', groupController.getEntityMembers);
+router.get('/:groupId/members', groupController.getGroupMembers);
 
 /**
  * @swagger
- * /members/{memberId}/groups:
+ * /groups/members/{memberId}/groups:
  *   get:
  *     summary: Obtiene la lista de grupos a los que pertenece un miembro
+ *     description: Devuelve la lista asociados a un miembro específico
  *     tags: [Groups]
  *     parameters:
  *       - in: path
@@ -312,13 +355,27 @@ router.get('/:entityId/members', groupController.getEntityMembers);
  *         required: true
  *         schema:
  *           type: string
- *         description: ID del miembro
+ *           example: "MIEMBRO_XYZ789"
+ *         description: ID único del miembro
  *     responses:
  *       200:
  *         description: Lista de grupos obtenida exitosamente
+ *         content:
+ *           application/json:
+ *             example:
+ *               - id: "GRUPO_ABC123"
+ *                 nombre: "Introducción a la programación"
+ *                 fecha_inscripcion: "2024-03-01"
+ *               - id: "GRUPO_DEF456"
+ *                 nombre: "Bases de datos avanzadas"
+ *                 fecha_inscripcion: "2024-02-15"
  *       500:
  *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             example:
+ *               error: "Error al obtener grupos del miembro"
  */
-router.get('/members/:memberId/groups', groupController.getEntityMembers);
+router.get('/members/:memberId/groups', groupController.getGroupMembers);
 
 module.exports = router;

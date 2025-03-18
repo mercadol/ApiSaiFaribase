@@ -1,7 +1,6 @@
-'use strict';
+// controllers/groupController.js
 
 const BaseController = require('./BaseController');
-const RelationController = require('./RelationController');
 const groupService = require('../services/groupService');
 
 /**
@@ -20,7 +19,11 @@ class GroupController extends BaseController {
       entityPlural: 'groups'
     });
 
-    this.relationController = new RelationController(groupService, 'Group');
+    // Enlazar métodos de relaciones
+    this.addMember = this.addMember.bind(this);
+    this.removeMember = this.removeMember.bind(this);
+    this.getGroupMembers = this.getGroupMembers.bind(this);
+    this.getMemberGroups = this.getMemberGroups.bind(this);
   }
 
   /**
@@ -63,14 +66,52 @@ class GroupController extends BaseController {
     }
     return data;
   }
+
+  async addMember(req, res, next) {
+    try {
+      const { groupId } = req.params;
+      const { memberId } = req.body;
+      const result = await this.service.addMember(memberId, groupId);
+      res
+        .status(201)
+        .json({ message: "Member added to Group successfully", result });
+    } catch (error) {
+      next(new ApiError(500, error.message));
+    }
+  }
+
+  async removeMember(req, res, next) {
+    try {
+      const { memberId, groupId } = req.params;
+      await this.service.removeMember(memberId, groupId);
+      res
+        .status(200)
+        .json({ message: "Member removed from Group successfully" });
+    } catch (error) {
+      next(new ApiError(500, error.message));
+    }
+  }
+
+  async getGroupMembers(req, res, next) {
+    try {
+      const { groupId } = req.params;
+      const members = await this.service.getGroupMembers(groupId);
+      res.status(200).json(members);
+    } catch (error) {
+      next(new ApiError(500, error.message));
+    }
+  }
+
+  async getMemberGroups(req, res, next) {
+    try {
+      const { memberId } = req.params;
+      const groups = await this.service.getMemberGroups(memberId);
+      res.status(200).json(groups);
+    } catch (error) {
+      next(new ApiError(500, error.message));
+    }
+  }
 }
 
 const groupController = new GroupController();
-
-// Delegar métodos de relaciones usando la instancia de RelationController
-groupController.addMember = groupController.relationController.addMember;
-groupController.removeMember = groupController.relationController.removeMember;
-groupController.getEntityMembers = groupController.relationController.getEntityMembers;
-groupController.getMemberEntities = groupController.relationController.getMemberEntities;
-
 module.exports = groupController;
