@@ -4,7 +4,8 @@
   "description": "Este es el backend del proyecto SAI",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js",
+    "start": "node index.js",
+    "dev-start": "nodemon index.js",
     "test": "jest",
     "test-coverage": "jest --coverage",
     "test:integration": "jest tests/integration"
@@ -15,7 +16,6 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "firebase-admin": "^13.0.2",
-    "nanoid": "^5.0.9",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "validator": "^13.12.0"

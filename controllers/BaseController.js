@@ -91,7 +91,7 @@ class BaseController {
     // Validación de datos antes de actualizar
     const validationError = this.validateUpdateData(updatedData);
     if (validationError) {
-      throw new ApiError(400, validationError); // Bad Request
+      throw new ApiError(400, validationError);
     }
     const result = await this.service.update(id, updatedData);
     res.status(200).json(result);
