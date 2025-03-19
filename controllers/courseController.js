@@ -1,5 +1,4 @@
 // controllers/courseController.js
-
 const BaseController = require("./BaseController");
 const courseService = require("../services/courseService");
 
@@ -28,17 +27,43 @@ class CourseController extends BaseController {
 
   /**
    * Valida los datos de creación de un curso.
-   * @param {Object} data - Datos del curso a validar.
-   * @returns {string|null} Mensaje de error si la validación falla, de lo
-   * contrario null.
+   * Solo valida la data y retorna un mensaje de error en caso de fallo.
    */
   validateCreateData(data) {
-    if (!data.Nombre) return "El Nombre es obligatorio";
-    if (data.Nombre.length < 3 || data.Nombre.length > 50) {
-      return "El Nombre debe tener entre 3 y 50 caracteres";
+    if (!data.Nombre || typeof data.Nombre !== 'string' || data.Nombre === "") {
+      return "El campo 'Nombre' es obligatorio y debe ser una cadena de texto.";
     }
-    if (data.Descripcion && data.Descripcion.length > 500) {
-      return "La descripción no puede superar los 500 caracteres";
+    if (!data.descripcion || typeof data.descripcion !== 'string' || data.descripcion === "") {
+      return "El campo 'descripcion' es obligatorio y debe ser una cadena de texto.";
+    }
+    if (data.fechaCreacion && isNaN(Date.parse(data.fechaCreacion))) {
+      return "El campo 'fechaCreacion' debe ser una fecha válida.";
+    }
+    return null;
+  }
+
+  /**
+   * Valida los datos de actualización de un curso.
+   * Solo valida la data y retorna un mensaje de error en caso de fallo.
+   */
+  validateUpdateData(data) {
+    if (data.Nombre !== undefined) {
+      if (typeof data.Nombre !== 'string' || data.Nombre === "") {
+        return "El campo 'Nombre' debe ser una cadena de texto no vacía.";
+      }
+    }
+    if (data.descripcion !== undefined) {
+      if (typeof data.descripcion !== 'string' || data.descripcion === "") {
+        return "El campo 'descripcion' debe ser una cadena de texto no vacía.";
+      }
+    }
+    if (data.fechaCreacion !== undefined) {
+      if (data.fechaCreacion && isNaN(Date.parse(data.fechaCreacion))) {
+        return "El campo 'fechaCreacion' debe ser una fecha válida.";
+      }
+    }
+    if (Object.keys(data).length === 0) {
+      return "No se proporcionaron datos válidos para actualizar.";
     }
     return null;
   }

@@ -18,24 +18,8 @@ class memberController extends BaseController {
   }
 
   /**
-   * Valida los datos recibidos para actualizar un miembro.
-   *
-   * @param {Object} data - Datos a validar.
-   * @returns {string|null} Mensaje de error si la validación falla; de lo contrario, null.
-   */
-  validateUpdateData(data) {
-    if (data.Nombre && (data.Nombre.length < 3 || data.Nombre.length > 50)) {
-      return "El campo Nombre debe tener entre 3 y 50 caracteres";
-    }
-    // Se pueden agregar más validaciones según se requiera.
-    return null;
-  }
-
-  /**
    * Valida los datos recibidos para la creación de un miembro.
-   *
-   * @param {Object} data - Datos a validar.
-   * @returns {string|null} Mensaje de error si la validación falla; de lo contrario, null.
+   * Solo valida la data y retorna un mensaje de error en caso de fallo.
    */
   validateCreateData(data) {
     const validMemberTypes = ["Miembro", "Visitante", "Bautizado"];
@@ -45,19 +29,49 @@ class memberController extends BaseController {
     if (data.Nombre.length < 3 || data.Nombre.length > 50) {
       return "El campo Nombre debe tener entre 3 y 50 caracteres";
     }
-
     if (!validMemberTypes.includes(data.TipoMiembro)) {
       return `TipoMiembro debe ser: ${validMemberTypes.join(", ")}`;
     }
-
     if (data.EstadoCivil && !validEstadosCiviles.includes(data.EstadoCivil)) {
       return `EstadoCivil debe ser: ${validEstadosCiviles.join(", ")}`;
     }
-
     if (data.Email && !this.validator.isEmail(data.Email)) {
-      return 'Formato de email inválido';
+      return "Formato de email inválido";
     }
+    return null;
+  }
 
+  /**
+   * Valida los datos recibidos para actualizar un miembro.
+   * Solo valida la data y retorna un mensaje de error en caso de fallo.
+   */
+  validateUpdateData(data) {
+    const validMemberTypes = ["Miembro", "Visitante", "Bautizado"];
+    const validEstadosCiviles = ["Soltero", "Casado", "Divorciado", "Viudo"];
+
+    if (Object.keys(data).length === 0) {
+      return "No se proporcionaron datos válidos para actualizar.";
+    }
+    if (data.Nombre !== undefined) {
+      if (data.Nombre.length < 3 || data.Nombre.length > 50) {
+        return "El campo Nombre debe tener entre 3 y 50 caracteres";
+      }
+    }
+    if (data.TipoMiembro !== undefined) {
+      if (!validMemberTypes.includes(data.TipoMiembro)) {
+        return `TipoMiembro debe ser: ${validMemberTypes.join(", ")}`;
+      }
+    }
+    if (data.EstadoCivil !== undefined) {
+      if (!validEstadosCiviles.includes(data.EstadoCivil)) {
+        return `EstadoCivil debe ser: ${validEstadosCiviles.join(", ")}`;
+      }
+    }
+    if (data.Email !== undefined) {
+      if (!this.validator.isEmail(data.Email)) {
+        return "Formato de email inválido";
+      }
+    }
     return null;
   }
 

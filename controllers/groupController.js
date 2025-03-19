@@ -28,22 +28,46 @@ class GroupController extends BaseController {
 
   /**
    * Valida los datos de creación de un grupo.
-   * @param {Object} data - Datos del grupo a validar.
-   * @returns {string|null} Mensaje de error si la validación falla, de lo
-   * contrario null.
+   * Solo valida la data y retorna un mensaje de error en caso de fallo.
    */
   validateCreateData(data) {
-    const { Nombre, Descripcion, Nota } = data;
-    if (!Nombre) return 'El Nombre del grupo es obligatorio';
-    if (!this.validator.isLength(Nombre, { min: 3, max: 50 })) {
-      return 'El Nombre debe tener entre 3 y 50 caracteres';
+    if (!data.Nombre) {
+      return "El Nombre del grupo es obligatorio";
     }
+    if (!this.validator.isLength(data.Nombre, { min: 3, max: 50 })) {
+      return "El Nombre debe tener entre 3 y 50 caracteres";
+    }
+    if (data.Descripcion && !this.validator.isLength(data.Descripcion, { max: 500 })) {
+      return "La descripción no puede superar los 500 caracteres";
+    }
+    if (data.Nota && !this.validator.isLength(data.Nota, { max: 1000 })) {
+      return "La nota no puede superar los 1000 caracteres";
+    }
+    return null;
+  }
 
-    if (Descripcion && !this.validator.isLength(Descripcion, { max: 500 })) {
-      return 'La descripción no puede superar los 500 caracteres';
+  /**
+   * Valida los datos de actualización de un grupo.
+   * Solo valida la data y retorna un mensaje de error en caso de fallo.
+   */
+  validateUpdateData(data) {
+    if (data.Nombre !== undefined) {
+      if (!this.validator.isLength(data.Nombre, { min: 3, max: 50 })) {
+        return "El Nombre debe tener entre 3 y 50 caracteres";
+      }
     }
-    if (Nota && !this.validator.isLength(Nota, { max: 1000 })) {
-      return 'La nota no puede superar los 1000 caracteres';
+    if (data.Descripcion !== undefined) {
+      if (data.Descripcion && !this.validator.isLength(data.Descripcion, { max: 500 })) {
+        return "La descripción no puede superar los 500 caracteres";
+      }
+    }
+    if (data.Nota !== undefined) {
+      if (data.Nota && !this.validator.isLength(data.Nota, { max: 1000 })) {
+        return "La nota no puede superar los 1000 caracteres";
+      }
+    }
+    if (Object.keys(data).length === 0) {
+      return "No se proporcionaron datos válidos para actualizar.";
     }
     return null;
   }
