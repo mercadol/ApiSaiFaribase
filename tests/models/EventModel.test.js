@@ -1,6 +1,4 @@
 // tests/models/EventModel.test.js
-"use strict";
-
 const { db } = require('../../firebase');
 const EventModel = require('../../models/EventModel');
 const ApiError = require('../../utils/ApiError');

@@ -1,6 +1,4 @@
 // controllers/BaseController.js
-"use strict";
-
 const ApiError = require("../utils/ApiError");
 const validator = require("validator");
 

@@ -1,6 +1,4 @@
 // services/courseService.js
-"use strict";
-
 const CourseModel = require("../models/CourseModel");
 
 const courseService = {

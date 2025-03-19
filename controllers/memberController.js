@@ -1,6 +1,4 @@
 // controller/memberController.js
-"use strict";
-
 const BaseController = require("./BaseController");
 const memberService = require("../services/memberService");
 

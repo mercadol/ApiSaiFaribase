@@ -1,5 +1,4 @@
-'use strict'
-
+// index.js
 require('dotenv').config();
 
 const app = require('./app');

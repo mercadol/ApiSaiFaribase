@@ -1,6 +1,4 @@
 // services/memberService.js
-"use strict";
-
 const MemberModel = require("../models/MemberModel");
 
 /**

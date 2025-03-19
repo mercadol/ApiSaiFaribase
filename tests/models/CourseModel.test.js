@@ -1,6 +1,4 @@
 // tests/models/CourseModel.test.js
-"use strict";
-
 const { db } = require('../../firebase');
 const CourseModel = require('../../models/CourseModel');
 const ApiError = require('../../utils/ApiError');

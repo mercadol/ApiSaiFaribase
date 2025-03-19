@@ -1,6 +1,4 @@
 // services/groupService.js
-"use strict";
-
 const GroupModel = require("../models/GroupModel");
 
 const groupService = {

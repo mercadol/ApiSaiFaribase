@@ -1,6 +1,4 @@
 // controllers/userController.js
-"use strict";
-
 const userService = require('../services/userService');
 const validator = require('validator');
 

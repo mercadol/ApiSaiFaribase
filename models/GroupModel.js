@@ -1,6 +1,4 @@
 // models/GroupModel.js
-"use strict";
-
 const { db } = require("../firebase");
 const ApiError = require("../utils/ApiError");
 

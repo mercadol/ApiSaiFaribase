@@ -1,7 +1,5 @@
 // middlewares/errorHandler.js
-'use strict';
 const ApiError = require('../utils/ApiError');
-
 /**
  * Middleware de manejo de errores.
  * Si el error es una instancia de ApiError, se usan sus propiedades; de lo contrario se

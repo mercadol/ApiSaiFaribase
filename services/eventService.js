@@ -1,6 +1,4 @@
 // services/evenServices.js
-"use strict";
-
 const EventModel = require("../models/EventModel");
 
 const eventService = {

@@ -1,6 +1,4 @@
 // models/CourseModel.js
-"use strict";
-
 const { db } = require("../firebase");
 const ApiError = require('../utils/ApiError');
 
@@ -148,8 +146,7 @@ class CourseModel {
         memberId: memberId,
       });
     } catch (error) {
-        console.error("Error agregando miembro al curso:", error);
-        throw new ApiError(500, "Error al agregar miembro al curso. Inténtelo más tarde.");
+      throw new ApiError(500, `Error al agregar miembro al curso. Inténtelo más tarde: ${error.message}`);
       }
     }
   
@@ -165,8 +162,7 @@ class CourseModel {
         const relationId = `${this.id}_${memberId}`;
         await db.collection("CourseMember").doc(relationId).delete();
       } catch (error) {
-        console.error("Error eliminando miembro del curso:", error);
-        throw new ApiError(500, "Error al eliminar miembro del curso. Inténtelo más tarde.");
+      throw new ApiError(500, `Error al eliminar miembro del curso. Inténtelo más tarde: ${error.message}`);
       }
     }
   
@@ -180,8 +176,7 @@ class CourseModel {
         const members = snapshot.docs.map(doc => doc.data().memberId);
         return members; // Devuelve una lista de IDs de miembros
       } catch (error) {
-        console.error("Error obteniendo miembros del curso:", error);
-        throw new ApiError(500, "Error al obtener miembros del curso. Inténtelo más tarde.");
+      throw new ApiError(500, `Error al obtener miembros del curso. Inténtelo más tarde: ${error.message}`);
       }
     }
 

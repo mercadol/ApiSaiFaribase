@@ -1,6 +1,4 @@
 // models/UserModel.js
-"use strict";
-
 const { db, auth } = require('../firebase');
 const ApiError = require('../utils/ApiError');
 

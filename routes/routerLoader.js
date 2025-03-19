@@ -1,6 +1,4 @@
 // routes/routerLoader.js
-'use strict'
-
 const express = require('express');
 
 // Importación de rutas específicas

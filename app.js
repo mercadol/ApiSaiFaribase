@@ -1,4 +1,4 @@
-"use strict";
+// app.js
 const express = require("express");
 const loadRoutes = require("./routes/routerLoader");
 const errorHandler = require("./middlewares/errorHandler");

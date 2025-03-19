@@ -1,6 +1,4 @@
 // services/userService.js
-"use strict";
-
 const { auth } = require('../firebase');
 const UserModel = require('../models/UserModel');
 

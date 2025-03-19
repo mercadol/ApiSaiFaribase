@@ -1,5 +1,3 @@
-"use strict";
-
 const db = require("../firebase").db;
 
 class Validations {
