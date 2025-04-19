@@ -4,11 +4,13 @@ const loadRoutes = require("./routes/routerLoader");
 const errorHandler = require("./middlewares/errorHandler");
 const ApiError = require('./utils/ApiError');
 const setupSwagger = require("./swagger");
+const logger = require('./utils/logger');
+const pinoHttp = require('pino-http');
 
-// Ejecutar express (http)
 const app = express();
 
 // MiddLewares
+app.use(pinoHttp({ logger }));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 //CORS
@@ -30,7 +32,9 @@ app.use("/api", loadRoutes); // todas las rutas inician por API
 setupSwagger(app);
 // Middleware para manejar rutas no encontradas (404)
 app.use((req, res, next) => {
-  next(new ApiError(404, "Route Not Found")); // Lanza un error 404
+  // loguear intento de ruta de acceso a ruta no encontrada
+  logger.warn(`Ruta no encontrada: ${req.method} ${req.originalUrl}`);
+  next(new ApiError(404, `La ruta ${req.originalUrl} no fue encontrada en este servidor.`)); // Lanza un error 404
 });
 app.use(errorHandler);
 
