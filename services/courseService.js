@@ -14,8 +14,12 @@ const courseService = {
   create: async (courseData) => {
     const course = new CourseModel({
       Nombre: courseData.Nombre,
-      descripcion: courseData.Descripcion,
-      fechaCreacion: courseData.FechaCreacion || new Date()
+      Descripcion: courseData.Descripcion,
+      Duracion: courseData.Duracion,
+      FechaInicio: courseData.FechaInicio || new Date(),
+      FechaCreacion: courseData.FechaCreacion || new Date(),
+      Nivel: courseData.Nivel,
+      Estado: courseData.Estado,
     });
     await course.save();
     return course.id;
@@ -23,11 +27,12 @@ const courseService = {
 
   update: async (id, updatedData) => {
     const course = await CourseModel.findById(id);
-    
-    // Actualizar propiedades
+
     if (updatedData.Nombre) course.Nombre = updatedData.Nombre;
-    if (updatedData.Descripcion) course.descripcion = updatedData.Descripcion;
-    
+    if (updatedData.Descripcion) course.Descripcion = updatedData.Descripcion;
+    if (updatedData.Nivel) course.Nivel = updatedData.Nivel;
+    if (updatedData.Estado) course.Estado = updatedData.Estado;
+
     await course.save();
     return course;
   },
@@ -61,7 +66,6 @@ const courseService = {
   getMemberCourses: async (memberId) => {
     return CourseModel.getMemberCourses(memberId);
   },
-  
 };
 
 module.exports = courseService;

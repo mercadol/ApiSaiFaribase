@@ -1,7 +1,18 @@
 // routes/courseRoute.js
-const express = require('express');
-const courseController = require('../controllers/courseController');
+const express = require("express");
+const courseController = require("../controllers/courseController");
 const router = express.Router();
+// Validadores
+const {
+  createCourseValidation,
+  updateCourseValidation,
+  courseIdValidation,
+  courseMemberValidation,
+  courseMemberDeleteValidation,
+  getCourseMembersValidation,
+  memberCoursesValidation,
+} = require("../services/validators/courseValidator");
+const authenticate = require("../middlewares/authenticate");
 
 /**
  * @swagger
@@ -37,7 +48,7 @@ const router = express.Router();
  *       500:
  *         description: An error occurred
  */
-router.get('/', courseController.getAll);
+router.get("/", courseController.getAll);
 
 /**
  * @swagger
@@ -72,7 +83,7 @@ router.get('/', courseController.getAll);
  *       500:
  *         description: Error al obtener el curso
  */
-router.get('/:id', courseController.getById);
+router.get("/:id", courseIdValidation, courseController.getById);
 
 /**
  * @swagger
@@ -127,7 +138,7 @@ router.get('/:id', courseController.getById);
  *             example:
  *               error: "Error al guardar el curso. Por favor, inténtalo más tarde."
  */
-router.post('/', courseController.create);
+router.post("/", createCourseValidation, courseController.create);
 
 /**
  * Elimina un curso por su ID.
@@ -156,7 +167,7 @@ router.post('/', courseController.create);
  *       500:
  *         description: Error al eliminar el curso
  */
-router.delete('/:id', courseController.delete);
+router.delete("/:id", courseIdValidation, courseController.delete);
 
 /**
  * @swagger
@@ -180,7 +191,7 @@ router.delete('/:id', courseController.delete);
  *               - Id
  *               - {data}
  * */
-router.put('/:id', courseController.update);
+router.put("/:id", updateCourseValidation, courseController.update);
 
 /**
  * @swagger
@@ -222,8 +233,11 @@ router.put('/:id', courseController.update);
  *       500:
  *         description: Error al realizar la búsqueda
  */
-router.get('/search/:searchString', courseController.search);
+router.get("/search/:searchString", courseController.search);
+// GET /courses/search/:searchString - Requiere su propio validador para searchString
+// router.get('/search/:searchString', authenticate, searchValidation, courseController.search);
 
+// -----------------------------------------------------------------------
 //relaciones curso-Miembro
 /**
  * @swagger
@@ -271,7 +285,11 @@ router.get('/search/:searchString', courseController.search);
  *             example:
  *               error: "Error al agregar miembro al curso"
  */
-router.post('/:courseId/members', courseController.addMember);
+router.post(
+  "/:courseId/members",
+  courseMemberValidation,
+  courseController.addMember
+);
 
 /**
  * @swagger
@@ -309,7 +327,11 @@ router.post('/:courseId/members', courseController.addMember);
  *             example:
  *               error: "Error al eliminar miembro del curso"
  */
-router.delete('/:courseId/members/:memberId', courseController.removeMember);
+router.delete(
+  "/:courseId/members/:memberId",
+  courseMemberDeleteValidation,
+  courseController.removeMember
+);
 
 /**
  * @swagger
@@ -345,7 +367,11 @@ router.delete('/:courseId/members/:memberId', courseController.removeMember);
  *             example:
  *               error: "Error al obtener miembros del curso"
  */
-router.get('/:courseId/members', courseController.getCourseMembers);
+router.get(
+  "/:courseId/members",
+  getCourseMembersValidation,
+  courseController.getCourseMembers
+);
 
 /**
  * @swagger
@@ -381,6 +407,10 @@ router.get('/:courseId/members', courseController.getCourseMembers);
  *             example:
  *               error: "Error al obtener cursos del miembro"
  */
-router.get('/members/:memberId/courses', courseController.getMemberCourses);
+router.get(
+  "/members/:memberId/courses",
+  memberCoursesValidation,
+  courseController.getMemberCourses
+);
 
-module.exports = router;  
+module.exports = router;

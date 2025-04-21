@@ -1,5 +1,6 @@
 // middlewares/authenticate.js
 const { auth } = require('../firebase');
+const ApiError = require('../utils/ApiError');
 
 /**
  * Middleware de autenticación.
@@ -21,6 +22,7 @@ const authenticate = async (req, res, next) => {
     req.user = await auth.getUser(decodedToken.uid); // Se agrega la información del usuario a la solicitud
     next();
   } catch (error) {
+    next(new ApiError(401, 'Token no válido'));
     return res.status(401).json({ message: 'Token no válido' });
   }
 };
