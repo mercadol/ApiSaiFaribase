@@ -9,8 +9,12 @@ class CourseModel {
   constructor(data) {
     this.id = data.id || null;
     this.Nombre = data.Nombre || "";
-    this.descripcion = data.descripcion || "";
-    this.fechaCreacion = data.fechaCreacion || new Date();
+    this.Descripcion = data.Descripcion || "";
+    this.Duracion = data.Duracion || "";
+    this.FechaInicio = data.FechaInicio || "";
+    this.FechaCreacion = data.FechaCreacion || new Date();
+    this.Nivel = data.Nivel || "";
+    this.Estado = data.Estado || "";
   }
   
   /**
@@ -21,8 +25,12 @@ class CourseModel {
     try {
       const courseData = {
         Nombre: this.Nombre,
-        descripcion: this.descripcion,
-        fechaCreacion: this.fechaCreacion,
+        Descripcion: this.Descripcion,
+        Duracion: this.Duracion,
+        FechaInicio: this.FechaInicio || null,
+        FechaCreacion: this.FechaCreacion,
+        Nivel: this.Nivel,
+        Estado: this.Estado,
       };
 
       if (this.id) {
