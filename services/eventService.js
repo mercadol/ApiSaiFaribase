@@ -15,8 +15,10 @@ const eventService = {
     
     const event = new EventModel({
       Nombre: eventData.Nombre,
-      descripcion: eventData.Descripcion,
-      fecha: eventData.Fecha || new Date()
+      Descripcion: eventData.Descripcion,
+      Fecha: eventData.Fecha || new Date(),
+      Estado: eventData.Estado || "",
+      Lugar: eventData.Lugar
     });
     await event.save();
     return event.id;
@@ -27,8 +29,10 @@ const eventService = {
     
     // Actualizar propiedades
     if (updatedData.Nombre) event.Nombre = updatedData.Nombre;
-    if (updatedData.Descripcion) event.descripcion = updatedData.Descripcion;
-    if (updatedData.Fecha) event.fecha = updatedData.Fecha;
+    if (updatedData.Descripcion) event.Descripcion = updatedData.Descripcion;
+    if (updatedData.Fecha) event.Fecha = updatedData.Fecha;
+    if (updatedData.Estado) event.Estado=updatedData.Estado;
+    if (updatedData.Lugar) event.Lugar =updatedData.Lugar;
     
     await event.save();
     return event;

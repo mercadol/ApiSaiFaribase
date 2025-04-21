@@ -248,7 +248,7 @@ router.get('/search/:searchString', eventController.search);
  *                 description: ID único del miembro a agregar
  *               data:
  *                 type: object
- *                 example: { "rol": "Lider", "fecha_inscripcion": "2024-03-01" }
+ *                 example: { "rol": "Lider", "Fecha_inscripcion": "2024-03-01" }
  *                 description: Datos adicionales de la relación
  *     responses:
  *       201:
@@ -363,10 +363,10 @@ router.get('/:eventId/members', eventController.getEventMembers);
  *             example:
  *               - id: "EVENTO_ABC123"
  *                 nombre: "Introducción a la programación"
- *                 fecha_inscripcion: "2024-03-01"
+ *                 Fecha_inscripcion: "2024-03-01"
  *               - id: "EVENTO_DEF456"
  *                 nombre: "Bases de datos avanzadas"
- *                 fecha_inscripcion: "2024-02-15"
+ *                 Fecha_inscripcion: "2024-02-15"
  *       500:
  *         description: Error interno del servidor
  *         content:

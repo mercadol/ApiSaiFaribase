@@ -14,8 +14,10 @@ class EventModel {
   constructor(data) {
     this.id = data.id || null;
     this.Nombre = data.Nombre || "";
-    this.descripcion = data.descripcion || "";
-    this.fecha = data.fecha || new Date();
+    this.Descripcion = data.Descripcion || "";
+    this.Fecha = data.Fecha || new Date();
+    this.Estado = data.Estado || "";
+    this.Lugar =data.Lugar || "";
   }
 
   /**
@@ -27,8 +29,10 @@ class EventModel {
     try {
       const eventData = {
         Nombre: this.Nombre,
-        descripcion: this.descripcion,
-        fecha: this.fecha,
+        Descripcion: this.Descripcion,
+        Fecha: this.Fecha,
+        Estado: this.Estado,
+        Lugar: this.Lugar
       };
 
       if (this.id) {

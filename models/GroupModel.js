@@ -14,8 +14,8 @@ class GroupModel {
   constructor(data) {
     this.id = data.id || null;
     this.Nombre = data.Nombre || "";
-    this.descripcion = data.descripcion || "";
-    this.fechaCreacion = data.fechaCreacion || new Date();
+    this.Descripcion = data.Descripcion || "";
+    this.FechaCreacion = data.FechaCreacion || new Date();
   }
 
   /**
@@ -27,8 +27,8 @@ class GroupModel {
   async save() {
     const groupData = {
       Nombre: this.Nombre,
-      descripcion: this.descripcion,
-      fechaCreacion: this.fechaCreacion,
+      Descripcion: this.Descripcion,
+      FechaCreacion: this.FechaCreacion,
     };
 
     try {

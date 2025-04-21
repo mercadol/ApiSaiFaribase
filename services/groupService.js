@@ -14,8 +14,8 @@ const groupService = {
   create: async (groupData) => {
     const group = new GroupModel({
       Nombre: groupData.Nombre,
-      descripcion: groupData.Descripcion,
-      fechaCreacion: groupData.FechaCreacion || new Date()
+      Descripcion: groupData.Descripcion,
+      FechaCreacion: groupData.FechaCreacion || new Date()
     });
     await group.save();
     return group.id;
@@ -26,8 +26,8 @@ const groupService = {
     
     // Actualizar propiedades
     if (updatedData.Nombre) group.Nombre = updatedData.Nombre;
-    if (updatedData.Descripcion) group.descripcion = updatedData.Descripcion;
-    if (updatedData.FechaCreacion) group.fechaCreacion = updatedData.FechaCreacion;
+    if (updatedData.Descripcion) group.Descripcion = updatedData.Descripcion;
+    if (updatedData.FechaCreacion) group.FechaCreacion = updatedData.FechaCreacion;
     
     await group.save();
     return group;
