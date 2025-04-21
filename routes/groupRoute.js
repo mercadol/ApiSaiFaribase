@@ -1,7 +1,18 @@
 // routes/groupRoute.js
-const express = require('express');
-const groupController = require('../controllers/groupController');
+const express = require("express");
+const groupController = require("../controllers/groupController");
 const router = express.Router();
+// Validadores
+const {
+  createGroupValidation,
+  updateGroupValidation,
+  groupIdValidation,
+  groupMemberValidation,
+  groupMemberDeleteValidation,
+  getGroupMembersValidation,
+  memberGroupsValidation,
+} = require("../services/validators/groupValidator");
+const authenticate = require("../middlewares/authenticate");
 
 /**
  * @swagger
@@ -37,7 +48,7 @@ const router = express.Router();
  *       500:
  *         description: An error occurred
  */
-router.get('/', groupController.getAll);
+router.get("/", groupController.getAll);
 
 /**
  * @swagger
@@ -72,7 +83,7 @@ router.get('/', groupController.getAll);
  *       500:
  *         description: Error al obtener el grupo
  */
-router.get('/:id', groupController.getById);
+router.get("/:id", groupIdValidation, groupController.getById);
 
 /**
  * @swagger
@@ -90,7 +101,7 @@ router.get('/:id', groupController.getById);
  *               - Nombre
  *               - Descripcion
  *               - Nota
- * 
+ *
  *     responses:
  *       201:
  *         description: Grupo creado exitosamente.
@@ -121,7 +132,7 @@ router.get('/:id', groupController.getById);
  *             example:
  *               error: "Error al guardar el grupo. Por favor, inténtalo más tarde."
  */
-router.post('/', groupController.create);
+router.post("/", createGroupValidation, groupController.create);
 
 /**
  * Elimina un grupo por su ID.
@@ -150,7 +161,7 @@ router.post('/', groupController.create);
  *       500:
  *         description: Error al eliminar el grupo
  */
-router.delete('/:id', groupController.delete);
+router.delete("/:id", groupIdValidation, groupController.delete);
 
 /**
  * @swagger
@@ -174,7 +185,7 @@ router.delete('/:id', groupController.delete);
  *               - Id
  *               - {data}
  * */
-router.put('/:id', groupController.update);
+router.put("/:id", updateGroupValidation, groupController.update);
 
 /**
  * @swagger
@@ -216,7 +227,7 @@ router.put('/:id', groupController.update);
  *       500:
  *         description: Error al realizar la búsqueda
  */
-router.get('/search/:searchString', groupController.search);
+router.get("/search/:searchString", groupController.search);
 
 //relaciones
 /**
@@ -257,7 +268,7 @@ router.get('/search/:searchString', groupController.search);
  *           application/json:
  *             example:
  *               message: "Miembro agregado correctamente"
- *               result: { courseId: "GRUPO_ABC123", memberId: "MIEMBRO_XYZ789" }
+ *               result: { groupId: "GRUPO_ABC123", memberId: "MIEMBRO_XYZ789" }
  *       500:
  *         description: Error interno del servidor
  *         content:
@@ -265,7 +276,11 @@ router.get('/search/:searchString', groupController.search);
  *             example:
  *               error: "Error al agregar miembro"
  */
-router.post('/:groupId/members', groupController.addMember);
+router.post(
+  "/:groupId/members",
+  groupMemberValidation,
+  groupController.addMember
+);
 
 /**
  * @swagger
@@ -303,7 +318,7 @@ router.post('/:groupId/members', groupController.addMember);
  *             example:
  *               error: "Error al eliminar miembro"
  */
-router.delete('/:groupId/members/:memberId', groupController.removeMember);
+router.delete("/:groupId/members/:memberId", groupMemberDeleteValidation, groupController.removeMember);
 
 /**
  * @swagger
@@ -339,7 +354,11 @@ router.delete('/:groupId/members/:memberId', groupController.removeMember);
  *             example:
  *               error: "Error al obtener miembros"
  */
-router.get('/:groupId/members', groupController.getGroupMembers);
+router.get(
+  "/:groupId/members",
+  getGroupMembersValidation,
+  groupController.getGroupMembers
+);
 
 /**
  * @swagger
@@ -375,6 +394,10 @@ router.get('/:groupId/members', groupController.getGroupMembers);
  *             example:
  *               error: "Error al obtener grupos del miembro"
  */
-router.get('/members/:memberId/groups', groupController.getGroupMembers);
+router.get(
+  "/members/:memberId/groups",
+  memberGroupsValidation,
+  groupController.getMemberGroups
+);
 
 module.exports = router;

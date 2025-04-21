@@ -1,7 +1,18 @@
 // routes/eventRoute.js
-const express = require('express');
-const eventController = require('../controllers/eventController');
+const express = require("express");
+const eventController = require("../controllers/eventController");
 const router = express.Router();
+// Validadores
+const {
+  createEventValidation,
+  updateEventValidation,
+  eventIdValidation,
+  eventMemberValidation,
+  eventMemberDeleteValidation,
+  getEventMembersValidation,
+  memberEventsValidation,
+} = require("../services/validators/eventValidator");
+const authenticate = require("../middlewares/authenticate");
 
 /**
  * @swagger
@@ -37,7 +48,7 @@ const router = express.Router();
  *       500:
  *         description: An error occurred
  */
-router.get('/', eventController.getAll);
+router.get("/", eventController.getAll);
 
 /**
  * @swagger
@@ -72,7 +83,7 @@ router.get('/', eventController.getAll);
  *       500:
  *         description: Error al obtener el evento
  */
-router.get('/:id', eventController.getById);
+router.get("/:id", eventIdValidation, eventController.getById);
 
 /**
  * @swagger
@@ -90,7 +101,7 @@ router.get('/:id', eventController.getById);
  *               - Nombre
  *               - Descripcion
  *               - Fecha
- * 
+ *
  *     responses:
  *       201:
  *         description: Evento creado exitosamente.
@@ -121,7 +132,7 @@ router.get('/:id', eventController.getById);
  *             example:
  *               error: "Error al guardar el evento. Por favor, inténtalo más tarde."
  */
-router.post('/', eventController.create);
+router.post("/", createEventValidation, eventController.create);
 
 /**
  * Elimina un evento por su ID.
@@ -150,7 +161,7 @@ router.post('/', eventController.create);
  *       500:
  *         description: Error al eliminar el evento
  */
-router.delete('/:id', eventController.delete);
+router.delete("/:id", eventIdValidation, eventController.delete);
 
 /**
  * @swagger
@@ -174,7 +185,7 @@ router.delete('/:id', eventController.delete);
  *               - Id
  *               - {data}
  * */
-router.put('/:id', eventController.update);
+router.put("/:id", updateEventValidation, eventController.update);
 
 /**
  * @swagger
@@ -216,7 +227,7 @@ router.put('/:id', eventController.update);
  *       500:
  *         description: Error al realizar la búsqueda
  */
-router.get('/search/:searchString', eventController.search);
+router.get("/search/:searchString", eventController.search);
 
 //relaciones
 /**
@@ -252,12 +263,12 @@ router.get('/search/:searchString', eventController.search);
  *                 description: Datos adicionales de la relación
  *     responses:
  *       201:
- *         description: Miembro agregado correctamente    
+ *         description: Miembro agregado correctamente
  *         content:
  *           application/json:
  *             example:
  *               message: "Miembro agregado correctamente"
- *               result: { courseId: "EVENTO_ABC123", memberId: "MIEMBRO_XYZ789" }
+ *               result: { eventId: "EVENTO_ABC123", memberId: "MIEMBRO_XYZ789" }
  *       500:
  *         description: Error interno del servidor
  *         content:
@@ -265,7 +276,11 @@ router.get('/search/:searchString', eventController.search);
  *             example:
  *               error: "Error al agregar miembro"
  */
-router.post('/:eventId/members', eventController.addMember);
+router.post(
+  "/:eventId/members",
+  eventMemberValidation,
+  eventController.addMember
+);
 
 /**
  * @swagger
@@ -302,7 +317,11 @@ router.post('/:eventId/members', eventController.addMember);
  *             example:
  *               error: "Error al eliminar miembro"
  */
-router.delete('/:eventId/members/:memberId', eventController.removeMember);
+router.delete(
+  "/:eventId/members/:memberId",
+  eventMemberDeleteValidation,
+  eventController.removeMember
+);
 
 /**
  * @swagger
@@ -338,7 +357,11 @@ router.delete('/:eventId/members/:memberId', eventController.removeMember);
  *             example:
  *               error: "Error al obtener miembros"
  */
-router.get('/:eventId/members', eventController.getEventMembers);
+router.get(
+  "/:eventId/members",
+  getEventMembersValidation,
+  eventController.getEventMembers
+);
 
 /**
  * @swagger
@@ -374,6 +397,10 @@ router.get('/:eventId/members', eventController.getEventMembers);
  *             example:
  *               error: "Error al obtener eventos del miembro"
  */
-router.get('/members/:memberId/events', eventController.getMemberEvents);
+router.get(
+  "/members/:memberId/events",
+  memberEventsValidation,
+  eventController.getMemberEvents
+);
 
 module.exports = router;

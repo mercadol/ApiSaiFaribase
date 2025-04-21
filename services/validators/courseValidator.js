@@ -1,7 +1,6 @@
 // services/validators/courseValidator.js
 const { body, param, validationResult } = require("express-validator");
 const ApiError = require("../../utils/ApiError");
-// const Validations = require('../validations'); // Opcional si necesitas validaciones personalizadas asíncronas
 
 // Middleware reutilizable para manejar errores de validación
 const handleValidationErrors = (req, res, next) => {
@@ -19,7 +18,6 @@ const handleValidationErrors = (req, res, next) => {
   next();
 };
 
-// Validador común para ID en parámetro (ajusta isMongoId si usas otro formato como UUID o numérico)
 const idParamValidation = (paramName = "id", entityName = "entidad") => [
   param(paramName)
     .notEmpty()

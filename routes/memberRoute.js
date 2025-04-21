@@ -1,8 +1,14 @@
 // routes/memberRoute.js
-const express = require('express');
-const memberController = require('../controllers/memberController');
+const express = require("express");
+const memberController = require("../controllers/memberController");
 const router = express.Router();
-const asyncHandler = require("../middlewares/asyncHandler");
+// Validadores
+const {
+  createMemberValidation,
+  updateMemberValidation,
+  memberIdValidation,
+} = require("../services/validators/memberValidator");
+const authenticate = require("../middlewares/authenticate");
 
 /**
  * Obtiene la lista de miembros con soporte para paginación.
@@ -45,9 +51,7 @@ const asyncHandler = require("../middlewares/asyncHandler");
  *       500:
  *         description: Error al obtener los miembros
  */
-router.get('/', asyncHandler((req, res, next) => {
-  return memberController.getAll(req, res, next);
-}));
+router.get("/", memberController.getAll);
 
 /**
  * Obtiene un miembro específico basado en el ID proporcionado.
@@ -83,7 +87,7 @@ router.get('/', asyncHandler((req, res, next) => {
  *       500:
  *         description: Error al obtener el miembro
  */
-router.get('/:id', memberController.getById);
+router.get("/:id", memberIdValidation, memberController.getById);
 
 /**
  * Crea un nuevo miembro.
@@ -160,7 +164,7 @@ router.get('/:id', memberController.getById);
  *             example:
  *               error: "Error al guardar el miembro. Por favor, inténtalo más tarde."
  */
-router.post('/', memberController.create);
+router.post("/", createMemberValidation, memberController.create);
 
 /**
  * Elimina un miembro por su ID.
@@ -192,7 +196,7 @@ router.post('/', memberController.create);
  *       500:
  *         description: Error al eliminar el miembro
  */
-router.delete('/:id', memberController.delete);
+router.delete("/:id", memberIdValidation, memberController.delete);
 
 /**
  * Actualiza un miembro existente por su ID.
@@ -253,7 +257,7 @@ router.delete('/:id', memberController.delete);
  * @returns {object} 404 - Miembro no encontrado
  * @returns {object} 500 - Error interno del servidor
  */
-router.put('/:id', memberController.update);
+router.put("/:id", updateMemberValidation, memberController.update);
 
 /**
  * Busca miembros por nombre utilizando un término de búsqueda.
@@ -296,6 +300,6 @@ router.put('/:id', memberController.update);
  *       500:
  *         description: Error al realizar la búsqueda
  */
-router.get('/search/:searchString', memberController.search);
+router.get("/search/:searchString", memberController.search);
 
 module.exports = router;

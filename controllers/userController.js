@@ -1,11 +1,21 @@
 // controllers/userController.js
 const userService = require('../services/userService');
-const validator = require('validator');
+const { validationResult, check } = require('express-validator');
 
 /**
  * Controlador para la gestión de usuarios.
  */
 const userController = {
+  /**
+   * Middleware de validación para crear usuario.
+   */
+  validateCreateUser: [
+    check('email').isEmail().withMessage('Email no válido'),
+    check('password')
+      .isLength({ min: 6 })
+      .withMessage('Contraseña debe tener al menos 6 caracteres'),
+  ],
+
   /**
    * Crea un nuevo usuario.
    * Realiza validaciones sobre el email y contraseña antes de crear el usuario.
@@ -15,19 +25,12 @@ const userController = {
    * @returns {Promise<void>}
    */
   createUser: async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ message: errors.array()[0].msg });
+    }
     try {
       const { email, password } = req.body;
-
-      // Validaciones
-      if (!email || !password) {
-        return res.status(400).json({ message: 'Email y contraseña son requeridos' });
-      }
-      if (!validator.isEmail(email)) {
-        return res.status(400).json({ message: 'Email no válido' });
-      }
-      if (password.length < 6) { // Ejemplo: contraseña de mínimo 6 caracteres
-        return res.status(400).json({ message: 'Contraseña debe tener al menos 6 caracteres' });
-      }
 
       const user = await userService.createUserWithEmailAndPassword(email, password);
       res.status(201).json(user); // 201 Created
@@ -37,6 +40,14 @@ const userController = {
   },
 
   /**
+   * Middleware de validación para iniciar sesión.
+   */
+  validateSignIn: [
+    check('email').isEmail().withMessage('Email no válido'),
+    check('password').notEmpty().withMessage('Contraseña es requerida'),
+  ],
+
+  /**
    * Inicia sesión para un usuario existente utilizando email y contraseña.
    *
    * @param {Object} req - Objeto de solicitud de Express.
@@ -44,16 +55,12 @@ const userController = {
    * @returns {Promise<void>}
    */
   signIn: async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ message: errors.array()[0].msg });
+    }
     try {
       const { email, password } = req.body;
-
-      // Validaciones
-      if (!email || !password) {
-        return res.status(400).json({ message: 'Email y contraseña son requeridos' });
-      }
-      if (!validator.isEmail(email)) {
-        return res.status(400).json({ message: 'Email no válido' });
-      }
 
       const user = await userService.signInWithEmailAndPassword(email, password);
       res.json(user);
