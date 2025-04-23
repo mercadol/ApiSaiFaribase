@@ -45,14 +45,14 @@ describe('eventService', () => {
 
   describe('update', () => {
     it('debería actualizar un evento existente', async () => {
-      const mockEvent = { id: 1, Nombre: 'Evento 1', descripcion: 'Descripción', save: jest.fn().mockResolvedValue() };
+      const mockEvent = { id: 1, Nombre: 'Evento 1', Descripcion: 'Descripción', save: jest.fn().mockResolvedValue() };
       EventModel.findById.mockResolvedValue(mockEvent);
 
       const updatedData = { Nombre: 'Evento Actualizado', Descripcion: 'Nueva Descripción' };
       const result = await eventService.update(1, updatedData);
 
       expect(result.Nombre).toBe(updatedData.Nombre);
-      expect(result.descripcion).toBe(updatedData.Descripcion);
+      expect(result.Descripcion).toBe(updatedData.Descripcion);
       expect(mockEvent.save).toHaveBeenCalled();
     });
   });

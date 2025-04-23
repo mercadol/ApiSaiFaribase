@@ -2,86 +2,87 @@
 // tests/middlewares/errorHandler.test.js
 const errorHandler = require('../../middlewares/errorHandler');
 const ApiError = require('../../utils/ApiError');
+const logger = require('../../utils/logger');
 
-describe('Middleware errorHandler', () => {
-  let req, res, next;
-  const originalEnv = process.env.NODE_ENV;
+// Mock del logger
+jest.mock('../../utils/logger', () => ({
+  error: jest.fn()
+}));
+
+describe('errorHandler middleware', () => {
+  let mockReq;
+  let mockRes;
+  let mockNext;
   
   beforeEach(() => {
-    req = {};
-    res = {
+    mockReq = {
+      path: '/test',
+      method: 'GET',
+      ip: '127.0.0.1'
+    };
+    
+    mockRes = {
       status: jest.fn().mockReturnThis(),
       json: jest.fn()
     };
-    next = jest.fn();
-    // Mock para console.error
-    console.error = jest.fn();
+    
+    mockNext = jest.fn();
+    
+    // Guarda y restaura NODE_ENV entre tests
+    process.env.NODE_ENV_ORIGINAL = process.env.NODE_ENV;
   });
   
   afterEach(() => {
-    process.env.NODE_ENV = originalEnv;
     jest.clearAllMocks();
+    process.env.NODE_ENV = process.env.NODE_ENV_ORIGINAL;
   });
   
-  test('debe manejar instancia de ApiError con el código y mensaje correctos', () => {
-    const error = new ApiError(400, 'Datos inválidos');
+  test('debe manejar ApiError con el código de estado correcto', () => {
+    const apiError = new ApiError(400, 'Error de validación');
     
-    errorHandler(error, req, res, next);
+    errorHandler(apiError, mockReq, mockRes, mockNext);
     
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
-      error: 'Datos inválidos'
-    }));
-    expect(console.error).toHaveBeenCalled();
-  });
-  
-  test('debe usar código 500 para errores estándar', () => {
-    const error = new Error('Error interno');
-    
-    errorHandler(error, req, res, next);
-    
-    expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
-      error: 'Error interno'
-    }));
-  });
-  
-  test('debe incluir stack trace en entorno no productivo', () => {
-    process.env.NODE_ENV = 'development';
-    const error = new Error('Error de prueba');
-    error.stack = 'Stack trace simulado';
-    
-    errorHandler(error, req, res, next);
-    
-    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
-      error: 'Error de prueba',
-      stack: 'Stack trace simulado'
-    }));
-  });
-  
-  test('no debe incluir stack trace en entorno productivo', () => {
-    process.env.NODE_ENV = 'production';
-    const error = new Error('Error de prueba');
-    error.stack = 'Stack trace simulado';
-    
-    errorHandler(error, req, res, next);
-    
-    expect(res.json).toHaveBeenCalledWith({
-      error: 'Error de prueba'
+    expect(mockRes.status).toHaveBeenCalledWith(400);
+    expect(mockRes.json).toHaveBeenCalledWith({
+      error: 'Error de validación',
+      stack: expect.any(String)
     });
-    expect(res.json).not.toHaveBeenCalledWith(expect.objectContaining({
-      stack: expect.anything()
-    }));
+    expect(logger.error).toHaveBeenCalled();
   });
   
-  test('debe usar "Internal Server Error" si no hay mensaje de error', () => {
-    const error = new Error();
-    error.message = null;
+  test('debe manejar errores genéricos con código 500', () => {
+    const genericError = new Error('Error interno');
     
-    errorHandler(error, req, res, next);
+    errorHandler(genericError, mockReq, mockRes, mockNext);
     
-    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
-      error: 'Internal Server Error'
-    }));
+    expect(mockRes.status).toHaveBeenCalledWith(500);
+    expect(mockRes.json).toHaveBeenCalledWith({
+      error: 'Ocurrió un error inesperado en el servidor.',
+      stack: expect.any(String)
+    });
+    expect(logger.error).toHaveBeenCalled();
+  });
+  
+  test('no debe exponer stack trace en producción', () => {
+    process.env.NODE_ENV = 'production';
+    const error = new Error('Error en producción');
+    
+    errorHandler(error, mockReq, mockRes, mockNext);
+    
+    expect(mockRes.json).toHaveBeenCalledWith({
+      error: 'Ocurrió un error inesperado en el servidor.'
+    });
+    expect(mockRes.json.mock.calls[0][0]).not.toHaveProperty('stack');
+  });
+  
+  test('debe exponer mensajes de ApiError incluso en producción', () => {
+    process.env.NODE_ENV = 'production';
+    const apiError = new ApiError(403, 'Acceso denegado');
+    
+    errorHandler(apiError, mockReq, mockRes, mockNext);
+    
+    expect(mockRes.json).toHaveBeenCalledWith({
+      error: 'Acceso denegado'
+    });
   });
 });

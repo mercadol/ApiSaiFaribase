@@ -1,7 +1,6 @@
 // controllers/courseController.js
 const BaseController = require("./BaseController");
 const courseService = require("../services/courseService");
-const ApiError = require("../utils/ApiError");
 
 /**
  * Controlador para gestionar la entidad Course.

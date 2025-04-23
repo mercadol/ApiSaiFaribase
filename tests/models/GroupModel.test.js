@@ -20,22 +20,22 @@ describe('GroupModel', () => {
       const group = new GroupModel({});
       expect(group.id).toBeNull();
       expect(group.Nombre).toBe('');
-      expect(group.descripcion).toBe('');
-      expect(group.fechaCreacion).toBeInstanceOf(Date);
+      expect(group.Descripcion).toBe('');
+      expect(group.FechaCreacion).toBeInstanceOf(Date);
     });
 
     test('debe crear objeto con propiedades especificadas', () => {
       const data = {
         id: 'test-id',
         Nombre: 'Test Group',
-        descripcion: 'Test Description',
-        fechaCreacion: new Date('2023-01-01')
+        Descripcion: 'Test Description',
+        FechaCreacion: new Date('2023-01-01')
       };
       const group = new GroupModel(data);
       expect(group.id).toBe('test-id');
       expect(group.Nombre).toBe('Test Group');
-      expect(group.descripcion).toBe('Test Description');
-      expect(group.fechaCreacion).toEqual(new Date('2023-01-01'));
+      expect(group.Descripcion).toBe('Test Description');
+      expect(group.FechaCreacion).toEqual(new Date('2023-01-01'));
     });
   });
 
@@ -46,7 +46,7 @@ describe('GroupModel', () => {
       
       const group = new GroupModel({
         Nombre: 'Test Group',
-        descripcion: 'Test Description'
+        Descripcion: 'Test Description'
       });
       
       await group.save();
@@ -54,8 +54,8 @@ describe('GroupModel', () => {
       expect(db.collection).toHaveBeenCalledWith('Group');
       expect(addMock).toHaveBeenCalledWith({
         Nombre: 'Test Group',
-        descripcion: 'Test Description',
-        fechaCreacion: expect.any(Date)
+        Descripcion: 'Test Description',
+        FechaCreacion: expect.any(Date)
       });
       expect(group.id).toBe('new-id');
     });
@@ -68,7 +68,7 @@ describe('GroupModel', () => {
       const group = new GroupModel({
         id: 'existing-id',
         Nombre: 'Test Group',
-        descripcion: 'Updated Description'
+        Descripcion: 'Updated Description'
       });
       
       await group.save();
@@ -77,8 +77,8 @@ describe('GroupModel', () => {
       expect(docMock).toHaveBeenCalledWith('existing-id');
       expect(updateMock).toHaveBeenCalledWith({
         Nombre: 'Test Group',
-        descripcion: 'Updated Description',
-        fechaCreacion: expect.any(Date)
+        Descripcion: 'Updated Description',
+        FechaCreacion: expect.any(Date)
       });
     });
 
@@ -143,8 +143,8 @@ describe('GroupModel', () => {
         id: 'test-id',
         data: () => ({
           Nombre: 'Test Group',
-          descripcion: 'Test Description',
-          fechaCreacion: new Date('2023-01-01')
+          Descripcion: 'Test Description',
+          FechaCreacion: new Date('2023-01-01')
         })
       });
       const docMock = jest.fn().mockReturnValue({ get: getMock });
@@ -191,11 +191,11 @@ describe('GroupModel', () => {
       const docs = [
         {
           id: 'id1',
-          data: () => ({ Nombre: 'Group 1', descripcion: 'Description 1' })
+          data: () => ({ Nombre: 'Group 1', Descripcion: 'Description 1' })
         },
         {
           id: 'id2',
-          data: () => ({ Nombre: 'Group 2', descripcion: 'Description 2' })
+          data: () => ({ Nombre: 'Group 2', Descripcion: 'Description 2' })
         }
       ];
       

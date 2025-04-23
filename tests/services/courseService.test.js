@@ -46,14 +46,14 @@ describe('courseService', () => {
 
   describe('update', () => {
     it('debería actualizar un curso existente', async () => {
-      const mockCourse = { id: 1, Nombre: 'Curso 1', descripcion: 'Descripción', save: jest.fn().mockResolvedValue() };
+      const mockCourse = { id: 1, Nombre: 'Curso 1', Descripcion: 'Descripción', save: jest.fn().mockResolvedValue() };
       CourseModel.findById.mockResolvedValue(mockCourse);
 
       const updatedData = { Nombre: 'Curso Actualizado', Descripcion: 'Nueva Descripción' };
       const result = await courseService.update(1, updatedData);
 
       expect(result.Nombre).toBe(updatedData.Nombre);
-      expect(result.descripcion).toBe(updatedData.Descripcion);
+      expect(result.Descripcion).toBe(updatedData.Descripcion);
       expect(mockCourse.save).toHaveBeenCalled();
     });
   });

@@ -58,7 +58,7 @@ describe("groupService", () => {
       const mockGroup = {
         id: 1,
         Nombre: "Grupo 1",
-        descripcion: "Descripción",
+        Descripcion: "Descripción",
         save: jest.fn().mockResolvedValue(),
       };
       GroupModel.findById.mockResolvedValue(mockGroup);
@@ -70,7 +70,7 @@ describe("groupService", () => {
       const result = await groupService.update(1, updatedData);
 
       expect(result.Nombre).toBe(updatedData.Nombre);
-      expect(result.descripcion).toBe(updatedData.Descripcion);
+      expect(result.Descripcion).toBe(updatedData.Descripcion);
       expect(mockGroup.save).toHaveBeenCalled();
     });
   });
