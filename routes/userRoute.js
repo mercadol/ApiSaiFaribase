@@ -33,7 +33,7 @@ const authenticate = require('../middlewares/authenticate');
  *       500:
  *         description: Error interno del servidor
  */
-router.post('/signup', userController.createUser);
+router.post('/signup', userController.validateCreateUser, userController.createUser);
 
 /**
  * Endpoint para iniciar sesión con email y contraseña.
@@ -64,7 +64,7 @@ router.post('/signup', userController.createUser);
  *       500:
  *         description: Error interno del servidor
  */
-router.post('/signin', userController.signIn);
+router.post('/signin', userController.validateSignIn, userController.signIn);
 
 /**
  * Endpoint para iniciar sesión de forma anónima.
