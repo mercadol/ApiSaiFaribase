@@ -47,10 +47,10 @@ const courseService = {
     return CourseModel.search(searchString, startAfterId, pageSize);
   },
 
-  addMember: async (memberId, courseId) => {
+  addMember: async (memberId, courseId, role) => {
     const course = await CourseModel.findById(courseId);
-    await course.addMember(memberId);
-    return { courseId, memberId };
+    await course.addMember(memberId, role);
+    return { courseId, memberId, role };
   },
 
   removeMember: async (memberId, courseId) => {

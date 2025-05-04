@@ -27,8 +27,8 @@ class EventController extends BaseController {
 
   async addMember(req, res, next) {
     const { eventId } = req.params;
-    const { memberId } = req.body;
-    const result = await this.service.addMember(memberId, eventId);
+    const { memberId, role } = req.body;
+    const result = await this.service.addMember(memberId, eventId, role);
     res
       .status(201)
       .json({ message: "Member agregado al curso correctamente", result });

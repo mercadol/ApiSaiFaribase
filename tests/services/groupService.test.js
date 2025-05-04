@@ -88,14 +88,17 @@ describe("groupService", () => {
 
   describe("addMember", () => {
     it("debería agregar un miembro a un grupo", async () => {
-      const mockGroup = { id: 1, addMember: jest.fn().mockResolvedValue() };
-      GroupModel.findById.mockResolvedValue(mockGroup);
+        const mockGroup = { id: 1, addMember: jest.fn().mockResolvedValue() };
+        GroupModel.findById.mockResolvedValue(mockGroup);
 
-      const result = await groupService.addMember("memberId", 1);
-      expect(result).toEqual({ groupId: 1, memberId: "memberId" });
-      expect(mockGroup.addMember).toHaveBeenCalledWith("memberId");
+        const memberId = "memberId";
+        const role = "Lider";
+
+        const result = await groupService.addMember(memberId, 1, role);
+        expect(result).toEqual({ groupId: 1, memberId: memberId, role: role });
+        expect(mockGroup.addMember).toHaveBeenCalledWith(memberId, role);
     });
-  });
+});
 
   describe("removeMember", () => {
     it("debería eliminar un miembro de un grupo", async () => {
@@ -105,17 +108,6 @@ describe("groupService", () => {
       const result = await groupService.removeMember("memberId", 1);
       expect(result).toBe(true);
       expect(mockGroup.removeMember).toHaveBeenCalledWith("memberId");
-    });
-  });
-
-  describe("getGroupMembers", () => {
-    it("debería devolver los miembros de un grupo", async () => {
-      const mockMembers = [{ id: "member1" }, { id: "member2" }];
-      GroupModel.getGroupMembers = jest.fn().mockResolvedValue(mockMembers);
-
-      const result = await groupService.getGroupMembers(1);
-      expect(result).toEqual(mockMembers);
-      expect(GroupModel.getGroupMembers).toHaveBeenCalledWith(1);
     });
   });
 

@@ -44,10 +44,10 @@ const groupService = {
   },
 
   // Relation operations
-  addMember: async (memberId, groupId) => {
+  addMember: async (memberId, groupId, role) => {
     const group = await GroupModel.findById(groupId);
-    await group.addMember(memberId);
-    return { groupId, memberId };
+    await group.addMember(memberId, role);
+    return { groupId, memberId, role };
   },
 
   removeMember: async (memberId, groupId) => {

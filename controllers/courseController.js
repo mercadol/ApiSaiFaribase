@@ -26,8 +26,8 @@ class CourseController extends BaseController {
 
   async addMember(req, res, next) {
     const { courseId } = req.params;
-    const { memberId } = req.body;
-    const result = await this.service.addMember(memberId, courseId);
+    const { memberId, role } = req.body;
+    const result = await this.service.addMember(memberId, groupId, role);
     res
       .status(201)
       .json({ message: "Miembro agregado al curso correctamente", result });

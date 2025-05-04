@@ -27,8 +27,8 @@ class GroupController extends BaseController {
 
   async addMember(req, res, next) {
     const { groupId } = req.params;
-    const { memberId } = req.body;
-    const result = await this.service.addMember(memberId, groupId);
+    const { memberId, role } = req.body;
+    const result = await this.service.addMember(memberId, groupId, role);
     res
       .status(201)
       .json({ message: "Miembro agregado al grupo correctamente", result });

@@ -110,7 +110,10 @@ class MemberModel {
       let query = db.collection("Member").orderBy("Nombre").limit(pageSize);
 
       if (startAfterId) {
-        const startAfterDoc = await db.collection("Member").doc(startAfterId).get();
+        const startAfterDoc = await db
+          .collection("Member")
+          .doc(startAfterId)
+          .get();
         if (startAfterDoc.exists) {
           query = query.startAfter(startAfterDoc);
         }
@@ -147,7 +150,10 @@ class MemberModel {
         .limit(pageSize);
 
       if (startAfterId) {
-        const startAfterDoc = await db.collection("Member").doc(startAfterId).get();
+        const startAfterDoc = await db
+          .collection("Member")
+          .doc(startAfterId)
+          .get();
         if (startAfterDoc.exists) {
           query = query.startAfter(startAfterDoc);
         }
@@ -164,6 +170,99 @@ class MemberModel {
       throw new ApiError(
         500,
         `Error al buscar miembros. Inténtelo más tarde: ${error.message}`
+      );
+    }
+  }
+
+  /**
+   * Busca miembros disponibles para asignación, excluyendo los ya asignados a una entidad específica.
+   *
+   * @param {string} searchString - Cadena de búsqueda para filtrar miembros.
+   * @param {string} excludeFromEntity - Entidad de la cual excluir miembros ('grupo', 'curso', 'evento').
+   * @param {string} entityId - ID de la entidad específica.
+   * @param {string|null} startAfterId - ID para paginación.
+   * @param {number} pageSize - Número de documentos a retornar.
+   * @returns {Promise<Array>} Array de miembros disponibles.
+   * @throws {ApiError} Si ocurre un error en la búsqueda.
+   */
+  static async searchAvailable(
+    searchString,
+    excludeFromEntity,
+    entityId,
+    startAfterId = null,
+    pageSize = 10
+  ) {
+    try {
+      // Obtener resultados de búsqueda básica
+      const searchResults = await this.search(
+        searchString,
+        startAfterId,
+        pageSize
+      );
+      const members = searchResults.results || [];
+
+      // Si no hay parámetros de exclusión, retornar resultados directamente
+      if (!excludeFromEntity || !entityId) {
+        return members.map((member) => ({
+          id: member.id,
+          Nombre: member.Nombre,
+          TipoMiembro: member.TipoMiembro,
+          Email: member.Email,
+        }));
+      }
+
+      // Obtener IDs de miembros ya asignados según la entidad
+      let assignedMemberIds = [];
+      switch (excludeFromEntity.toLowerCase()) {
+        case "grupo":
+          const GroupModel = require("./GroupModel");
+          const groupMembers = await GroupModel.getGroupMembers(entityId);
+          assignedMemberIds = groupMembers.map((member) => member.id);
+          break;
+        case "curso":
+          const CourseModel = require("./CourseModel");
+          try {
+            const courseMembers = await CourseModel.getCourseMembers(entityId);
+            assignedMemberIds = courseMembers.map((member) => member.id);
+          } catch (error) {
+            console.warn(
+              "CourseModel.getCourseMembers no está implementado:",
+              error.message
+            );
+          }
+          break;
+        case "evento":
+          const EventModel = require("./EventModel");
+          try {
+            const eventMembers = await EventModel.getEventMembers(entityId);
+            assignedMemberIds = eventMembers.map((member) => member.id);
+          } catch (error) {
+            console.warn(
+              "EventModel.getEventMembers no está implementado:",
+              error.message
+            );
+          }
+          break;
+        default:
+          break;
+      }
+
+      // Filtrar los miembros ya asignados
+      const availableMembers = members.filter(
+        (member) => !assignedMemberIds.includes(member.id)
+      );
+
+      // Retornar solo los campos necesarios
+      return availableMembers.map((member) => ({
+        id: member.id,
+        Nombre: member.Nombre,
+        TipoMiembro: member.TipoMiembro,
+        Email: member.Email,
+      }));
+    } catch (error) {
+      throw new ApiError(
+        500,
+        `Error al buscar miembros disponibles. Inténtelo más tarde: ${error.message}`
       );
     }
   }

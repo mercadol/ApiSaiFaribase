@@ -302,4 +302,7 @@ router.put("/:id", updateMemberValidation, memberController.update);
  */
 router.get("/search/:searchString", memberController.search);
 
+
+router.get("/available", memberController.searchAvailable);
+
 module.exports = router;

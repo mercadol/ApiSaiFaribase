@@ -1,6 +1,7 @@
 // tests/models/CourseModel.test.js
 const { db } = require("../../firebase");
 const CourseModel = require("../../models/CourseModel");
+const MemberModel = require("../../models/MemberModel");
 const ApiError = require("../../utils/ApiError");
 
 // Mock de Firebase
@@ -9,6 +10,7 @@ jest.mock("../../firebase", () => ({
     collection: jest.fn(),
   },
 }));
+jest.mock("../../models/MemberModel");
 
 describe("CourseModel", () => {
   beforeEach(() => {
@@ -377,13 +379,17 @@ describe("CourseModel", () => {
       db.collection.mockReturnValue({ doc: docMock });
 
       const course = new CourseModel({ id: "course-id" });
-      await course.addMember("member-id");
+      const memberId = "member-id";
+      const role = "Lider";
+
+      await course.addMember(memberId, role);
 
       expect(db.collection).toHaveBeenCalledWith("CourseMember");
       expect(docMock).toHaveBeenCalledWith("course-id_member-id");
       expect(setMock).toHaveBeenCalledWith({
         courseId: "course-id",
-        memberId: "member-id",
+        memberId: memberId,
+        role: role,
       });
     });
   });
@@ -432,7 +438,7 @@ describe("CourseModel", () => {
       });
     });
 
-    test("debe obtener miembros correctamente", async () => {
+    test("debe obtener miembros con datos enriquecidos correctamente", async () => {
       const docs = [
         { data: () => ({ memberId: "member1" }) },
         { data: () => ({ memberId: "member2" }) },
@@ -442,11 +448,38 @@ describe("CourseModel", () => {
       const whereMock = jest.fn().mockReturnValue({ get: getMock });
       db.collection.mockReturnValue({ where: whereMock });
 
-      const memberIds = await CourseModel.getCourseMembers("course-id");
+      // Mock para MemberModel.findById
+      MemberModel.findById.mockImplementation((id) => {
+        if (id === "member1") {
+          return Promise.resolve({
+            id: "member1",
+            Nombre: "Miembro Uno",
+            TipoMiembro: "Visitante",
+          });
+        } else if (id === "member2") {
+          return Promise.resolve({
+            id: "member2",
+            Nombre: "Miembro Dos",
+            TipoMiembro: "Regular",
+          });
+        }
+        return Promise.reject(new Error("Miembro no encontrado"));
+      });
 
+      const members = await CourseModel.getCourseMembers("course-id");
+
+      // Verificar llamadas a métodos
       expect(db.collection).toHaveBeenCalledWith("CourseMember");
       expect(whereMock).toHaveBeenCalledWith("courseId", "==", "course-id");
-      expect(memberIds).toEqual(["member1", "member2"]);
+      expect(MemberModel.findById).toHaveBeenCalledTimes(2);
+      expect(MemberModel.findById).toHaveBeenCalledWith("member1");
+      expect(MemberModel.findById).toHaveBeenCalledWith("member2");
+
+      // Verificar datos retornados
+      expect(members).toEqual([
+        { id: "member1", Nombre: "Miembro Uno", TipoMiembro: "Visitante" },
+        { id: "member2", Nombre: "Miembro Dos", TipoMiembro: "Regular" },
+      ]);
     });
   });
 

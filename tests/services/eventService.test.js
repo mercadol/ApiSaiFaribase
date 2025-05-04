@@ -1,17 +1,20 @@
 // tests/services/eventService.test.js
-const eventService = require('../../services/eventService');
-const EventModel = require('../../models/EventModel');
+const eventService = require("../../services/eventService");
+const EventModel = require("../../models/EventModel");
 
-jest.mock('../../models/EventModel');
+jest.mock("../../models/EventModel");
 
-describe('eventService', () => {
+describe("eventService", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  describe('getAll', () => {
-    it('debería devolver todos los eventos', async () => {
-      const mockEvents = [{ id: 1, Nombre: 'Evento 1' }, { id: 2, Nombre: 'Evento 2' }];
+  describe("getAll", () => {
+    it("debería devolver todos los eventos", async () => {
+      const mockEvents = [
+        { id: 1, Nombre: "Evento 1" },
+        { id: 2, Nombre: "Evento 2" },
+      ];
       EventModel.findAll.mockResolvedValue(mockEvents);
 
       const result = await eventService.getAll();
@@ -20,9 +23,9 @@ describe('eventService', () => {
     });
   });
 
-  describe('getById', () => {
-    it('debería devolver un evento por ID', async () => {
-      const mockEvent = { id: 1, Nombre: 'Evento 1' };
+  describe("getById", () => {
+    it("debería devolver un evento por ID", async () => {
+      const mockEvent = { id: 1, Nombre: "Evento 1" };
       EventModel.findById.mockResolvedValue(mockEvent);
 
       const result = await eventService.getById(1);
@@ -31,10 +34,17 @@ describe('eventService', () => {
     });
   });
 
-  describe('create', () => {
-    it('debería crear un nuevo evento y devolver su ID', async () => {
-      const eventData = { Nombre: 'Evento 1', Descripcion: 'Descripción del evento' };
-      const mockEvent = { id: 1, ...eventData, save: jest.fn().mockResolvedValue() };
+  describe("create", () => {
+    it("debería crear un nuevo evento y devolver su ID", async () => {
+      const eventData = {
+        Nombre: "Evento 1",
+        Descripcion: "Descripción del evento",
+      };
+      const mockEvent = {
+        id: 1,
+        ...eventData,
+        save: jest.fn().mockResolvedValue(),
+      };
       EventModel.mockImplementation(() => mockEvent);
 
       const result = await eventService.create(eventData);
@@ -43,12 +53,20 @@ describe('eventService', () => {
     });
   });
 
-  describe('update', () => {
-    it('debería actualizar un evento existente', async () => {
-      const mockEvent = { id: 1, Nombre: 'Evento 1', Descripcion: 'Descripción', save: jest.fn().mockResolvedValue() };
+  describe("update", () => {
+    it("debería actualizar un evento existente", async () => {
+      const mockEvent = {
+        id: 1,
+        Nombre: "Evento 1",
+        Descripcion: "Descripción",
+        save: jest.fn().mockResolvedValue(),
+      };
       EventModel.findById.mockResolvedValue(mockEvent);
 
-      const updatedData = { Nombre: 'Evento Actualizado', Descripcion: 'Nueva Descripción' };
+      const updatedData = {
+        Nombre: "Evento Actualizado",
+        Descripcion: "Nueva Descripción",
+      };
       const result = await eventService.update(1, updatedData);
 
       expect(result.Nombre).toBe(updatedData.Nombre);
@@ -57,8 +75,8 @@ describe('eventService', () => {
     });
   });
 
-  describe('delete', () => {
-    it('debería eliminar un evento existente', async () => {
+  describe("delete", () => {
+    it("debería eliminar un evento existente", async () => {
       const mockEvent = { id: 1, delete: jest.fn().mockResolvedValue() };
       EventModel.findById.mockResolvedValue(mockEvent);
 
@@ -68,31 +86,34 @@ describe('eventService', () => {
     });
   });
 
-  describe('addMember', () => {
-    it('debería agregar un miembro a un evento', async () => {
+  describe("addMember", () => {
+    it("debería agregar un miembro a un evento", async () => {
       const mockEvent = { id: 1, addMember: jest.fn().mockResolvedValue() };
       EventModel.findById.mockResolvedValue(mockEvent);
 
-      const result = await eventService.addMember('memberId', 1);
-      expect(result).toEqual({ eventId: 1, memberId: 'memberId' });
-      expect(mockEvent.addMember).toHaveBeenCalledWith('memberId');
+      const memberId = "memberId";
+      const role = "Lider";
+
+      const result = await eventService.addMember(memberId, 1, role);
+      expect(result).toEqual({ eventId: 1, memberId: memberId, role: role });
+      expect(mockEvent.addMember).toHaveBeenCalledWith(memberId, role);
     });
   });
 
-  describe('removeMember', () => {
-    it('debería eliminar un miembro de un evento', async () => {
+  describe("removeMember", () => {
+    it("debería eliminar un miembro de un evento", async () => {
       const mockEvent = { id: 1, removeMember: jest.fn().mockResolvedValue() };
       EventModel.findById.mockResolvedValue(mockEvent);
 
-      const result = await eventService.removeMember('memberId', 1);
+      const result = await eventService.removeMember("memberId", 1);
       expect(result).toBe(true);
-      expect(mockEvent.removeMember).toHaveBeenCalledWith('memberId');
+      expect(mockEvent.removeMember).toHaveBeenCalledWith("memberId");
     });
   });
 
-  describe('getEventMembers', () => {
-    it('debería devolver los miembros de un evento', async () => {
-      const mockMembers = [{ id: 'member1' }, { id: 'member2' }];
+  describe("getEventMembers", () => {
+    it("debería devolver los miembros de un evento", async () => {
+      const mockMembers = [{ id: "member1" }, { id: "member2" }];
       EventModel.getEventMembers = jest.fn().mockResolvedValue(mockMembers);
 
       const result = await eventService.getEventMembers(1);
@@ -101,16 +122,17 @@ describe('eventService', () => {
     });
   });
 
-  describe('getMemberEvents', () => {
-    it('debería devolver los eventos a los que pertenece un miembro', async () => {
-      const mockEvents = [{ id: 1, Nombre: 'Evento 1' }, { id: 2, Nombre: 'Evento 2' }];
+  describe("getMemberEvents", () => {
+    it("debería devolver los eventos a los que pertenece un miembro", async () => {
+      const mockEvents = [
+        { id: 1, Nombre: "Evento 1" },
+        { id: 2, Nombre: "Evento 2" },
+      ];
       EventModel.getMemberEvents = jest.fn().mockResolvedValue(mockEvents);
 
-      const result = await eventService.getMemberEvents('memberId');
+      const result = await eventService.getMemberEvents("memberId");
       expect(result).toEqual(mockEvents);
-      expect(EventModel.getMemberEvents).toHaveBeenCalledWith('memberId');
+      expect(EventModel.getMemberEvents).toHaveBeenCalledWith("memberId");
     });
   });
 });
-
-

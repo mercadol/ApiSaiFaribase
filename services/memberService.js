@@ -39,7 +39,7 @@ const memberService = {
       EstadoCivil: memberData.EstadoCivil,
       TipoMiembro: memberData.TipoMiembro,
       Oficio: memberData.Oficio,
-      FechaRegistro: memberData.FechaRegistro || new Date()
+      FechaRegistro: memberData.FechaRegistro || new Date(),
     });
     await member.save();
     return member.id;
@@ -60,7 +60,7 @@ const memberService = {
     if (updatedData.EstadoCivil) member.EstadoCivil = updatedData.EstadoCivil;
     if (updatedData.TipoMiembro) member.TipoMiembro = updatedData.TipoMiembro;
     if (updatedData.Oficio) member.Oficio = updatedData.Oficio;
-    
+
     await member.save();
     return member;
   },
@@ -88,7 +88,33 @@ const memberService = {
    */
   search: async (searchString, startAfterId = null, pageSize = 10) => {
     return MemberModel.search(searchString, startAfterId, pageSize);
-  }
+  },
+
+  /**
+   * Busca miembros disponibles para asignación, excluyendo los ya asignados a una entidad específica.
+   *
+   * @param {string} searchString - Cadena de búsqueda.
+   * @param {string} excludeFromEntity - Entidad de la cual excluir miembros ('grupo', 'curso', 'evento').
+   * @param {string} entityId - ID de la entidad específica.
+   * @param {string|null} startAfterId - ID para la paginación.
+   * @param {number} pageSize - Tamaño de la página.
+   * @returns {Promise<Array>} Array de miembros disponibles.
+   */
+  searchAvailable: async (
+    searchString,
+    excludeFromEntity,
+    entityId,
+    startAfterId = null,
+    pageSize = 10
+  ) => {
+    return MemberModel.searchAvailable(
+      searchString,
+      excludeFromEntity,
+      entityId,
+      startAfterId,
+      pageSize
+    );
+  },
 };
 
 module.exports = memberService;

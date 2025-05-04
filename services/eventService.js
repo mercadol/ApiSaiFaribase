@@ -49,10 +49,10 @@ const eventService = {
   },
 
   // Relation operations
-  addMember: async (memberId, eventId) => {
+  addMember: async (memberId, eventId, role) => {
     const event = await EventModel.findById(eventId);
-    await event.addMember(memberId);
-    return { eventId, memberId };
+    await event.addMember(memberId, role);
+    return { eventId, memberId, role };
   },
 
   removeMember: async (memberId, eventId) => {

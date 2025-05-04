@@ -1,6 +1,7 @@
 // models/GroupModel.js
 const { db } = require("../firebase");
 const ApiError = require("../utils/ApiError");
+const MemberModel = require("./MemberModel");
 
 /**
  * Modelo que representa un grupo.
@@ -107,13 +108,18 @@ class GroupModel {
     try {
       let query = db.collection("Group").orderBy("Nombre").limit(pageSize);
       if (startAfterId) {
-        const startAfterDoc = await db.collection("Group").doc(startAfterId).get();
+        const startAfterDoc = await db
+          .collection("Group")
+          .doc(startAfterId)
+          .get();
         if (startAfterDoc.exists) {
           query = query.startAfter(startAfterDoc);
         }
       }
       const snapshot = await query.get();
-      return snapshot.docs.map((doc) => new GroupModel({ id: doc.id, ...doc.data() }));
+      return snapshot.docs.map(
+        (doc) => new GroupModel({ id: doc.id, ...doc.data() })
+      );
     } catch (error) {
       throw new ApiError(
         500,
@@ -141,7 +147,10 @@ class GroupModel {
         .limit(pageSize);
 
       if (startAfterId) {
-        const startAfterDoc = await db.collection("Group").doc(startAfterId).get();
+        const startAfterDoc = await db
+          .collection("Group")
+          .doc(startAfterId)
+          .get();
         if (startAfterDoc.exists) {
           query = query.startAfter(startAfterDoc);
         }
@@ -166,21 +175,26 @@ class GroupModel {
    * Agrega un miembro al grupo.
    *
    * @param {string} memberId - ID del miembro a agregar.
+   * @param {string} role - Rol del miembro en el grupo.
    * @returns {Promise<void>}
    * @throws {ApiError} Si no se especifica el ID del grupo o del miembro, o si ocurre un error.
    */
-  async addMember(memberId) {
+  async addMember(memberId, role) {
     if (!this.id) {
       throw new ApiError(400, "ID del grupo no especificado.");
     }
     if (!memberId) {
       throw new ApiError(400, "ID del miembro no especificado.");
     }
+    if (!role) {
+      throw new ApiError(400, "Rol del miembro no especificado.");
+    }
     try {
       const relationId = `${this.id}_${memberId}`;
       await db.collection("GroupMember").doc(relationId).set({
         groupId: this.id,
         memberId: memberId,
+        role: role,
       });
     } catch (error) {
       throw new ApiError(
@@ -216,10 +230,10 @@ class GroupModel {
   }
 
   /**
-   * Obtiene todos los IDs de miembros que pertenecen a un grupo.
+   * Obtiene todos los miembros que pertenecen a un grupo con datos enriquecidos.
    *
    * @param {string} groupId - ID del grupo.
-   * @returns {Promise<string[]>} Array de IDs de miembros.
+   * @returns {Promise<Array<{id: string, Nombre: string, TipoMiembro: string, role: string}>>} Array de datos de miembros.
    * @throws {ApiError} Si no se especifica el ID del grupo o si ocurre un error en la consulta.
    */
   static async getGroupMembers(groupId) {
@@ -227,12 +241,46 @@ class GroupModel {
       throw new ApiError(400, "ID del grupo no especificado.");
     }
     try {
-      const snapshot = await db.collection("GroupMember").where("groupId", "==", groupId).get();
-      return snapshot.docs.map((doc) => doc.data().memberId);
+      const snapshot = await db
+        .collection("GroupMember")
+        .where("groupId", "==", groupId)
+        .get();
+
+      if (snapshot.empty) return []; // Si no hay miembros, retornar un array vacío
+
+      const memberDataPromises = snapshot.docs.map(async (doc) => {
+        const memberId = doc.data().memberId;
+        const role = doc.data().role; // Obtener el rol del documento
+
+        // Buscar el miembro en la colección de miembros
+        const member = await MemberModel.findById(memberId).catch((err) => {
+          console.warn(
+            `Miembro con ID ${memberId} referenciado pero no encontrado.`,
+            err
+          );
+          return null;
+        });
+
+        // Si el miembro fue encontrado, retornar sus datos junto con el TipoMiembro y el rol
+        if (member) {
+          return {
+            id: member.id,
+            Nombre: member.Nombre,
+            TipoMiembro: member.TipoMiembro, // Usar el TipoMiembro del objeto member
+            role: role, // Incluir el rol de la relación
+          };
+        }
+        return null; // Si no se encuentra el miembro, retornar null
+      });
+
+      const membersData = await Promise.all(memberDataPromises);
+
+      // Filtrar miembros no encontrados y retornar la lista
+      return membersData.filter((member) => member !== null);
     } catch (error) {
       throw new ApiError(
         500,
-        "Error al obtener miembros del grupo. Inténtelo más tarde."
+        `Error al obtener miembros del grupo. Inténtelo más tarde: ${error.message}`
       );
     }
   }
@@ -249,7 +297,10 @@ class GroupModel {
       throw new ApiError(400, "ID del miembro no especificado.");
     }
     try {
-      const snapshot = await db.collection("GroupMember").where("memberId", "==", memberId).get();
+      const snapshot = await db
+        .collection("GroupMember")
+        .where("memberId", "==", memberId)
+        .get();
       const groupIds = snapshot.docs.map((doc) => doc.data().groupId);
 
       // Obtener detalles de cada grupo
