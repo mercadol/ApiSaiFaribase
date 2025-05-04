@@ -252,29 +252,56 @@ router.get("/search/:searchString", groupController.search);
  *             type: object
  *             required:
  *               - memberId
+ *               - role
  *             properties:
  *               memberId:
  *                 type: string
  *                 example: "MIEMBRO_XYZ789"
  *                 description: ID único del miembro a agregar
- *               data:
- *                 type: object
- *                 example: { "rol": "Lider", "fecha_inscripcion": "2024-03-01" }
- *                 description: Datos adicionales de la relación
+ *               role:
+ *                 type: string
+ *                 example: "Lider"
+ *                 description: Rol del miembro
  *     responses:
  *       201:
  *         description: Miembro agregado correctamente
  *         content:
  *           application/json:
- *             example:
- *               message: "Miembro agregado correctamente"
- *               result: { groupId: "GRUPO_ABC123", memberId: "MIEMBRO_XYZ789" }
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Miembro agregado correctamente"
+ *                 result:
+ *                   type: object
+ *                   properties:
+ *                     groupId:
+ *                       type: string
+ *                       example: "GRUPO_ABC123"
+ *                     memberId:
+ *                       type: string
+ *                       example: "MIEMBRO_XYZ789"
+ *       400:
+ *         description: Solicitud incorrecta, falta información necesaria
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "ID del miembro no especificado."
  *       500:
  *         description: Error interno del servidor
  *         content:
  *           application/json:
- *             example:
- *               error: "Error al agregar miembro"
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Error al agregar miembro"
  */
 router.post(
   "/:groupId/members",
@@ -325,7 +352,7 @@ router.delete("/:groupId/members/:memberId", groupMemberDeleteValidation, groupC
  * /groups/{groupId}/members:
  *   get:
  *     summary: Obtiene la lista de miembros de un grupo
- *     description: Devuelve la lista completa de miembros asociados
+ *     description: Devuelve la lista completa de miembros asociados a un grupo específico
  *     tags: [Groups]
  *     parameters:
  *       - in: path
@@ -334,25 +361,46 @@ router.delete("/:groupId/members/:memberId", groupMemberDeleteValidation, groupC
  *         schema:
  *           type: string
  *           example: "GRUPO_ABC123"
- *         description: ID del grupo
+ *         description: ID del grupo del cual se obtendrán los miembros
  *     responses:
  *       200:
  *         description: Lista de miembros obtenida exitosamente
  *         content:
  *           application/json:
- *             example:
- *               - id: "MIEMBRO_XYZ789"
- *                 nombre: "Juan Pérez"
- *                 rol: "estudiante"
- *               - id: "MIEMBRO_DEF456"
- *                 nombre: "María García"
- *                 rol: "instructor"
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                     example: "MIEMBRO_XYZ789"
+ *                   nombre:
+ *                     type: string
+ *                     example: "Juan Pérez"
+ *                   rol:
+ *                     type: string
+ *                     example: "estudiante"
+ *       404:
+ *         description: Grupo no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Grupo no encontrado"
  *       500:
  *         description: Error interno del servidor
  *         content:
  *           application/json:
- *             example:
- *               error: "Error al obtener miembros"
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Error al obtener miembros"
  */
 router.get(
   "/:groupId/members",

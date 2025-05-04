@@ -123,8 +123,8 @@ router.get("/:id", courseIdValidation, courseController.getById);
  *                   type: Data
  *                   description: Fecha clausura del curso.
  *             example:
- *               Nombre: "Grupo de aseo"
- *               Descripcion: "Grupo encargado de velar por el aseo de las instalaciones"
+ *               Nombre: "Introduccion biblica"
+ *               Descripcion: "Curso basico de preparacion biblica"
  *       400:
  *         description: Error de validación por campos faltantes o inválidos.
  *         content:
@@ -261,29 +261,56 @@ router.get("/search/:searchString", courseController.search);
  *             type: object
  *             required:
  *               - memberId
+ *               - role
  *             properties:
  *               memberId:
  *                 type: string
  *                 example: "MIEMBRO_XYZ789"
  *                 description: ID único del miembro a agregar
- *               data:
- *                 type: object
- *                 example: { "rol": "estudiante", "fecha_inscripcion": "2024-03-01" }
- *                 description: Datos adicionales de la relación
+ *               role:
+ *                 type: string
+ *                 example: "Maestro"
+ *                 description: Rol del miembro
  *     responses:
  *       201:
- *         description: Miembro agregado exitosamente al curso
+ *         description: Miembro agregado correctamente
  *         content:
  *           application/json:
- *             example:
- *               message: "Miembro agregado al curso correctamente"
- *               result: { courseId: "CURSO_ABC123", memberId: "MIEMBRO_XYZ789" }
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Miembro agregado correctamente"
+ *                 result:
+ *                   type: object
+ *                   properties:
+ *                     courseId:
+ *                       type: string
+ *                       example: "GRUPO_ABC123"
+ *                     memberId:
+ *                       type: string
+ *                       example: "MIEMBRO_XYZ789"
+ *       400:
+ *         description: Solicitud incorrecta, falta información necesaria
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "ID del miembro no especificado."
  *       500:
  *         description: Error interno del servidor
  *         content:
  *           application/json:
- *             example:
- *               error: "Error al agregar miembro al curso"
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Error al agregar miembro"
  */
 router.post(
   "/:courseId/members",
@@ -353,19 +380,40 @@ router.delete(
  *         description: Lista de miembros obtenida exitosamente
  *         content:
  *           application/json:
- *             example:
- *               - id: "MIEMBRO_XYZ789"
- *                 nombre: "Juan Pérez"
- *                 rol: "estudiante"
- *               - id: "MIEMBRO_DEF456"
- *                 nombre: "María García"
- *                 rol: "instructor"
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                     example: "MIEMBRO_XYZ789"
+ *                   nombre:
+ *                     type: string
+ *                     example: "Juan Pérez"
+ *                   rol:
+ *                     type: string
+ *                     example: "estudiante"
+ *       404:
+ *         description: Curso no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Curso no encontrado"
  *       500:
  *         description: Error interno del servidor
  *         content:
  *           application/json:
- *             example:
- *               error: "Error al obtener miembros del curso"
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Error al obtener miembros"
  */
 router.get(
   "/:courseId/members",

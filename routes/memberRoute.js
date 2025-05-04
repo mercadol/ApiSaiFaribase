@@ -302,7 +302,89 @@ router.put("/:id", updateMemberValidation, memberController.update);
  */
 router.get("/search/:searchString", memberController.search);
 
-
+/**
+ * Busca miembros disponibles para asignación a entidades, excluyendo los ya asignados.
+ * @swagger
+ * /members/available:
+ *   get:
+ *     summary: Obtiene la lista de miembros disponibles
+ *     tags: [Members]
+ *     description: Devuelve todos los miembros que están disponibles para asignación, excluyendo los ya asignados a una entidad específica.
+ *     parameters:
+ *       - in: query
+ *         name: q
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Cadena de búsqueda para filtrar miembros.
+ *       - in: query
+ *         name: excludeFromEntity
+ *         schema:
+ *           type: string
+ *           enum: [grupo, curso, evento]
+ *         description: Entidad de la cual excluir miembros.
+ *       - in: query
+ *         name: entityId
+ *         schema:
+ *           type: string
+ *         description: ID de la entidad específica para la exclusión.
+ *       - in: query
+ *         name: startAfter
+ *         schema:
+ *           type: string
+ *         description: ID del documento desde el que se debe comenzar la paginación.
+ *       - in: query
+ *         name: pageSize
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Número de documentos por página (por defecto, 10).
+ *     responses:
+ *       200:
+ *         description: Lista de miembros disponibles obtenida correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                       Nombre:
+ *                         type: string
+ *                       TipoMiembro:
+ *                         type: string
+ *                       Email:
+ *                         type: string
+ *       400:
+ *         description: Error de validación por parámetros faltantes o inválidos.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *       500:
+ *         description: Error al buscar miembros disponibles
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ */
 router.get("/available", memberController.searchAvailable);
 
 module.exports = router;
